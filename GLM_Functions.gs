@@ -27,6 +27,7 @@ function fcnFindMatchingEntry(ss, RspnSht, ResponseData, RspnRow, RspnStartRow, 
   var EntryLosr;
   var EntryData;
   var EntryPrcssd;
+  var EntryMatchID;
   
   var MatchingRow = 0;
   
@@ -38,8 +39,9 @@ function fcnFindMatchingEntry(ss, RspnSht, ResponseData, RspnRow, RspnStartRow, 
       for (var EntryRow = RspnStartRow; EntryRow <= RspnMaxRows; EntryRow++){
         
         // Gets Entry Data to analyze
-        EntryPrcssd = RspnSht.getRange(EntryRow, ColPrcsd).getValue();
         EntryData = RspnSht.getRange(EntryRow, 1, 1, RspnDataInputs).getValues();
+        EntryPrcssd = RspnSht.getRange(EntryRow, ColPrcsd).getValue();
+        EntryMatchID = RspnSht.getRange(EntryRow, ColMatchID).getValue();
         
         EntryWeek = EntryData[0][1];
         EntryWinr = EntryData[0][2];
@@ -50,7 +52,7 @@ function fcnFindMatchingEntry(ss, RspnSht, ResponseData, RspnRow, RspnStartRow, 
         RspnDataLosr = ResponseData[0][3];
         
         // If both rows are different, Week Number, Player A and Player B are matching, we found the other match to compare data to
-        if (EntryRow != RspnRow && EntryPrcssd == 1 && RspnDataWeek == EntryWeek && RspnDataWinr == EntryWinr && RspnDataLosr == EntryLosr){
+        if (EntryRow != RspnRow && EntryPrcssd == 1 && EntryMatchID == '' && RspnDataWeek == EntryWeek && RspnDataWinr == EntryWinr && RspnDataLosr == EntryLosr){
           
           TestSht.getRange(RspnRow +10, 1).setValue(RspnDataWeek);
           TestSht.getRange(RspnRow +10, 2).setValue(RspnDataWinr);
@@ -98,7 +100,6 @@ function fcnFindMatchingEntry(ss, RspnSht, ResponseData, RspnRow, RspnStartRow, 
         // Loop reached the end of responses entered or found matching data
         if(EntryWeek == '' || MatchingRow != 0) {
           Logger.log('Find Matching Loop Exits at Row %s',EntryRow);
-          Logger.log('Entry Week: %s / Matching Row: %s',EntryWeek,MatchingRow);
           EntryRow = RspnMaxRows + 1;
         }
       }
