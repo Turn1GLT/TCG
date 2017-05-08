@@ -40,9 +40,9 @@ function fcnFindMatchingEntry(ss, RspnSht, ResponseData, RspnRow, RspnStartRow, 
         
         // Gets Entry Data to analyze
         EntryData = RspnSht.getRange(EntryRow, 1, 1, RspnDataInputs).getValues();
-        EntryPrcssd = RspnSht.getRange(EntryRow, ColPrcsd).getValue();
-        EntryMatchID = RspnSht.getRange(EntryRow, ColMatchID).getValue();
-        
+
+        EntryPrcssd = EntryData[0][24];
+        EntryMatchID = EntryData[0][23];
         EntryWeek = EntryData[0][1];
         EntryWinr = EntryData[0][2];
         EntryLosr = EntryData[0][3];
@@ -62,7 +62,7 @@ function fcnFindMatchingEntry(ss, RspnSht, ResponseData, RspnRow, RspnStartRow, 
           TestSht.getRange(RspnRow +10, 6).setValue(EntryLosr);
 
           // Compare New Response Data and Entry Data. If Data is not equal to the other, the conflicting Data ID is returned
-          DataConflict = subCheckDataConflict(ResponseData, EntryData, 1, RspnDataInputs - 2, TestSht);
+          DataConflict = subCheckDataConflict(ResponseData, EntryData, 1, RspnDataInputs - 4, TestSht);
           
           // 
           if (DataConflict == 0){

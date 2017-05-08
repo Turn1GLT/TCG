@@ -50,8 +50,12 @@ function fcnGameResults() {
   
   // Find a Row that is not processed in the Response Sheet (added data)
   for (var RspnRow = RspnNextRowPrcss; RspnRow <= RspnMaxRows; RspnRow++){
-    RspnWeekNum = RspnSht.getRange(RspnRow, 2).getValue();
-    RspnDataPrcssd = RspnSht.getRange(RspnRow, ColPrcsd).getValue();
+    
+    // Copy the new response data
+    ResponseData = RspnSht.getRange(RspnRow, 1, 1, RspnDataInputs).getValues();
+    
+    RspnWeekNum = ResponseData[0][1];
+    RspnDataPrcssd = ResponseData[0][24];
       
     // If week number is not empty and Processed is empty, Match Data needs to be processed
     if (RspnWeekNum != '' && RspnDataPrcssd == ''){
