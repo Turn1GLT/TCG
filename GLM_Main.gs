@@ -32,7 +32,7 @@ function fcnGameResults() {
   var RspnDataWeek;
   var RspnDataWinr;
   var RspnDataLosr;
-  var RspnDataInputs = 23; // from Time Stamp to Feedback
+  var RspnDataInputs = 25; // from Time Stamp to Data Processed
   var RspnDataPrcssd = 0;
   var ResponseData;
 
