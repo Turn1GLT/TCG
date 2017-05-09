@@ -14,9 +14,10 @@ function fcnFindMatchingEntry(ss, RspnSht, ResponseData, RspnRow, RspnStartRow, 
   // Columns Values
   var ColMatchID = 24;
   var ColPrcsd = 25;
-  var ColDataConflict = 26;
-  var ColPrcsdLastVal = 27;
-  var ColMatchIDLastVal = 28;
+  var ColErrorCode = 26;
+  var ColDataConflict = 27;
+  var ColPrcsdLastVal = 28;
+  var ColMatchIDLastVal = 29;
   
   var RspnDataWeek;
   var RspnDataWinr;
@@ -41,11 +42,11 @@ function fcnFindMatchingEntry(ss, RspnSht, ResponseData, RspnRow, RspnStartRow, 
         // Gets Entry Data to analyze
         EntryData = RspnSht.getRange(EntryRow, 1, 1, RspnDataInputs).getValues();
 
-        EntryPrcssd = EntryData[0][24];
-        EntryMatchID = EntryData[0][23];
         EntryWeek = EntryData[0][1];
         EntryWinr = EntryData[0][2];
         EntryLosr = EntryData[0][3];
+        EntryMatchID = EntryData[0][23];
+        EntryPrcssd = EntryData[0][24];
 
         RspnDataWeek = ResponseData[0][1];
         RspnDataWinr = ResponseData[0][2];
@@ -120,6 +121,58 @@ function fcnFindMatchingEntry(ss, RspnSht, ResponseData, RspnRow, RspnStartRow, 
 
 function fcnFindDuplicateEntry(ss, RspnSht, ResponseData, RspnRow, RspnStartRow, RspnMaxRows, RspnDataInputs) {
 
+  // Columns Values
+  var ColMatchID = 24;
+  var ColPrcsd = 25;
+  var ColErrorCode = 26;
+  var ColDataConflict = 27;
+  var ColPrcsdLastVal = 28;
+  var ColMatchIDLastVal = 29;
+  
+  var RspnDataWeek;
+  var RspnDataWinr;
+  var RspnDataLosr;
+
+  var EntryWeek;
+  var EntryWinr;
+  var EntryLosr;
+  var EntryData;
+  var EntryPrcssd;
+  var EntryMatchID;
+  
+  var DuplicateRow = 0;
+  
+  var DataConflict = -1;
+  
+  var TestSht = ss.getSheetByName('Test');
+  
+  // Loop to find if the other player posted the game results
+  for (var EntryRow = RspnStartRow; EntryRow <= RspnMaxRows; EntryRow++){
+    
+    // Gets Entry Data to analyze
+    EntryData = RspnSht.getRange(EntryRow, 1, 1, RspnDataInputs).getValues();
+    
+    EntryWeek = EntryData[0][1];
+    EntryWinr = EntryData[0][2];
+    EntryLosr = EntryData[0][3];
+    EntryMatchID = EntryData[0][23];
+    EntryPrcssd = EntryData[0][24];
+    
+    RspnDataWeek = ResponseData[0][1];
+    RspnDataWinr = ResponseData[0][2];
+    RspnDataLosr = ResponseData[0][3];
+    
+    // If both rows are different, the Data Entry was processed and was compiled in the Match Results (MatchID != '') and Week Number are equal), Look for player entry combination
+    if (EntryRow != RspnRow && EntryPrcssd == 1 && EntryMatchID != '' && RspnDataWeek == EntryWeek){
+      // If combination of players are the same between the entry data and the new response data, duplicate entry was found. Save Row index
+      if ((RspnDataWinr == EntryWinr && RspnDataLosr == EntryLosr) || (RspnDataWinr == EntryLosr && RspnDataLosr == EntryWinr)){
+        DuplicateRow = EntryRow;
+        Logger.log('Duplicate entry found at row: %s', DuplicateRow)
+        EntryRow = RspnMaxRows + 1;
+      }
+    }
+    return DuplicateRow;
+  }
 }
 
 // **********************************************
@@ -169,9 +222,10 @@ function fcnPopMatchResults(ss,RspnSht,ResponseData,MatchData,MatchID) {
                                    
 }
 
-                                   
-// ResponseData[0][0]  = Week Number
-// ResponseData[0][1]  = Player
+// Response and Entry Data Array
+
+// ResponseData[0][0]  = Time Stamp
+// ResponseData[0][1]  = Week Number
 // ResponseData[0][2]  = Winning Player
 // ResponseData[0][3]  = Losing Player
 // ResponseData[0][4]  = Score
@@ -193,29 +247,36 @@ function fcnPopMatchResults(ss,RspnSht,ResponseData,MatchData,MatchID) {
 // ResponseData[0][20] = Card 15 (Regular Foil)
 // ResponseData[0][21] = Card 16 (Special Foil)
 // ResponseData[0][22] = Feedback
+// ResponseData[0][23] = MatchID
+// ResponseData[0][24] = Data Processed Status                               
 
-// MatchData[0][1] 	= Match ID
-// MatchData[0][2] 	= Week Number
-// MatchData[0][3] 	= Winning Player
-// MatchData[0][4] 	= Losing Player
-// MatchData[0][5] 	= Score
-// MatchData[0][8] 	= Expansion Set
-// MatchData[0][9] 	= Card 1
-// MatchData[0][10] = Card 2
-// MatchData[0][11] = Card 3
-// MatchData[0][12] = Card 4
-// MatchData[0][13] = Card 5
-// MatchData[0][14] = Card 6
-// MatchData[0][15] = Card 8
-// MatchData[0][16] = Card 7
-// MatchData[0][17] = Card 9
-// MatchData[0][18] = Card 10
-// MatchData[0][19] = Card 11
-// MatchData[0][20] = Card 12
-// MatchData[0][21] = Card 13
-// MatchData[0][22] = Card 14
-// MatchData[0][23] = Card 15 (Regular Foil)
-// MatchData[0][24] = Card 16 (Special Foil)
+// Result Data Array
+
+// ResultData[0][0]  = Result ID
+// ResultData[0][1]  = Match ID
+// ResultData[0][2]  = Week Number
+// ResultData[0][3]  = Winning Player
+// ResultData[0][4]  = Losing Player
+// ResultData[0][5]  = Score
+// ResultData[0][6]  = Winner Score - NOT USED
+// ResultData[0][7]  = Loser Score - NOT USED
+// ResultData[0][8]  = Expansion Set
+// ResultData[0][9]  = Card 1
+// ResultData[0][10] = Card 2
+// ResultData[0][11] = Card 3
+// ResultData[0][12] = Card 4
+// ResultData[0][13] = Card 5
+// ResultData[0][14] = Card 6
+// ResultData[0][15] = Card 8
+// ResultData[0][16] = Card 7
+// ResultData[0][17] = Card 9
+// ResultData[0][18] = Card 10
+// ResultData[0][19] = Card 11
+// ResultData[0][20] = Card 12
+// ResultData[0][21] = Card 13
+// ResultData[0][22] = Card 14
+// ResultData[0][23] = Card 15 (Regular Foil)
+// ResultData[0][24] = Card 16 (Special Foil)
 
 
 
