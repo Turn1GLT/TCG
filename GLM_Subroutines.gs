@@ -10,7 +10,7 @@
 
 function subCheckDataConflict(DataArray1, DataArray2, ColStart, ColEnd, TestSht) {
   
-  var DataConflict = -1;
+  var DataConflict = 0;
   
   // Compare New Response Data and Match Data. If Data is not equal to the other
   for (var j = ColStart; j <= ColEnd; j++){
@@ -25,5 +25,34 @@ function subCheckDataConflict(DataArray1, DataArray2, ColStart, ColEnd, TestSht)
       j = ColEnd + 1;
     }
   }
-  return DataConflict + 1;
+  return DataConflict;
 }
+
+// **********************************************
+// function subPlayerMatchValidation()
+//
+// This function verifies that the player was allowed 
+// to play this match. It checks in the total amount of matches
+// played by the player to allow the game to be posted
+// The function returns 1 if the game is valid and 0 if not valid
+//
+// **********************************************
+
+function subPlayerMatchValidation(ss, PlayerName, CurrentWeek, TestSht) {
+  
+  // Opens Cumulative Results tab
+  var CumulSht = ss.getSheetByName('Cumulative Results');
+    
+  // Get Data
+  var MaxMatch = CumulSht.getRange(3,3).getValue();
+  var PlayerData = CumulSht.getRange(5, 2, 32, 3).getValues();
+  
+  var MatchValid = 0;
+  
+  for (var CumulRow = 5; CumulRow <= 32; CumulRow++){
+    // Enter validation here
+  }
+
+  return MatchValid;
+}
+
