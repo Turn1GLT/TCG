@@ -9,7 +9,7 @@
 //
 // **********************************************
 
-function fcnFindMatchingEntry(ss, RspnSht, ResponseData, RspnRow, RspnStartRow, RspnMaxRows, RspnDataInputs) {
+function fcnFindMatchingResponse(ss, RspnSht, ResponseData, RspnRow, RspnStartRow, RspnMaxRows, RspnDataInputs) {
 
   // Columns Values
   var ColMatchID = 24;
@@ -119,7 +119,7 @@ function fcnFindMatchingEntry(ss, RspnSht, ResponseData, RspnRow, RspnStartRow, 
 //
 // **********************************************
 
-function fcnFindDuplicateEntry(ss, RspnSht, ResponseData, RspnRow, RspnStartRow, RspnMaxRows, RspnDataInputs) {
+function fcnFindDuplicateResponse(ss, RspnSht, ResponseData, RspnRow, RspnStartRow, RspnMaxRows, RspnDataInputs) {
 
   // Columns Values
   var ColMatchID = 24;
@@ -184,7 +184,7 @@ function fcnFindDuplicateEntry(ss, RspnSht, ResponseData, RspnRow, RspnStartRow,
 //
 // **********************************************
 
-function fcnPopMatchResults(ss, RspnSht, ResponseData, EntryData, MatchID, OptDualSubmission) {
+function fcnPostMatchResults(ss, RspnSht, ResponseData, EntryData, MatchID, OptDualSubmission, TestSht) {
   
   // Match Results Sheet Variables
   var RsltSht = ss.getSheetByName('Match Results');
@@ -198,7 +198,7 @@ function fcnPopMatchResults(ss, RspnSht, ResponseData, EntryData, MatchID, OptDu
   var RsltPlyrDataA;
   var RsltPlyrDataB;
   
-  var MatchResultPopulated = -1;
+  var MatchPostedStatus = 0;
   
   // Sets which Data set is Player A and Player B. Data[0][1] = Player who posted the data
   if (OptDualSubmission == 'Enabled' && ResponseData[0][1] == ResponseData[0][2]) {
@@ -212,54 +212,61 @@ function fcnPopMatchResults(ss, RspnSht, ResponseData, EntryData, MatchID, OptDu
   }
   
   // Copies Players Data
-  ResultData[0][1]  = ResponseData[0][23]; // Match ID
+
   ResultData[0][2]  = ResponseData[0][1]; // Week Number
   ResultData[0][3]  = ResponseData[0][2]; // Winning Player
   ResultData[0][4]  = ResponseData[0][3]; // Losing Player  
   
   // Validate if players are allowed to post results (look for number of games played versus total amount of games allowed
-  MatchValidWinr = 
-  MatchValidLosr = 
+  MatchValidWinr = subPlayerMatchValidation(ss, ResultData[0][3], ResultData[0][2], TestSht);
+  MatchValidLosr = subPlayerMatchValidation(ss, ResultData[0][4], ResultData[0][2], TestSht);
   
+    if (MatchValidWinr == 1 && MatchValidLosr == 1){
+      // Copies Result Data
+      // ResultData[0][0] = Result ID 
+      ResultData[0][1]  = MatchID; // Match ID
+      ResultData[0][5]  = ResponseData[0][4]; // Score
+      ResultData[0][6]  = 2; // Winner Score
+      if (ResponseData[0][4] == '2 - 0') ResultData[0][7]  = 0; // Loser Score
+      if (ResponseData[0][4] == '2 - 1') ResultData[0][7]  = 1; // Loser Score
+      
+      
+      // Copies Card Data
+      ResultData[0][8]  = ResponseData[0][5];  // Expansion Set
+      ResultData[0][9]  = ResponseData[0][6];  // Card 1
+      ResultData[0][10] = ResponseData[0][7];  // Card 2
+      ResultData[0][11] = ResponseData[0][8];  // Card 3
+      ResultData[0][12] = ResponseData[0][9];  // Card 4
+      ResultData[0][13] = ResponseData[0][10]; // Card 5
+      ResultData[0][14] = ResponseData[0][11]; // Card 6
+      ResultData[0][15] = ResponseData[0][12]; // Card 8
+      ResultData[0][16] = ResponseData[0][13]; // Card 7
+      ResultData[0][17] = ResponseData[0][14]; // Card 9
+      ResultData[0][18] = ResponseData[0][15]; // Card 10
+      ResultData[0][19] = ResponseData[0][16]; // Card 11
+      ResultData[0][20] = ResponseData[0][17]; // Card 12
+      ResultData[0][21] = ResponseData[0][18]; // Card 13
+      ResultData[0][22] = ResponseData[0][19]; // Card 14
+      ResultData[0][23] = ResponseData[0][20]; // Card 15 (Regular Foil)
+      ResultData[0][24] = ResponseData[0][21]; // Card 16 (Special Foil)  
+      
+      // Sets Data in Match Result Tab
+      RsltRng.setValues(ResultData);
+      
+      // Updates the 
+      MatchPostedStatus = 1;
+    }
   
-  // Copies Result Data
-  // ResultData[0][0] = Result ID 
-  ResultData[0][5]  = ResponseData[0][4]; // Score
-  ResultData[0][6]  = 2; // Winner Score
-  if (ResponseData[0][4] == '2 - 0') ResultData[0][7]  = 0; // Loser Score
-  if (ResponseData[0][4] == '2 - 1') ResultData[0][7]  = 1; // Loser Score
+  if (MatchValidWinr != 1){
+    // returns Error that Winning Player match was illegal
+    MatchPostedStatus = -2;
+  }
 
-
-  // Copies Card Data
-  ResultData[0][8]  = ResponseData[0][5];  // Expansion Set
-  ResultData[0][9]  = ResponseData[0][6];  // Card 1
-  ResultData[0][10] = ResponseData[0][7];  // Card 2
-  ResultData[0][11] = ResponseData[0][8];  // Card 3
-  ResultData[0][12] = ResponseData[0][9];  // Card 4
-  ResultData[0][13] = ResponseData[0][10]; // Card 5
-  ResultData[0][14] = ResponseData[0][11]; // Card 6
-  ResultData[0][15] = ResponseData[0][12]; // Card 8
-  ResultData[0][16] = ResponseData[0][13]; // Card 7
-  ResultData[0][17] = ResponseData[0][14]; // Card 9
-  ResultData[0][18] = ResponseData[0][15]; // Card 10
-  ResultData[0][19] = ResponseData[0][16]; // Card 11
-  ResultData[0][20] = ResponseData[0][17]; // Card 12
-  ResultData[0][21] = ResponseData[0][18]; // Card 13
-  ResultData[0][22] = ResponseData[0][19]; // Card 14
-  ResultData[0][23] = ResponseData[0][20]; // Card 15 (Regular Foil)
-  ResultData[0][24] = ResponseData[0][21]; // Card 16 (Special Foil)  
-  
-  
-  
-  
-  // Sets Data in Match Result Tab
-  RsltRng.setValues(ResultData);
-  
-  // Updates the 
-  MatchResultPopulated = 1;
-  
+  if (MatchValidWinr != 1){
+    // returns Error that Losing Player match was illegal
+    MatchPostedStatus = -3;
+  }
   return MatchResultPopulated;
-                                   
 }
 
 // Response and Entry Data Array
