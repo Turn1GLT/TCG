@@ -14,23 +14,26 @@ function fcnGameResults() {
   
   // Config Sheet to get options
   var ConfigSht = SpreadsheetApp.openById('14rR_7-SG9fTi-M7fpS7d6n4XrOlnbKxRW1Ni2ongUVU').getSheetByName('Config');
-  var OptDualSubmission = ConfigSht.getRange(3, 9).getValue(); // If Dual Submission is disabled, look for duplicate instead
-  var OptPostResult = ConfigSht.getRange(4, 9).getValue();
-  var OptPlyrMatchValidation = ConfigSht.getRange(5, 9).getValue();
+  var ConfigData = ConfigSht.getRange(3, 9, 20, 1).getValues();
   
+  // Code Execution Options
+  var OptDualSubmission = ConfigData[0][0]; // If Dual Submission is disabled, look for duplicate instead
+  var OptPostResult = ConfigData[1][0];
+  var OptPlyrMatchValidation = ConfigData[2][0];
+  
+  // Columns Values and Parameters
+  var ColMatchID = ConfigData[8][0];
+  var ColPrcsd = ConfigData[9][0];
+  var ColDataConflict = ConfigData[10][0];
+  var ColErrorMsg = ConfigData[11][0];
+  var ColPrcsdLastVal = ConfigData[12][0];
+  var ColMatchIDLastVal = ConfigData[13][0];
+  var RspnStartRow = ConfigData[14][0];
+  var RspnDataInputs = ConfigData[15][0]; // from Time Stamp to Data Processed
+
   // Test Sheet (for Debug)
   var TestSht = ss.getSheetByName('Test') ; 
   
-  // Columns Values and Parameters
-  var ColMatchID = 24;
-  var ColPrcsd = 25;
-  var ColDataConflict = 26;
-  var ColErrorMsg = 27;
-  var ColPrcsdLastVal = 28;
-  var ColMatchIDLastVal = 29;
-  var RspnStartRow = 2;
-  var RspnDataInputs = 25; // from Time Stamp to Data Processed
-
   // Form Responses Sheet Variables
   var RspnSht = ss.getSheetByName('Form Responses 13');
   var RspnMaxRows = RspnSht.getMaxRows();
@@ -65,7 +68,7 @@ function fcnGameResults() {
     ResponseData = RspnSht.getRange(RspnRow, 1, 1, RspnDataInputs).getValues();
     
     RspnWeekNum = ResponseData[0][1];
-    RspnDataPrcssd = ResponseData[0][24];
+    RspnDataPrcssd = ResponseData[0][23];
     RspnDataWinr  = ResponseData[0][2]; // Winning Player
     RspnDataLosr  = ResponseData[0][3]; // Losing Player 
     
@@ -85,7 +88,7 @@ function fcnGameResults() {
         
         // Look for Duplicate Entry (looks in all entries with MatchID and combination of Week Number, Winner and Loser) 
         // Real code will look at Player Posting Data as well
-        DuplicateRspn = fcnFindDuplicateResponse(ss, RspnSht, ResponseData, RspnRow, RspnStartRow, RspnMaxRows, RspnDataInputs);  
+        DuplicateRspn = fcnFindDuplicateResponse(ss, ConfigData, RspnSht, ResponseData, RspnRow, RspnStartRow, RspnMaxRows, RspnDataInputs);  
         
         Logger.log('Duplicate Result: %s', DuplicateRspn);
         
@@ -95,7 +98,7 @@ function fcnGameResults() {
           // If Dual Submission is enabled, Search if the other Entry matching this response has been submitted (must be enabled)
           if (OptDualSubmission == 'Enabled'){
             // function returns row where the matching data was found
-            MatchingRspn = fcnFindMatchingResponse(ss, RspnSht, ResponseData, RspnRow, RspnStartRow, RspnMaxRows, RspnDataInputs);
+            MatchingRspn = fcnFindMatchingResponse(ss, ConfigData, RspnSht, ResponseData, RspnRow, RspnStartRow, RspnMaxRows, RspnDataInputs);
           }
           
           // Search if the other Entry matching this response has been submitted
@@ -114,7 +117,7 @@ function fcnGameResults() {
               MatchingRspnData = RspnSht.getRange(MatchingRspn, 1, 1, RspnDataInputs).getValues();
               
               // Execute function to populate Match Result Sheet from processed data
-              MatchPostStatus = fcnPostMatchResults(ss, RspnSht, ResponseData, MatchingRspnData, MatchID, OptDualSubmission, OptPlyrMatchValidation, TestSht);
+              MatchPostStatus = fcnPostMatchResults(ss, ConfigData, RspnSht, ResponseData, MatchingRspnData, MatchID, TestSht);
               Logger.log('Match Post Status: %s',MatchPostStatus);
               
               // If Match was populated in Match Results Tab
@@ -247,6 +250,8 @@ function fcnGameResults() {
       RspnRow = RspnMaxRows + 1;
     }
   }
+  // Execute Ranking function in Standing tab
+  fcnUpdateStandings(ss, ConfigSht);
 }
 
 
