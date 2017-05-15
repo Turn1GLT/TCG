@@ -1,7 +1,7 @@
 // Response and Entry Data Array
 
 // ResponseData[0][0]  = Time Stamp
-// ResponseData[0][1]  = Week Number
+// ResponseData[0][1]  = Week/Round Number
 // ResponseData[0][2]  = Winning Player
 // ResponseData[0][3]  = Losing Player
 // ResponseData[0][4]  = Score
@@ -19,8 +19,8 @@
 // ResponseData[0][16] = Card 11
 // ResponseData[0][17] = Card 12
 // ResponseData[0][18] = Card 13
-// ResponseData[0][19] = Card 14
-// ResponseData[0][20] = Card 16 (Special Foil)
+// ResponseData[0][19] = Card 14 / Foil
+// ResponseData[0][20] = Special Foil (Yes/No)
 // ResponseData[0][21] = Feedback
 // ResponseData[0][22] = MatchID
 // ResponseData[0][23] = Data Processed Status          
@@ -29,7 +29,7 @@
 
 // ResultData[0][0]  = Result ID
 // ResultData[0][1]  = Match ID
-// ResultData[0][2]  = Week Number
+// ResultData[0][2]  = Week/Round Number
 // ResultData[0][3]  = Winning Player
 // ResultData[0][4]  = Losing Player
 // ResultData[0][5]  = Score
@@ -49,8 +49,8 @@
 // ResultData[0][19] = Card 11
 // ResultData[0][20] = Card 12
 // ResultData[0][21] = Card 13
-// ResultData[0][22] = Card 14
-// ResultData[0][23] = Card 15 (Special Foil)
+// ResultData[0][22] = Card 14 / Foil
+// ResultData[0][23] = Special Foil (Yes/No)
 
 // ShtWeekPackData Array
 

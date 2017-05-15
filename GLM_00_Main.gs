@@ -13,13 +13,14 @@ function fcnGameResults() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   
   // Config Sheet to get options
-  var ConfigSht = SpreadsheetApp.openById('14rR_7-SG9fTi-M7fpS7d6n4XrOlnbKxRW1Ni2ongUVU').getSheetByName('Config');
-  var ConfigData = ConfigSht.getRange(3, 9, 20, 1).getValues();
+  var ShtConfig = SpreadsheetApp.openById('14rR_7-SG9fTi-M7fpS7d6n4XrOlnbKxRW1Ni2ongUVU').getSheetByName('Config');
+  var ConfigData = ShtConfig.getRange(3, 9, 20, 1).getValues();
   
   // Code Execution Options
   var OptDualSubmission = ConfigData[0][0]; // If Dual Submission is disabled, look for duplicate instead
   var OptPostResult = ConfigData[1][0];
   var OptPlyrMatchValidation = ConfigData[2][0];
+  var OptGameTCG = ConfigData[3][0];
   
   // Columns Values and Parameters
   var ColMatchID = ConfigData[8][0];
@@ -30,15 +31,16 @@ function fcnGameResults() {
   var ColMatchIDLastVal = ConfigData[13][0];
   var RspnStartRow = ConfigData[14][0];
   var RspnDataInputs = ConfigData[15][0]; // from Time Stamp to Data Processed
+  var NbCards = ConfigData[16][0];
 
   // Test Sheet (for Debug)
   var TestSht = ss.getSheetByName('Test') ; 
   
   // Form Responses Sheet Variables
-  var RspnSht = ss.getSheetByName('Form Responses 13');
-  var RspnMaxRows = RspnSht.getMaxRows();
-  var RspnMaxCols = RspnSht.getMaxColumns();
-  var RspnNextRowPrcss = RspnSht.getRange(1, ColPrcsdLastVal).getValue() + 1;
+  var ShtRspn = ss.getSheetByName('Form Responses 13');
+  var RspnMaxRows = ShtRspn.getMaxRows();
+  var RspnMaxCols = ShtRspn.getMaxColumns();
+  var RspnNextRowPrcss = ShtRspn.getRange(1, ColPrcsdLastVal).getValue() + 1;
   var RspnWeekNum;
   var RspnDataWeek;
   var RspnDataWinr;
@@ -46,26 +48,29 @@ function fcnGameResults() {
   var RspnDataPrcssd = 0;
   var ResponseData;
   var MatchingRspnData;
+  var CardList = new Array(16); // 0 = Set, 1-14 = Card Numbers, 15 = Masterpiece
   
   var MatchID; 
-  var ErrorMsg = '';
+  var StatusMsg = '';
 
   // Data Processing Flags
-  var DuplicateRspn = -1;
-  var MatchingRspn = -1;
-  var MatchPostStatus = -1;
+  var DuplicateRspn = -99;
+  var MatchingRspn = -98;
+  var MatchPostStatus = -97;
+  var CardDBUpdated = -96;
   
   Logger.log('Start of Main Function Executed');
   
   Logger.log('Dual Submission Option: %s',OptDualSubmission);
   Logger.log('Post Results Option: %s',OptPostResult);
   Logger.log('Player Match Validation Option: %s',OptPlyrMatchValidation);
+  Logger.log('TCG Option: %s',OptGameTCG);
   
   // Find a Row that is not processed in the Response Sheet (added data)
   for (var RspnRow = RspnNextRowPrcss; RspnRow <= RspnMaxRows; RspnRow++){
     
     // Copy the new response data (from Time Stamp to Data Processed Field
-    ResponseData = RspnSht.getRange(RspnRow, 1, 1, RspnDataInputs).getValues();
+    ResponseData = ShtRspn.getRange(RspnRow, 1, 1, RspnDataInputs).getValues();
     
     RspnWeekNum = ResponseData[0][1];
     RspnDataPrcssd = ResponseData[0][23];
@@ -79,16 +84,16 @@ function fcnGameResults() {
       if (RspnDataWinr != RspnDataLosr){
         
         // Generates the Match ID in advance if data analysis is successful
-        MatchID = RspnSht.getRange(1, ColMatchIDLastVal).getValue() + 1;
+        MatchID = ShtRspn.getRange(1, ColMatchIDLastVal).getValue() + 1;
         
         Logger.log('New Data Found at Row: %s',RspnRow);
         
         // Copy the new response data to Data Array
-        ResponseData = RspnSht.getRange(RspnRow, 1, 1, RspnDataInputs).getValues();
+        ResponseData = ShtRspn.getRange(RspnRow, 1, 1, RspnDataInputs).getValues();
         
         // Look for Duplicate Entry (looks in all entries with MatchID and combination of Week Number, Winner and Loser) 
         // Real code will look at Player Posting Data as well
-        DuplicateRspn = fcnFindDuplicateResponse(ss, ConfigData, RspnSht, ResponseData, RspnRow, RspnStartRow, RspnMaxRows, RspnDataInputs);  
+        DuplicateRspn = fcnFindDuplicateData(ss, ConfigData, ShtRspn, ResponseData, RspnRow, RspnStartRow, RspnMaxRows, RspnDataInputs);  
         
         Logger.log('Duplicate Result: %s', DuplicateRspn);
         
@@ -98,7 +103,7 @@ function fcnGameResults() {
           // If Dual Submission is enabled, Search if the other Entry matching this response has been submitted (must be enabled)
           if (OptDualSubmission == 'Enabled'){
             // function returns row where the matching data was found
-            MatchingRspn = fcnFindMatchingResponse(ss, ConfigData, RspnSht, ResponseData, RspnRow, RspnStartRow, RspnMaxRows, RspnDataInputs);
+            MatchingRspn = fcnFindMatchingData(ss, ConfigData, ShtRspn, ResponseData, RspnRow, RspnStartRow, RspnMaxRows, RspnDataInputs);
           }
           
           // Search if the other Entry matching this response has been submitted
@@ -108,40 +113,39 @@ function fcnGameResults() {
           
           Logger.log('Matching Result: %s', MatchingRspn);
           
-          // If the result of the fcnFindMatchingEntry function returns something different than -1 and 0, we found a matching entry, continue analyzing the response data
-          if (MatchingRspn != -1 && MatchingRspn != 0){
+          // If the result of the fcnFindMatchingEntry function returns something greater than 0, we found a matching entry, continue analyzing the response data
+          if (MatchingRspn > 0){
             
             if (OptPostResult == 'Enabled'){
               
               // Get the Entry Data found at row MatchingRspn
-              MatchingRspnData = RspnSht.getRange(MatchingRspn, 1, 1, RspnDataInputs).getValues();
+              MatchingRspnData = ShtRspn.getRange(MatchingRspn, 1, 1, RspnDataInputs).getValues();
               
               // Execute function to populate Match Result Sheet from processed data
-              MatchPostStatus = fcnPostMatchResults(ss, ConfigData, RspnSht, ResponseData, MatchingRspnData, MatchID, TestSht);
+              MatchPostStatus = fcnPostMatchResults(ss, ConfigData, ShtRspn, ResponseData, MatchingRspnData, MatchID, TestSht);
               Logger.log('Match Post Status: %s',MatchPostStatus);
               
               // If Match was populated in Match Results Tab
               if (MatchPostStatus == 1){
                 // Match ID doesn't change because we assumed it was already OK
                 
+                // Copies all cards added to the Card Database
+                if (OptGameTCG == 'Enabled'){
+                  for (var card = 0; card < NbCards; card++){
+                    CardList[card] = [ResponseData[0][card+5]];
+                  }
+                  //fcnUpdateCardDB(RspnDataLosr, CardList);
+                }
                 // Send email Confirmation that Response and Entry Data was compiled and posted to the Match Results
                 
               }
               
               // If MatchPostSuccess = 0, function was executed but was not able to post in the Match Result Tab
-              if (MatchPostStatus == 0){
+              if (MatchPostStatus < 0){
                 // Updates the Match ID to an empty value 
                 MatchID = '';
-                // Set the Error Message
-                ErrorMsg = 'Not Able to Post Results';
-              }
-              
-              // If MatchPostSuccess = -1, function was not executed properly, sends email to notify
-              if (MatchPostStatus == -1){
-                // Updates the Match ID to an empty value 
-                MatchID = '';
-                // Set the Error Message
-                ErrorMsg = 'Match Post Not Executed';
+                // Generate the Status Message
+                StatusMsg = subGenErrorMsg(MatchPostStatus);
                 // Get email from Config File
                 
                 // Call the Email Function, sends Both Response and Entry Data 
@@ -159,14 +163,16 @@ function fcnGameResults() {
           
           // If MatchingEntry = 0, fcnFindMatchingEntry did not find a matching entry, it might be the first response entry
           if (OptDualSubmission == 'Enabled' && MatchingRspn == 0){
+            // Generate the Status Message
+            StatusMsg = 'Waiting for Other Response Submission'
             // Set the Data Processed Flag
             RspnDataPrcssd = 1;
           } 
           
           // If MatchingEntry = -1, fcnFindMatchingEntry was not executed properly, sends email to notify
-          if (OptDualSubmission == 'Enabled' && MatchingRspn == -1){
-            // Set the Error Message
-            ErrorMsg = 'Matching Response Search Not Executed';
+          if (OptDualSubmission == 'Enabled' && MatchingRspn < 0){
+            // Set the Status Message
+            StatusMsg = subGenErrorMsg(MatchingRspn);
             
             // Get email from Config File
             
@@ -177,7 +183,7 @@ function fcnGameResults() {
         }
         
         // If Duplicate is found, send email to notify, set Response Data Processed to -1 to represent the Duplicate Entry
-        if (DuplicateRspn != 0 && DuplicateRspn != -1){
+        if (DuplicateRspn > 0){
           
           // Updates the Match ID to an empty value 
           MatchID = '';
@@ -185,17 +191,16 @@ function fcnGameResults() {
           // Set the Data Processed Flag
           RspnDataPrcssd = 1;        
           
-          // Sets the Error Message
-          ErrorMsg = 'Duplicate Entry Found at Row: ' + DuplicateRspn;
-          
-          Logger.log('Duplicate Found');        
+          // Sets the Status Message
+          StatusMsg = 'Duplicate Entry Found at Row: ' + DuplicateRspn;
+                
           // Get email from Config File
           
           // Call the Email Function, sends Both Response and Entry Data to Organizer
         }
         
         // If FindDuplicateEntry was not executed properly, send email to notify, set Response Data Processed to -2 to represent processing error
-        if (DuplicateRspn == -1){
+        if (DuplicateRspn < 0){
           
           // Updates the Match ID to an empty value 
           MatchID = '';
@@ -203,10 +208,9 @@ function fcnGameResults() {
           // Set the Data Processed Flag
           RspnDataPrcssd = 1;  
           
-          // Set the Error Message
-          ErrorMsg = 'Duplicate Entry Search Not Executed';
-          
-          Logger.log('Duplicate Not Executed');  
+          // Set the Status Message
+          StatusMsg = subGenErrorMsg(DuplicateRspn);
+ 
           // Get email from Config File
           
           // Call the Email Function, sends Both Response and Entry Data 
@@ -222,26 +226,24 @@ function fcnGameResults() {
         // Set the Data Processed Flag
         RspnDataPrcssd = 1;  
         
-        // Set the Error Message
-        ErrorMsg = 'Same Player selected for Win and Loss';
-        
-        Logger.log('Same Player selected for Win and Loss');  
+        // Set the Status Message
+        StatusMsg = 'Same Player selected for Win and Loss'; 
         // Get email from Config File
         
         // Call the Email Function, sends Both Response and Entry Data 
       }
       
-      // Set the Match ID (for both Response and Matching Entry),  and Updates the Last Match ID generated, 
+      // Set the Match ID (for both Response and Matching Entry), and Updates the Last Match ID generated, 
       if (MatchPostStatus == 1 || OptPostResult == 'Disabled'){
-        RspnSht.getRange(RspnRow, ColMatchID).setValue(MatchID);
-        RspnSht.getRange(1, ColMatchIDLastVal).setValue(MatchID);
+        ShtRspn.getRange(RspnRow, ColMatchID).setValue(MatchID);
+        ShtRspn.getRange(1, ColMatchIDLastVal).setValue(MatchID);
       }
-      // Set the Processed Flag and Error Message for the response
-      RspnSht.getRange(RspnRow, ColPrcsd).setValue(RspnDataPrcssd);
-      RspnSht.getRange(RspnRow, ColErrorMsg).setValue(ErrorMsg);
+      // Set the Processed Flag and Status Message for the response
+      ShtRspn.getRange(RspnRow, ColPrcsd).setValue(RspnDataPrcssd);
+      ShtRspn.getRange(RspnRow, ColErrorMsg).setValue(StatusMsg);
       
       // Set the Matching Response Match ID if Matching Response found
-      if (MatchingRspn > 0) RspnSht.getRange(MatchingRspn, ColMatchID).setValue(MatchID);	  
+      if (MatchingRspn > 0) ShtRspn.getRange(MatchingRspn, ColMatchID).setValue(MatchID);	  
       
     }
     // When Week Number is empty or if the Response Data was processed, we have reached the end of the list, then exit the loop
@@ -251,7 +253,7 @@ function fcnGameResults() {
     }
   }
   // Execute Ranking function in Standing tab
-  fcnUpdateStandings(ss, ConfigSht);
+  fcnUpdateStandings(ss, ShtConfig);
 }
 
 

@@ -1,5 +1,5 @@
 // **********************************************
-// function fcnFindMatchingEntry()
+// function fcnFindMatchingData()
 //
 // This function searches for the other match entry 
 // in the Response Tab. The functions returns the Row number
@@ -9,7 +9,7 @@
 //
 // **********************************************
 
-function fcnFindMatchingResponse(ss, ConfigData, RspnSht, ResponseData, RspnRow, RspnStartRow, RspnMaxRows, RspnDataInputs) {
+function fcnFindMatchingData(ss, ConfigData, ShtRspn, ResponseData, RspnRow, RspnStartRow, RspnMaxRows, RspnDataInputs) {
 
   // Columns Values and Parameters
   var ColMatchID = ConfigData[8][0];
@@ -42,7 +42,7 @@ function fcnFindMatchingResponse(ss, ConfigData, RspnSht, ResponseData, RspnRow,
       for (var EntryRow = RspnStartRow; EntryRow <= RspnMaxRows; EntryRow++){
         
         // Gets Entry Data to analyze
-        EntryData = RspnSht.getRange(EntryRow, 1, 1, RspnDataInputs).getValues();
+        EntryData = ShtRspn.getRange(EntryRow, 1, 1, RspnDataInputs).getValues();
 
         EntryWeek = EntryData[0][1];
         EntryWinr = EntryData[0][2];
@@ -63,14 +63,8 @@ function fcnFindMatchingResponse(ss, ConfigData, RspnSht, ResponseData, RspnRow,
           // 
           if (DataConflict == 0){
             // Sets Conflict Flag to 'No Conflict'
-            RspnSht.getRange(RspnRow, ColDataConflict).setValue('No Conflict');
-            RspnSht.getRange(EntryRow, ColDataConflict).setValue('No Conflict');
-            
-            TestSht.getRange(RspnRow, 1).setValue('Matching Entry Found');
-            TestSht.getRange(RspnRow, 2, 1, RspnDataInputs).setValues(ResponseData);
-            TestSht.getRange(RspnRow +20, 1).setValue(EntryRow);
-            TestSht.getRange(RspnRow +20, 2, 1, RspnDataInputs).setValues(EntryData);
-            
+            ShtRspn.getRange(RspnRow, ColDataConflict).setValue('No Conflict');
+            ShtRspn.getRange(EntryRow, ColDataConflict).setValue('No Conflict');
             MatchingRow = EntryRow;
           }
           
@@ -78,21 +72,11 @@ function fcnFindMatchingResponse(ss, ConfigData, RspnSht, ResponseData, RspnRow,
           if (DataConflict != 0 && DataConflict != -1){
 
             // Sets the Conflict Value to the Data ID value where the conflict was found
-            RspnSht.getRange(RspnRow, ColDataConflict).setValue(DataConflict);
-            RspnSht.getRange(EntryRow, ColDataConflict).setValue(DataConflict);
-
-            // Gets email from Config File
-            
-            // Calls the Email Function, sends Both Response and Entry Data and Conflicting Values and Category
-            
+            ShtRspn.getRange(RspnRow, ColDataConflict).setValue(DataConflict);
+            ShtRspn.getRange(EntryRow, ColDataConflict).setValue(DataConflict);
           }
         }
-        // Loop did not find matching data
-        else{
-          TestSht.getRange(RspnRow, 1).setValue('Matching Entry Not Found');
-          TestSht.getRange(RspnRow, 2, 1, RspnDataInputs).setValues(ResponseData);
-        }
-        
+
         // Loop reached the end of responses entered or found matching data
         if(EntryWeek == '' || MatchingRow != 0) {
           Logger.log('Find Matching Loop Exits at Row %s',EntryRow);
@@ -104,17 +88,19 @@ function fcnFindMatchingResponse(ss, ConfigData, RspnSht, ResponseData, RspnRow,
 }
 
 // **********************************************
-// function fcnFindMatchingEntry()
+// function fcnFindDuplicateData()
 //
-// This function searches for the other match entry 
-// in the Response Tab. The functions returns the Row number
-// where the matching data was found. 
+// This function searches the entry list to find any 
+// duplicate responses. To make sure we do not interfere 
+// with the fcnFindMatchingData, we look for a non-zero Match ID
+//
+// The functions returns the Row number where the matching data was found. 
 // 
-// If no matching data is found, it returns 0;
+// If no duplicate data is found, it returns 0;
 //
 // **********************************************
 
-function fcnFindDuplicateResponse(ss, ConfigData, RspnSht, ResponseData, RspnRow, RspnStartRow, RspnMaxRows, RspnDataInputs) {
+function fcnFindDuplicateData(ss, ConfigData, ShtRspn, ResponseData, RspnRow, RspnStartRow, RspnMaxRows, RspnDataInputs) {
 
   // Columns Values and Parameters
   var ColMatchID = ConfigData[8][0];
@@ -144,7 +130,7 @@ function fcnFindDuplicateResponse(ss, ConfigData, RspnSht, ResponseData, RspnRow
   
   var TestSht = ss.getSheetByName('Test');
   
-  var EntryWeekData = RspnSht.getRange(RspnStartRow, 2, RspnMaxRows-3,1).getValues();
+  var EntryWeekData = ShtRspn.getRange(RspnStartRow, 2, RspnMaxRows-3,1).getValues();
     
   // Loop to find if the other player posted the game results
   for (var EntryRow = RspnStartRow; EntryRow <= RspnMaxRows; EntryRow++){
@@ -153,23 +139,13 @@ function fcnFindDuplicateResponse(ss, ConfigData, RspnSht, ResponseData, RspnRow
     if (EntryWeekData[EntryRow][0] == RspnDataWeek){
       
       // Gets Entry Data to analyze
-      EntryData = RspnSht.getRange(EntryRow, 1, 1, RspnDataInputs).getValues();
+      EntryData = ShtRspn.getRange(EntryRow, 1, 1, RspnDataInputs).getValues();
       
       EntryWeek = EntryData[0][1];
       EntryWinr = EntryData[0][2];
       EntryLosr = EntryData[0][3];
       EntryMatchID = EntryData[0][22];
       EntryPrcssd = EntryData[0][23];
-           
-      TestSht.getRange(EntryRow +10, 1).setValue(RspnRow);
-      TestSht.getRange(EntryRow +10, 2).setValue(RspnDataWeek); 
-      TestSht.getRange(EntryRow +10, 3).setValue(RspnDataWinr);
-      TestSht.getRange(EntryRow +10, 4).setValue(RspnDataLosr);
-      
-      TestSht.getRange(EntryRow +10, 6).setValue(EntryRow);
-      TestSht.getRange(EntryRow +10, 7).setValue(EntryWeek);
-      TestSht.getRange(EntryRow +10, 8).setValue(EntryWinr);
-      TestSht.getRange(EntryRow +10, 9).setValue(EntryLosr);
       
       // If both rows are different, the Data Entry was processed and was compiled in the Match Results (MatchID != '') and Week Number are equal), Look for player entry combination
       if (EntryRow != RspnRow && EntryPrcssd == 1 && EntryMatchID != ''){
@@ -198,12 +174,13 @@ function fcnFindDuplicateResponse(ss, ConfigData, RspnSht, ResponseData, RspnRow
 //
 // **********************************************
 
-function fcnPostMatchResults(ss, ConfigData, RspnSht, ResponseData, MatchingRspnData, MatchID, TestSht) {
+function fcnPostMatchResults(ss, ConfigData, ShtRspn, ResponseData, MatchingRspnData, MatchID, TestSht) {
   
   // Code Execution Options
   var OptDualSubmission = ConfigData[0][0]; // If Dual Submission is disabled, look for duplicate instead
   var OptPostResult = ConfigData[1][0];
   var OptPlyrMatchValidation = ConfigData[2][0];
+  var OptGameTCG = ConfigData[3][0];
   
   // Match Results Sheet Variables
   var RsltSht = ss.getSheetByName('Match Results');
@@ -213,8 +190,8 @@ function fcnPostMatchResults(ss, ConfigData, RspnSht, ResponseData, MatchingRspn
   var RsltLastResultRow = RsltLastResultRowRng.getValue() + 1;
   var RsltRng = RsltSht.getRange(RsltLastResultRow, 1, 1, RsltShtMaxCol);
   var ResultData = RsltRng.getValues();
-  var MatchValidWinr;
-  var MatchValidLosr;
+  var MatchValidWinr = '';
+  var MatchValidLosr = '';
   var RsltPlyrDataA;
   var RsltPlyrDataB;
   
@@ -223,24 +200,27 @@ function fcnPostMatchResults(ss, ConfigData, RspnSht, ResponseData, MatchingRspn
   // Sets which Data set is Player A and Player B. Data[0][1] = Player who posted the data
   if (OptDualSubmission == 'Enabled' && ResponseData[0][1] == ResponseData[0][2]) {
     RsltPlyrDataA = ResponseData;
-    RsltPlyrDataB = EntryData;
+    RsltPlyrDataB = MatchingRspnData;
   }
   
   if (OptDualSubmission == 'Enabled' && ResponseData[0][1] == ResponseData[0][3]) {
     RsltPlyrDataA = ResponseData;
-    RsltPlyrDataB = EntryData;
+    RsltPlyrDataB = MatchingRspnData;
   }
   
   // Copies Players Data
 
-  ResultData[0][2]  = ResponseData[0][1]; // Week Number
+  ResultData[0][2]  = ResponseData[0][1]; // Week/Round Number
   ResultData[0][3]  = ResponseData[0][2]; // Winning Player
   ResultData[0][4]  = ResponseData[0][3]; // Losing Player  
   
   // If option is enabled, Validate if players are allowed to post results (look for number of games played versus total amount of games allowed
   if (OptPlyrMatchValidation == 'Enabled'){
-    MatchValidWinr = subPlayerMatchValidation(ss, ResultData[0][3], ResultData[0][2], TestSht);
-    MatchValidLosr = subPlayerMatchValidation(ss, ResultData[0][4], ResultData[0][2], TestSht);
+    
+    Logger.log('Player Match Validation: %s',ResultData[0][3]);
+    MatchValidWinr = subPlayerMatchValidation(ss, ResultData[0][3], TestSht);
+    Logger.log('Player Match Validation: %s',ResultData[0][4]);
+    MatchValidLosr = subPlayerMatchValidation(ss, ResultData[0][4], TestSht);
   }
 
   // If option is disabled, Consider Matches are valid
@@ -261,22 +241,24 @@ function fcnPostMatchResults(ss, ConfigData, RspnSht, ResponseData, MatchingRspn
     
     
     // Copies Card Data
-    ResultData[0][8]  = ResponseData[0][5];  // Expansion Set
-    ResultData[0][9]  = ResponseData[0][6];  // Card 1
-    ResultData[0][10] = ResponseData[0][7];  // Card 2
-    ResultData[0][11] = ResponseData[0][8];  // Card 3
-    ResultData[0][12] = ResponseData[0][9];  // Card 4
-    ResultData[0][13] = ResponseData[0][10]; // Card 5
-    ResultData[0][14] = ResponseData[0][11]; // Card 6
-    ResultData[0][15] = ResponseData[0][12]; // Card 8
-    ResultData[0][16] = ResponseData[0][13]; // Card 7
-    ResultData[0][17] = ResponseData[0][14]; // Card 9
-    ResultData[0][18] = ResponseData[0][15]; // Card 10
-    ResultData[0][19] = ResponseData[0][16]; // Card 11
-    ResultData[0][20] = ResponseData[0][17]; // Card 12
-    ResultData[0][21] = ResponseData[0][18]; // Card 13
-    ResultData[0][22] = ResponseData[0][19]; // Card 14
-    ResultData[0][23] = ResponseData[0][20]; // Card 15 (Special Foil) 
+    if (OptGameTCG == 'Enabled'){
+      ResultData[0][8]  = ResponseData[0][5];  // Expansion Set
+      ResultData[0][9]  = ResponseData[0][6];  // Card 1
+      ResultData[0][10] = ResponseData[0][7];  // Card 2
+      ResultData[0][11] = ResponseData[0][8];  // Card 3
+      ResultData[0][12] = ResponseData[0][9];  // Card 4
+      ResultData[0][13] = ResponseData[0][10]; // Card 5
+      ResultData[0][14] = ResponseData[0][11]; // Card 6
+      ResultData[0][15] = ResponseData[0][12]; // Card 8
+      ResultData[0][16] = ResponseData[0][13]; // Card 7
+      ResultData[0][17] = ResponseData[0][14]; // Card 9
+      ResultData[0][18] = ResponseData[0][15]; // Card 10
+      ResultData[0][19] = ResponseData[0][16]; // Card 11
+      ResultData[0][20] = ResponseData[0][17]; // Card 12
+      ResultData[0][21] = ResponseData[0][18]; // Card 13
+      ResultData[0][22] = ResponseData[0][19]; // Card 14
+      ResultData[0][23] = ResponseData[0][20]; // Card 15 (Special Foil) 
+    }
     
     // Sets Data in Match Result Tab
     RsltRng.setValues(ResultData);
@@ -289,20 +271,32 @@ function fcnPostMatchResults(ss, ConfigData, RspnSht, ResponseData, MatchingRspn
     fcnPostResultWeek(ss, ConfigData, ResultData, TestSht);
   }
   
-  if (MatchValidWinr != 1 && MatchValidLosr == 1){
-    // returns Error that Winning Player match is not legal
-    MatchPostedStatus = -2;
-  }
+  // If Match Validation was not successful, generate Error Status
   
-  if (MatchValidLosr != 1 && MatchValidWinr == 1){
-    // returns Error that Losing Player match is not legal
-    MatchPostedStatus = -3;
-  }
+  // returns Error that Winning Player is Eliminated from the League
+  if (MatchValidWinr == -1 && MatchValidLosr == 1)  MatchPostedStatus = -11;
   
-  if (MatchValidWinr != 1 && MatchValidLosr != 1){
-    // returns Error that Both Players match are not legal
-    MatchPostedStatus = -4;
-  }
+  // returns Error that Winning Player has played too many matches
+  if (MatchValidWinr == -2 && MatchValidLosr == 1)  MatchPostedStatus = -12;  
+  
+  // returns Error that Losing Player is Eliminated from the League
+  if (MatchValidLosr == -1 && MatchValidWinr == 1)  MatchPostedStatus = -21;
+  
+  // returns Error that Losing Player has played too many matches
+  if (MatchValidLosr == -2 && MatchValidWinr == 1)  MatchPostedStatus = -22;
+  
+  // returns Error that Both Players are Eliminated from the League
+  if (MatchValidWinr == -1 && MatchValidLosr == -1) MatchPostedStatus = -31;
+  
+  // returns Error that Winning Player is Eliminated from the League and Losing Player has played too many matches
+  if (MatchValidWinr == -1 && MatchValidLosr == -2) MatchPostedStatus = -32;
+
+  // returns Error that Winning Player has player too many matches and Losing Player is Eliminated from the League
+  if (MatchValidWinr == -2 && MatchValidLosr == -1) MatchPostedStatus = -33;
+  
+  // returns Error that Both Players have played too many matches
+  if (MatchValidWinr == -2 && MatchValidLosr == -2) MatchPostedStatus = -34;
+  
   return MatchPostedStatus;
 }
 
@@ -318,6 +312,10 @@ function fcnPostMatchResults(ss, ConfigData, RspnSht, ResponseData, MatchingRspn
 
 function fcnPostResultWeek(ss, ConfigData, ResultData, TestSht) {
 
+  // Code Execution Options
+  var OptGameTCG = ConfigData[3][0];
+  
+  // function variables
   var ShtWeekRslt;
   var ShtWeekRsltRng;
   var ShtWeekPlyr;
@@ -350,35 +348,26 @@ function fcnPostResultWeek(ss, ConfigData, ResultData, TestSht) {
   if (MatchWeek == 7) ShtWeekRslt = ss.getSheetByName('Week7');
 
   ShtWeekMaxCol = ShtWeekRslt.getMaxColumns();
-  
-  Logger.log('Match Week # %s',MatchWeek);
-  Logger.log('Max Columns: %s',ShtWeekMaxCol);  
-  Logger.log('Win Name:  %s',MatchDataWinr);
-  Logger.log('Loss Name: %s',MatchDataLosr);
-  
 
   // Gets All Players Names
   ShtWeekPlyr = ShtWeekRslt.getRange(5,ColPlyr,32,1).getValues();
   
   // Find the Winning and Losing Player in the Week Result Tab
   for (var RsltRow = 5; RsltRow <= 36; RsltRow ++){
-    Logger.log('Player Name: %s',ShtWeekPlyr[RsltRow - 5][0]);
     
-    if (ShtWeekPlyr[RsltRow - 5][0] == MatchDataWinr) {
-      WeekWinrRow = RsltRow;
-      Logger.log('Winner at Row: %s',WeekWinrRow);
-    }
-    if (ShtWeekPlyr[RsltRow - 5][0] == MatchDataLosr) {
-      WeekLosrRow = RsltRow;
-      Logger.log('Loser at Row: %s',WeekLosrRow);
-    }
+    if (ShtWeekPlyr[RsltRow - 5][0] == MatchDataWinr) WeekWinrRow = RsltRow;
+    if (ShtWeekPlyr[RsltRow - 5][0] == MatchDataLosr) WeekLosrRow = RsltRow;
     
     if (WeekWinrRow != '' && WeekLosrRow != '') {
       // Get Winner and Loser Match Record 
       ShtWeekWinrRec = ShtWeekRslt.getRange(WeekWinrRow,5,1,2).getValues();
       ShtWeekLosrRec = ShtWeekRslt.getRange(WeekLosrRow,5,1,2).getValues();
+      
+      // If Game Type is TCG
+      if (OptGameTCG == 'Enabled'){
       // Get Loser Pack Data
       ShtWeekPackData = ShtWeekRslt.getRange(WeekLosrRow,8,1,(PackLength*6)+1).getValues();
+      }
       RsltRow = 37;
     }
   }
@@ -391,9 +380,13 @@ function fcnPostResultWeek(ss, ConfigData, ResultData, TestSht) {
   ShtWeekLosrRec[0][1] = ShtWeekLosrRec[0][1] + 1;
   if (ShtWeekLosrRec[0][0] == '') ShtWeekLosrRec[0][0] = 0;  
   
-  // If Punishment Pack has been opened, update Punishment Pack Info
-  if (ResultData[0][8] != ''){
- 
+  // Update the Week Results Sheet
+  ShtWeekRslt.getRange(WeekWinrRow,5,1,2).setValues(ShtWeekWinrRec);
+  ShtWeekRslt.getRange(WeekLosrRow,5,1,2).setValues(ShtWeekLosrRec);
+  
+  // If Game Type is TCG and Punishment Pack has been opened, update Punishment Pack Info
+  if (OptGameTCG == 'Enabled' && ResultData[0][8] != ''){
+      
     // Find the next free Punishment Pack space offset
     if (ShtWeekPackData[0][1]  == '' && NextPackID == 0) NextPackID = 1;
     if (ShtWeekPackData[0][17] == '' && NextPackID == 0) NextPackID = 17;
@@ -402,20 +395,14 @@ function fcnPostResultWeek(ss, ConfigData, ResultData, TestSht) {
     if (ShtWeekPackData[0][65] == '' && NextPackID == 0) NextPackID = 65;
     if (ShtWeekPackData[0][81] == '' && NextPackID == 0) NextPackID = 81;
     
-    Logger.log('Next Pack ID: %s',NextPackID);
-    
     ShtWeekPackData[0][0] = ShtWeekPackData[0][0] + 1;
     // Update the Pack data
     for (var PackDataID = 0; PackDataID < PackLength; PackDataID++){
       ShtWeekPackData[0][PackDataID + NextPackID] = ResultData[0][PackDataID + 8];
-      Logger.log('Pack Data: %s',NextPackID);
     }
+    // Update the Week Results Sheet with the Pack Info
+    ShtWeekRslt.getRange(WeekLosrRow,8,1,(PackLength*6)+1).setValues(ShtWeekPackData);
   }
-  
-  // Update the Week Results Sheet
-  ShtWeekRslt.getRange(WeekWinrRow,5,1,2).setValues(ShtWeekWinrRec);
-  ShtWeekRslt.getRange(WeekLosrRow,5,1,2).setValues(ShtWeekLosrRec);
-  ShtWeekRslt.getRange(WeekLosrRow,8,1,(PackLength*6)+1).setValues(ShtWeekPackData);
 }
 
 // **********************************************
@@ -445,6 +432,22 @@ function fcnUpdateStandings(ss){
 }
 
 
+// **********************************************
+// function fcnUpdateCardDB()
+//
+// This function updates the Player card database  
+// with the list of cards sent in arguments
+//
+// **********************************************
+
+function fcnUpdateCardDB(Player, CardList){
+  
+  // Declare Variables
+  
+  // Open Card Database spreadsheet
+
+
+}
 
 
 
