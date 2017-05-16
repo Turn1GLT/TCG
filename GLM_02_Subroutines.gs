@@ -40,6 +40,8 @@ function subCheckDataConflict(DataArray1, DataArray2, ColStart, ColEnd, TestSht)
 
 function subPlayerMatchValidation(ss, PlayerName, TestSht) {
   
+  Logger.log('%s Match Validation executed', PlayerName);
+  
   // Opens Cumulative Results tab
   var ShtCumul = ss.getSheetByName('Cumulative Results');
     
@@ -55,7 +57,7 @@ function subPlayerMatchValidation(ss, PlayerName, TestSht) {
   // Look for Player Row and if Player is still Active or Eliminated
   for (var i = 0; i < 32; i++) {
     // Player Found, Number of Match Played and Status memorized
-    if (PlayerName == CumulPlyrData[i][0]){
+    if (PlayerName == CumulPlyrData[i][1]){
       PlayerMatchPlayed = CumulPlyrData[i][3];
       PlayerStatus = CumulPlyrData[i][8];
       //Logger.log('Player Name: %s / MP: %s / Status: %s',CumulPlyrData[i][0], CumulPlyrData[i][3], CumulPlyrData[i][8]);

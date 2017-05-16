@@ -217,10 +217,11 @@ function fcnPostMatchResults(ss, ConfigData, ShtRspn, ResponseData, MatchingRspn
   // If option is enabled, Validate if players are allowed to post results (look for number of games played versus total amount of games allowed
   if (OptPlyrMatchValidation == 'Enabled'){
     
-    Logger.log('Player Match Validation: %s',ResultData[0][3]);
+
     MatchValidWinr = subPlayerMatchValidation(ss, ResultData[0][3], TestSht);
-    Logger.log('Player Match Validation: %s',ResultData[0][4]);
+    Logger.log('%s Match Validation: %s',ResultData[0][3], MatchValidWinr);
     MatchValidLosr = subPlayerMatchValidation(ss, ResultData[0][4], TestSht);
+    Logger.log('%s Match Validation: %s',ResultData[0][4], MatchValidLosr);
   }
 
   // If option is disabled, Consider Matches are valid
@@ -325,7 +326,7 @@ function fcnPostResultWeek(ss, ConfigData, ResultData, TestSht) {
   var ShtWeekMaxCol;
   var ShtWeekPlyr
   
-  var ColPlyr = 1;
+  var ColPlyr = 2;
   var ColWin = 5;
   var ColLos = 6;
   var PackLength = 16;
@@ -443,10 +444,17 @@ function fcnUpdateStandings(ss){
 function fcnUpdateCardDB(Player, CardList){
   
   // Declare Variables
+  var ShtCardDB = SpreadsheetApp.openById('').getSheetByName(Player);
   
-  // Open Card Database spreadsheet
+  // Open Player Card Database spreadsheet
 
+  // Find Set Columns according to Set in Cardlist (CardList[0])
 
+  // Loop through each card in CardList and update quantity
+  
+  // Call function to generate clean card pool from Player Card DB
+  
+  // Return Value
 }
 
 
