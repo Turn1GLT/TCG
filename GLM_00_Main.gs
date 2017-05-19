@@ -132,9 +132,9 @@ function fcnGameResults() {
                 // Copies all cards added to the Card Database
                 if (OptGameTCG == 'Enabled'){
                   for (var card = 0; card < NbCards; card++){
-                    CardList[card] = [ResponseData[0][card+5]];
+                    CardList[card] = ResponseData[0][card+5];
                   }
-                  //fcnUpdateCardDB(RspnDataLosr, CardList);
+                  fcnUpdateCardDB(RspnDataLosr, CardList, TestSht);
                 }
                 // Send email Confirmation that Response and Entry Data was compiled and posted to the Match Results
                 

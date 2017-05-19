@@ -1,4 +1,83 @@
 // **********************************************
+// function fcnFindDuplicateData()
+//
+// This function searches the entry list to find any 
+// duplicate responses. To make sure we do not interfere 
+// with the fcnFindMatchingData, we look for a non-zero Match ID
+//
+// The functions returns the Row number where the matching data was found. 
+// 
+// If no duplicate data is found, it returns 0;
+//
+// **********************************************
+
+function fcnFindDuplicateData(ss, ConfigData, ShtRspn, ResponseData, RspnRow, RspnStartRow, RspnMaxRows, RspnDataInputs) {
+
+  // Columns Values and Parameters
+  var ColMatchID = ConfigData[8][0];
+  var ColPrcsd = ConfigData[9][0];
+  var ColDataConflict = ConfigData[10][0];
+  var ColErrorMsg = ConfigData[11][0];
+  var ColPrcsdLastVal = ConfigData[12][0];
+  var ColMatchIDLastVal = ConfigData[13][0];
+  var RspnStartRow = ConfigData[14][0];
+  var RspnDataInputs = ConfigData[15][0]; // from Time Stamp to Data Processed
+  
+  // Response Data 
+  var RspnDataWeek = ResponseData[0][1];
+  var RspnDataWinr = ResponseData[0][2];
+  var RspnDataLosr = ResponseData[0][3];
+
+  var EntryWeek;
+  var EntryWinr;
+  var EntryLosr;
+  var EntryData;
+  var EntryPrcssd;
+  var EntryMatchID;
+  
+  var DuplicateRow = 0;
+  
+  var DataConflict = -1;
+  
+  var TestSht = ss.getSheetByName('Test');
+  
+  var EntryWeekData = ShtRspn.getRange(RspnStartRow, 2, RspnMaxRows-3,1).getValues();
+    
+  // Loop to find if the other player posted the game results
+  for (var EntryRow = RspnStartRow; EntryRow <= RspnMaxRows; EntryRow++){
+    
+    // Filters only entries of the same week the response was posted
+    if (EntryWeekData[EntryRow][0] == RspnDataWeek){
+      
+      // Gets Entry Data to analyze
+      EntryData = ShtRspn.getRange(EntryRow, 1, 1, RspnDataInputs).getValues();
+      
+      EntryWeek = EntryData[0][1];
+      EntryWinr = EntryData[0][2];
+      EntryLosr = EntryData[0][3];
+      EntryMatchID = EntryData[0][22];
+      EntryPrcssd = EntryData[0][23];
+      
+      // If both rows are different, the Data Entry was processed and was compiled in the Match Results (MatchID != '') and Week Number are equal), Look for player entry combination
+      if (EntryRow != RspnRow && EntryPrcssd == 1 && EntryMatchID != ''){
+        // If combination of players are the same between the entry data and the new response data, duplicate entry was found. Save Row index
+        if ((RspnDataWinr == EntryWinr && RspnDataLosr == EntryLosr) || (RspnDataWinr == EntryLosr && RspnDataLosr == EntryWinr)){
+          DuplicateRow = EntryRow;
+          EntryRow = RspnMaxRows + 1;
+        }
+      }
+    }
+    
+    // If we do not detect any value in Week Column, we reached the end of the list and skip
+    if (EntryRow <= RspnMaxRows && EntryWeekData[EntryRow][0] == ''){
+      EntryRow = RspnMaxRows + 1;
+    }
+  }
+  return DuplicateRow;
+}
+
+
+// **********************************************
 // function fcnFindMatchingData()
 //
 // This function searches for the other match entry 
@@ -87,83 +166,6 @@ function fcnFindMatchingData(ss, ConfigData, ShtRspn, ResponseData, RspnRow, Rsp
   return MatchingRow;
 }
 
-// **********************************************
-// function fcnFindDuplicateData()
-//
-// This function searches the entry list to find any 
-// duplicate responses. To make sure we do not interfere 
-// with the fcnFindMatchingData, we look for a non-zero Match ID
-//
-// The functions returns the Row number where the matching data was found. 
-// 
-// If no duplicate data is found, it returns 0;
-//
-// **********************************************
-
-function fcnFindDuplicateData(ss, ConfigData, ShtRspn, ResponseData, RspnRow, RspnStartRow, RspnMaxRows, RspnDataInputs) {
-
-  // Columns Values and Parameters
-  var ColMatchID = ConfigData[8][0];
-  var ColPrcsd = ConfigData[9][0];
-  var ColDataConflict = ConfigData[10][0];
-  var ColErrorMsg = ConfigData[11][0];
-  var ColPrcsdLastVal = ConfigData[12][0];
-  var ColMatchIDLastVal = ConfigData[13][0];
-  var RspnStartRow = ConfigData[14][0];
-  var RspnDataInputs = ConfigData[15][0]; // from Time Stamp to Data Processed
-  
-  // Response Data 
-  var RspnDataWeek = ResponseData[0][1];
-  var RspnDataWinr = ResponseData[0][2];
-  var RspnDataLosr = ResponseData[0][3];
-
-  var EntryWeek;
-  var EntryWinr;
-  var EntryLosr;
-  var EntryData;
-  var EntryPrcssd;
-  var EntryMatchID;
-  
-  var DuplicateRow = 0;
-  
-  var DataConflict = -1;
-  
-  var TestSht = ss.getSheetByName('Test');
-  
-  var EntryWeekData = ShtRspn.getRange(RspnStartRow, 2, RspnMaxRows-3,1).getValues();
-    
-  // Loop to find if the other player posted the game results
-  for (var EntryRow = RspnStartRow; EntryRow <= RspnMaxRows; EntryRow++){
-    
-    // Filters only entries of the same week the response was posted
-    if (EntryWeekData[EntryRow][0] == RspnDataWeek){
-      
-      // Gets Entry Data to analyze
-      EntryData = ShtRspn.getRange(EntryRow, 1, 1, RspnDataInputs).getValues();
-      
-      EntryWeek = EntryData[0][1];
-      EntryWinr = EntryData[0][2];
-      EntryLosr = EntryData[0][3];
-      EntryMatchID = EntryData[0][22];
-      EntryPrcssd = EntryData[0][23];
-      
-      // If both rows are different, the Data Entry was processed and was compiled in the Match Results (MatchID != '') and Week Number are equal), Look for player entry combination
-      if (EntryRow != RspnRow && EntryPrcssd == 1 && EntryMatchID != ''){
-        // If combination of players are the same between the entry data and the new response data, duplicate entry was found. Save Row index
-        if ((RspnDataWinr == EntryWinr && RspnDataLosr == EntryLosr) || (RspnDataWinr == EntryLosr && RspnDataLosr == EntryWinr)){
-          DuplicateRow = EntryRow;
-          EntryRow = RspnMaxRows + 1;
-        }
-      }
-    }
-    
-    // If we do not detect any value in Week Column, we reached the end of the list and skip
-    if (EntryRow <= RspnMaxRows && EntryWeekData[EntryRow][0] == ''){
-      EntryRow = RspnMaxRows + 1;
-    }
-  }
-  return DuplicateRow;
-}
 
 // **********************************************
 // function fcnPostMatchResults()
@@ -433,29 +435,7 @@ function fcnUpdateStandings(ss){
 }
 
 
-// **********************************************
-// function fcnUpdateCardDB()
-//
-// This function updates the Player card database  
-// with the list of cards sent in arguments
-//
-// **********************************************
 
-function fcnUpdateCardDB(Player, CardList){
-  
-  // Declare Variables
-  var ShtCardDB = SpreadsheetApp.openById('').getSheetByName(Player);
-  
-  // Open Player Card Database spreadsheet
-
-  // Find Set Columns according to Set in Cardlist (CardList[0])
-
-  // Loop through each card in CardList and update quantity
-  
-  // Call function to generate clean card pool from Player Card DB
-  
-  // Return Value
-}
 
 
 
