@@ -49,6 +49,7 @@ function fcnGameResults() {
   var ResponseData;
   var MatchingRspnData;
   var CardList = new Array(16); // 0 = Set, 1-14 = Card Numbers, 15 = Masterpiece
+  var CardUpdateStatus = new Array(16);
   
   var MatchID; 
   var StatusMsg = '';
@@ -134,7 +135,7 @@ function fcnGameResults() {
                   for (var card = 0; card < NbCards; card++){
                     CardList[card] = ResponseData[0][card+5];
                   }
-                  fcnUpdateCardDB(RspnDataLosr, CardList, TestSht);
+                  if (CardList[0] != 'No Pack Opened') CardUpdateStatus = fcnUpdateCardDB(RspnDataLosr, CardList, TestSht);
                 }
                 // Send email Confirmation that Response and Entry Data was compiled and posted to the Match Results
                 

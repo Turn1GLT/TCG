@@ -14,9 +14,7 @@ function OnOpen() {
   
   ss.setActiveSheet(FirstSht);
   
-  var FuncMenuButtons = [{name: "Analyze New Match Entry", functionName: "fcnGameResults"}];
-  //var SortMenuButtons = [{name: "Sort Deck by Type/Color", functionName: "fcnSortDeckTypeColor"}, {name: "Sort Deck by Type/Card Name", functionName: "fcnSortDeckTypeName"}, {name: "Sort Deck by Color", functionName: "fcnSortDeckColor"}, {name: "Sort Deck by Card Name", functionName: "fcnSortDeckCardName"}, {name: "Sort Deck by Category", functionName: "fcnSortDeckCategory"}, {name: "Sort Deck by Staple", functionName: "fcnSortDeckStaple"}];
+  var FuncMenuButtons = [{name: 'Analyze New Match Entry', functionName: 'fcnGameResults'}, {name: 'Generate Players Card DB', functionName:'fcnGenPlayerCardDB'}, {name:'Delete Players Card DB', functionName:'fcnDelPlayerCardDB'}, {name:'Generate Players Card Pool', functionName:'fcnGenPlayerCardPoolSht'}, {name:'Delete Players Card Pool', functionName:'fcnDelPlayerCardPoolSht'}];
   
   ss.addMenu("General Fctn", FuncMenuButtons);
-  //ss.addMenu("Sort Fctn", SortMenuButtons);
-}
+  }

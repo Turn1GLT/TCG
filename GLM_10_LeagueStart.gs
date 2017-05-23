@@ -9,20 +9,20 @@
 function fcnGenPlayerCardDB(){
   
   // Config Spreadsheet
-  var ShtConfig = SpreadsheetApp.openById('14rR_7-SG9fTi-M7fpS7d6n4XrOlnbKxRW1Ni2ongUVU').getSheetByName('Config');
-  var CardDBShtID = ShtConfig.getRange(3, 2).getValue();
-  var NbPlayers = ShtConfig.getRange(16,7).getValue();
+  var shtConfig = SpreadsheetApp.openById('14rR_7-SG9fTi-M7fpS7d6n4XrOlnbKxRW1Ni2ongUVU').getSheetByName('Config');
+  var CardDBShtID = shtConfig.getRange(3, 2).getValue();
+  var NbPlayers = shtConfig.getRange(16,7).getValue();
   
   // Card DB Spreadsheet
   var ssCardDB = SpreadsheetApp.openById(CardDBShtID);
-  var ShtCardDB = ssCardDB.getSheetByName('Template');
-  var ShtCardDBNum;
-  var CardDBHeader = ShtCardDB.getRange(4,1,4,36).getValues();
+  var shtCardDB = ssCardDB.getSheetByName('Template');
+  var shtCardDBNum;
+  var CardDBHeader = shtCardDB.getRange(4,1,4,36).getValues();
     
   var NbSheets = ssCardDB.getNumSheets();
   
-  var ShtPlyrCardDB;
-  var ShtPlyrName;
+  var shtPlyrCardDB;
+  var shtPlyrName;
   var PlyrRow
   
   // Loops through each player starting from the first
@@ -30,18 +30,18 @@ function fcnGenPlayerCardDB(){
     
     // Update the Player Row and Get Player Name from Config File
     PlyrRow = plyr + 16; // 16 is the row where the player list starts
-    ShtPlyrName = ShtConfig.getRange(PlyrRow, 2).getValue();
+    shtPlyrName = shtConfig.getRange(PlyrRow, 2).getValue();
   
     // INSERTS TAB BEFORE "Card DB" TAB
-    ssCardDB.insertSheet(ShtPlyrName, 0, {template: ShtCardDB});
-    ShtPlyrCardDB = ssCardDB.getSheets()[0];
+    ssCardDB.insertSheet(shtPlyrName, 0, {template: shtCardDB});
+    shtPlyrCardDB = ssCardDB.getSheets()[0];
         
     // Opens the new sheet and modify appropriate data (Player Name, Header)
-    ShtPlyrCardDB.getRange(3,3).setValue(ShtPlyrName);
-    ShtPlyrCardDB.getRange(4,1,4,36).setValues(CardDBHeader);
+    shtPlyrCardDB.getRange(3,3).setValue(shtPlyrName);
+    shtPlyrCardDB.getRange(4,1,4,36).setValues(CardDBHeader);
   }
-  ShtPlyrCardDB = ssCardDB.getSheets()[0];
-  ssCardDB.setActiveSheet(ShtPlyrCardDB);
+  shtPlyrCardDB = ssCardDB.getSheets()[0];
+  ssCardDB.setActiveSheet(shtPlyrCardDB);
 }
 
 
@@ -56,21 +56,19 @@ function fcnGenPlayerCardDB(){
 function fcnGenPlayerCardPoolSht(){
   
   // Config Spreadsheet
-  var ShtConfig = SpreadsheetApp.openById('14rR_7-SG9fTi-M7fpS7d6n4XrOlnbKxRW1Ni2ongUVU').getSheetByName('Config');
-  var CardPoolShtID = ShtConfig.getRange(4, 2).getValue();
-  var NbPlayers = ShtConfig.getRange(16,7).getValue();
+  var shtConfig = SpreadsheetApp.openById('14rR_7-SG9fTi-M7fpS7d6n4XrOlnbKxRW1Ni2ongUVU').getSheetByName('Config');
+  var CardPoolShtID = shtConfig.getRange(4, 2).getValue();
+  var NbPlayers = shtConfig.getRange(16,7).getValue();
   
-  // Card DB Spreadsheet
+  // Card Pool Spreadsheet
   var ssCardPool = SpreadsheetApp.openById(CardPoolShtID);
-  var ShtCardPool = ssCardPool.getSheetByName('Template');
-  var ShtCardPoolNum;
+  var shtCardPool = ssCardPool.getSheetByName('Template');
+  var shtCardPoolNum;
     
   var NbSheets = ssCardPool.getNumSheets();
   
-
-  
-  var ShtPlyrCardPool;
-  var ShtPlyrName;
+  var shtPlyrCardPool;
+  var shtPlyrName;
   var PlyrRow
   
   // Loops through each player starting from the first
@@ -78,15 +76,78 @@ function fcnGenPlayerCardPoolSht(){
     
     // Update the Player Row and Get Player Name from Config File
     PlyrRow = plyr + 16; // 16 is the row where the player list starts
-    ShtPlyrName = ShtConfig.getRange(PlyrRow, 2).getValue();
+    shtPlyrName = shtConfig.getRange(PlyrRow, 2).getValue();
   
     // INSERTS TAB BEFORE "Card DB" TAB
-    ssCardPool.insertSheet(ShtPlyrName, 0, {template: ShtCardPool});
-    ShtPlyrCardPool = ssCardPool.getSheets()[0];
+    ssCardPool.insertSheet(shtPlyrName, 0, {template: shtCardPool});
+    shtPlyrCardPool = ssCardPool.getSheets()[0];
         
     // Opens the new sheet and modify appropriate data (Player Name, Header)
-    ShtPlyrCardPool.getRange(2,1).setValue(ShtPlyrName);
+    shtPlyrCardPool.getRange(2,1).setValue(shtPlyrName);
   }
-  ShtPlyrCardPool = ssCardPool.getSheets()[0];
-  ssCardPool.setActiveSheet(ShtPlyrCardPool);
+  shtPlyrCardPool = ssCardPool.getSheets()[0];
+  ssCardPool.setActiveSheet(shtPlyrCardPool);
+}
+
+
+// **********************************************
+// function fcnDelPlayerCardDB()
+//
+// This function deletes all Card DB for all 
+// players from the Config File
+//
+// **********************************************
+
+function fcnDelPlayerCardDB(){
+
+  // Config Spreadsheet
+  var shtConfig = SpreadsheetApp.openById('14rR_7-SG9fTi-M7fpS7d6n4XrOlnbKxRW1Ni2ongUVU').getSheetByName('Config');
+  var CardDBShtID = shtConfig.getRange(3, 2).getValue();
+  
+  // Card DB Spreadsheet
+  var ssCardDB = SpreadsheetApp.openById(CardDBShtID);
+  var ssNbSheet = ssCardDB.getNumSheets();
+  var shtCurr;
+  var shtCurrName;
+  var shtTemplate = ssCardDB.getSheetByName('Template');
+  
+  // Activates Template Sheet
+  ssCardDB.setActiveSheet(shtTemplate);
+  
+  for (var sht = 0; sht < ssNbSheet - 1; sht ++){
+    shtCurr = ssCardDB.getSheets()[0];
+    shtCurrName = shtCurr.getName();
+    if( shtCurrName != 'Template') ssCardDB.deleteSheet(shtCurr);
+    }
+}
+
+// **********************************************
+// function fcnDelPlayerCardPoolSht()
+//
+// This function deletes all Card DB for all 
+// players from the Config File
+//
+// **********************************************
+
+function fcnDelPlayerCardPoolSht(){
+
+  // Config Spreadsheet
+  var shtConfig = SpreadsheetApp.openById('14rR_7-SG9fTi-M7fpS7d6n4XrOlnbKxRW1Ni2ongUVU').getSheetByName('Config');
+  var CardPoolShtID = shtConfig.getRange(4, 2).getValue();
+  
+  // Card Pool Spreadsheet
+  var ssCardPool = SpreadsheetApp.openById(CardPoolShtID);
+  var ssNbSheet = ssCardPool.getNumSheets();
+  var shtCurr;
+  var shtCurrName;
+  var shtTemplate = ssCardPool.getSheetByName('Template');
+  
+  // Activates Template Sheet
+  ssCardPool.setActiveSheet(shtTemplate);
+  
+  for (var sht = 0; sht < ssNbSheet - 1; sht ++){
+    shtCurr = ssCardPool.getSheets()[0];
+    shtCurrName = shtCurr.getName();
+    if( shtCurrName != 'Template') ssCardPool.deleteSheet(shtCurr);
+  }
 }
