@@ -18,7 +18,7 @@ function fcnGameResults() {
   var OptDualSubmission = ConfigData[0][0]; // If Dual Submission is disabled, look for duplicate instead
   var OptPostResult = ConfigData[1][0];
   var OptPlyrMatchValidation = ConfigData[2][0];
-  var OptGameTCG = ConfigData[3][0];
+  var OptTCGBooster = ConfigData[3][0];
   
   // Columns Values and Parameters
   var ColMatchID = ConfigData[8][0];
@@ -48,6 +48,7 @@ function fcnGameResults() {
   var MatchingRspnData;
   var CardList = new Array(16);         // 0 = Set, 1-14 = Card Numbers, 15 = Masterpiece
   var CardNameList = new Array(16);     // 0 = Set, 1-14 = Card Numbers, 15 = Masterpiece
+  var CardName;
   
   var MatchID; 
   var MatchData = new Array(25); // 0 = MatchID, 1 = Week #, 2 = Winning Player, 3 = Losing Player, 4 = Score, 5 = Winner Points, 6 = Loser Points, 7 = Card Set, 8-21 = Cards, 22 = Masterpiece (Y-N), 23 = Reserved, 24 = MatchPostStatus
@@ -64,7 +65,7 @@ function fcnGameResults() {
   Logger.log('Dual Submission Option: %s',OptDualSubmission);
   Logger.log('Post Results Option: %s',OptPostResult);
   Logger.log('Player Match Validation Option: %s',OptPlyrMatchValidation);
-  Logger.log('TCG Option: %s',OptGameTCG);
+  Logger.log('TCG Option: %s',OptTCGBooster);
   
   // Find a Row that is not processed in the Response Sheet (added data)
   for (var RspnRow = RspnNextRowPrcss; RspnRow <= RspnMaxRows; RspnRow++){
@@ -93,7 +94,7 @@ function fcnGameResults() {
         
         // Look for Duplicate Entry (looks in all entries with MatchID and combination of Week Number, Winner and Loser) 
         // Real code will look at Player Posting Data as well
-        DuplicateRspn = fcnFindDuplicateData(ss, ConfigData, shtRspn, ResponseData, RspnRow, RspnStartRow, RspnMaxRows, RspnDataInputs);  
+        DuplicateRspn = fcnFindDuplicateData(ss, ConfigData, shtRspn, ResponseData, RspnRow, RspnStartRow, RspnMaxRows, RspnDataInputs, shtTest);  
         
         Logger.log('Duplicate Result: %s', DuplicateRspn);
         
@@ -103,7 +104,7 @@ function fcnGameResults() {
           // If Dual Submission is enabled, Search if the other Entry matching this response has been submitted (must be enabled)
           if (OptDualSubmission == 'Enabled'){
             // function returns row where the matching data was found
-            MatchingRspn = fcnFindMatchingData(ss, ConfigData, shtRspn, ResponseData, RspnRow, RspnStartRow, RspnMaxRows, RspnDataInputs);
+            MatchingRspn = fcnFindMatchingData(ss, ConfigData, shtRspn, ResponseData, RspnRow, RspnStartRow, RspnMaxRows, RspnDataInputs, shtTest);
           }
           
           // Search if the other Entry matching this response has been submitted
@@ -132,15 +133,24 @@ function fcnGameResults() {
                 // Match ID doesn't change because we assumed it was already OK
                 
                 // Copies all cards added to the Card Database
-                if (OptGameTCG == 'Enabled'){
+                if (OptTCGBooster == 'Enabled'){
                   for (var card = 0; card < NbCards; card++){
                     CardList[card] = ResponseData[0][card+5];
                   }
                   if (CardList[0] != 'No Pack Opened') {
                     CardNameList = fcnUpdateCardDB(RspnDataLosr, CardList, shtTest);
+                    // Copy all card names to Match Data [7-22]
+                    for (var card = 0; card < NbCards; card++){
+                      CardName = CardNameList[card];
+                      MatchData[card+7] = CardName;
+                      if (CardName == 'Card Name not Found for Card Number') {
+                        StatusMsg = 'Card Name not Found for Card Number: ' + CardList[card]; 
+                      }
+                    }
                   }
-                  for (var card = 0; card < NbCards; card++){
-                    MatchData[card+7] = CardNameList[card];
+                  // for debug
+                  for (var data = 0; data < 25; data++){
+                    shtTest.getRange(data+1, 9).setValue(MatchData[data]);
                   }
                 }
                   

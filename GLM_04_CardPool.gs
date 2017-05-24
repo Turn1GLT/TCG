@@ -49,11 +49,11 @@ function fcnUpdateCardPool(shtCardDB, Player, shtTest){
           CardPool[CardNb][3] = SetData[CardID][3]; // Card Rarity
           CardPool[CardNb][4] = SetName;            // Set Name    
           CardNb++;
-          shtTest.getRange(CardNb,5).setValue(CardPool[CardNb][0]);
-          shtTest.getRange(CardNb,6).setValue(CardPool[CardNb][1]);
-          shtTest.getRange(CardNb,7).setValue(CardPool[CardNb][2]);
-          shtTest.getRange(CardNb,8).setValue(CardPool[CardNb][3]);
-          shtTest.getRange(CardNb,9).setValue(CardPool[CardNb][4]);
+          shtTest.getRange(CardNb,1).setValue(CardPool[CardNb][0]);
+          shtTest.getRange(CardNb,2).setValue(CardPool[CardNb][1]);
+          shtTest.getRange(CardNb,3).setValue(CardPool[CardNb][2]);
+          shtTest.getRange(CardNb,4).setValue(CardPool[CardNb][3]);
+          shtTest.getRange(CardNb,5).setValue(CardPool[CardNb][4]);
         }
       }
     }

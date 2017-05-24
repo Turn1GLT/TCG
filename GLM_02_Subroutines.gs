@@ -15,13 +15,13 @@ function subCheckDataConflict(DataArray1, DataArray2, ColStart, ColEnd, shtTest)
   // Compare New Response Data and Match Data. If Data is not equal to the other
   for (var j = ColStart; j <= ColEnd; j++){
     
-    shtTest.getRange(j+30,1).setValue(DataArray1[0][j]);
-    shtTest.getRange(j+30,2).setValue(DataArray2[0][j]);
+//    shtTest.getRange(j+30,1).setValue(DataArray1[0][j]);
+//    shtTest.getRange(j+30,2).setValue(DataArray2[0][j]);
         
     // If Data Conflict is found, sets the data and sends email
     if (DataArray1[0][j] != DataArray2[0][j]) {
       DataConflict = j;
-      shtTest.getRange(j+30,3).setValue('Conflict Detected');
+//      shtTest.getRange(j+30,3).setValue('Conflict Detected');
       j = ColEnd + 1;
     }
   }

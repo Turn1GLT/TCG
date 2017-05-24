@@ -46,18 +46,22 @@ function fcnUpdateCardDB(Player, CardList, shtTest){
     
     // Regular cards and non Masterpiece card
     if (CardListNb < 14 || (CardListNb == 14 && CardList[15] == 'No')){
-      //
+      // Get Card Name
       CardName = shtCardDB.getRange(CardID+7, CardCol).getValue();
       // If Card Name exists, set status to 1 and update card quantity
       if (CardName != ''){
+        
         CardQty = shtCardDB.getRange(CardID+7, CardCol-2).getValue() + 1;
         shtCardDB.getRange(CardID+7, CardCol-2).setValue(CardQty);
+        
         // Updates the Card Name to return to Main Function
         CardNameList[CardListNb] = CardName;
+        if (CardListNb == 14) CardNameList[15] = 'No Masterpiece';
       }
+
       // If Card Name does not exist, set status to 0
       if (CardName == ''){
-        CardNameList[CardListNb] = 'No Card with Number:' + CardListNb;
+        CardNameList[CardListNb] = 'Card Name not Found for Card Number';
       }
       //shtTest.getRange(CardListNb,3).setValue(UpdateCardDBStatus[CardListNb]);
     }
@@ -78,12 +82,17 @@ function fcnUpdateCardDB(Player, CardList, shtTest){
         case 7 : MstrCol= 47; break;
         case 8 : MstrCol= 47; break;
       }
-      CardQty = shtCardDB.getRange(CardID+7, MstrCol-2).getValue() + 1;
-      shtCardDB.getRange(CardID+7, MstrCol-2).setValue(CardQty);
       
-      // Updates the Card Name to return to Main Function
-      CardNameList[CardListNb] = CardName;
-      CardNameList[15] = 'Last Card is Masterpiece';
+      // Get Card Name
+      CardName = shtCardDB.getRange(CardID+7, MstrCol).getValue();
+      // If Card Name exists, set status to 1 and update card quantity
+      if (CardName != ''){
+        CardQty = shtCardDB.getRange(CardID+7, MstrCol-2).getValue() + 1;
+        shtCardDB.getRange(CardID+7, MstrCol-2).setValue(CardQty);
+        // Updates the Card Name to return to Main Function
+        CardNameList[CardListNb] = CardName;
+        CardNameList[15] = 'Last Card is Masterpiece';
+      }
     }
   }
     
@@ -91,6 +100,6 @@ function fcnUpdateCardDB(Player, CardList, shtTest){
   fcnUpdateCardPool(shtCardDB, Player, shtTest);
   
   // Return Value
-  return CardNameLists;
+  return CardNameList;
 }
 

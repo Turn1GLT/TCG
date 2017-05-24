@@ -11,7 +11,7 @@
 //
 // **********************************************
 
-function fcnFindDuplicateData(ss, ConfigData, shtRspn, ResponseData, RspnRow, RspnStartRow, RspnMaxRows, RspnDataInputs) {
+function fcnFindDuplicateData(ss, ConfigData, shtRspn, ResponseData, RspnRow, RspnStartRow, RspnMaxRows, RspnDataInputs, shtTest) {
 
   // Columns Values and Parameters
   var ColMatchID = ConfigData[8][0];
@@ -38,8 +38,6 @@ function fcnFindDuplicateData(ss, ConfigData, shtRspn, ResponseData, RspnRow, Rs
   var DuplicateRow = 0;
   
   var DataConflict = -1;
-  
-  var shtTest = ss.getSheetByName('Test');
   
   var EntryWeekData = shtRspn.getRange(RspnStartRow, 2, RspnMaxRows-3,1).getValues();
     
@@ -88,7 +86,7 @@ function fcnFindDuplicateData(ss, ConfigData, shtRspn, ResponseData, RspnRow, Rs
 //
 // **********************************************
 
-function fcnFindMatchingData(ss, ConfigData, shtRspn, ResponseData, RspnRow, RspnStartRow, RspnMaxRows, RspnDataInputs) {
+function fcnFindMatchingData(ss, ConfigData, shtRspn, ResponseData, RspnRow, RspnStartRow, RspnMaxRows, RspnDataInputs, shtTest) {
 
   // Columns Values and Parameters
   var ColMatchID = ConfigData[8][0];
@@ -114,8 +112,6 @@ function fcnFindMatchingData(ss, ConfigData, shtRspn, ResponseData, RspnRow, Rsp
   var MatchingRow = 0;
   
   var DataConflict = -1;
-  
-  var shtTest = ss.getSheetByName('Test');
   
   // Loop to find if the other player posted the game results
       for (var EntryRow = RspnStartRow; EntryRow <= RspnMaxRows; EntryRow++){
@@ -182,7 +178,7 @@ function fcnPostMatchResults(ss, ConfigData, shtRspn, ResponseData, MatchingRspn
   var OptDualSubmission = ConfigData[0][0]; // If Dual Submission is disabled, look for duplicate instead
   var OptPostResult = ConfigData[1][0];
   var OptPlyrMatchValidation = ConfigData[2][0];
-  var OptGameTCG = ConfigData[3][0];
+  var OptTCGBooster = ConfigData[3][0];
   
   // Match Results Sheet Variables
   var shtRslt = ss.getSheetByName('Match Results');
@@ -214,14 +210,13 @@ function fcnPostMatchResults(ss, ConfigData, shtRspn, ResponseData, MatchingRspn
   
   // Copies Players Data
 
-  ResultData[0][2]  = ResponseData[0][1]; // Week/Round Number
-  ResultData[0][3]  = ResponseData[0][2]; // Winning Player
-  ResultData[0][4]  = ResponseData[0][3]; // Losing Player  
+  ResultData[0][2] = ResponseData[0][1]; // Week/Round Number
+  ResultData[0][3] = ResponseData[0][2]; // Winning Player
+  ResultData[0][4] = ResponseData[0][3]; // Losing Player  
   
   // If option is enabled, Validate if players are allowed to post results (look for number of games played versus total amount of games allowed
   if (OptPlyrMatchValidation == 'Enabled'){
-    
-
+    // Call subroutine to check if players match are valid
     MatchValidWinr = subPlayerMatchValidation(ss, ResultData[0][3], shtTest);
     Logger.log('%s Match Validation: %s',ResultData[0][3], MatchValidWinr);
     MatchValidLosr = subPlayerMatchValidation(ss, ResultData[0][4], shtTest);
@@ -238,15 +233,23 @@ function fcnPostMatchResults(ss, ConfigData, shtRspn, ResponseData, MatchingRspn
   if (MatchValidWinr == 1 && MatchValidLosr == 1){
     // Copies Result Data
     // ResultData[0][0] = Result ID 
-    ResultData[0][1]  = MatchID; // Match ID
-    ResultData[0][5]  = ResponseData[0][4]; // Score
-    ResultData[0][6]  = 2; // Winner Score
+    ResultData[0][1] = MatchID; // Match ID
+    ResultData[0][5] = ResponseData[0][4]; // Score
+    ResultData[0][6] = 2; // Winner Score
     if (ResponseData[0][4] == '2 - 0') ResultData[0][7]  = 0; // Loser Score
     if (ResponseData[0][4] == '2 - 1') ResultData[0][7]  = 1; // Loser Score
     
+    // Populates Match Data for Main Routine
+    MatchData[0] = ResultData[0][1]; // MatchID
+    MatchData[1] = ResultData[0][2]; // Week / Round
+    MatchData[2] = ResultData[0][3]; // Winning Player
+    MatchData[3] = ResultData[0][4]; // Losing Player
+    MatchData[4] = ResultData[0][5]; // Score
+    MatchData[5] = ResultData[0][6]; // Winner Points
+    MatchData[6] = ResultData[0][7]; // Loser Points
     
     // Copies Card Data
-    if (OptGameTCG == 'Enabled'){
+    if (OptTCGBooster == 'Enabled'){
       ResultData[0][8]  = ResponseData[0][5];  // Expansion Set
       ResultData[0][9]  = ResponseData[0][6];  // Card 1
       ResultData[0][10] = ResponseData[0][7];  // Card 2
@@ -304,9 +307,18 @@ function fcnPostMatchResults(ss, ConfigData, shtRspn, ResponseData, MatchingRspn
   
   MatchData[24] = MatchPostedStatus;
   
-  return MatchData;
+  Logger.log('MatchData[0]:%s',MatchData[0]);
+  Logger.log('MatchData[1]:%s',MatchData[1]);
+  Logger.log('MatchData[2]:%s',MatchData[2]);
+  Logger.log('MatchData[3]:%s',MatchData[3]);
+  Logger.log('MatchData[4]:%s',MatchData[4]);
+  Logger.log('MatchData[5]:%s',MatchData[5]);
+  Logger.log('MatchData[6]:%s',MatchData[6]);
+  Logger.log('MatchData[7]:%s',MatchData[7]);
+  Logger.log('MatchData[8]:%s',MatchData[8]);
+  Logger.log('MatchData[24]:%s',MatchData[24]);
   
-  //return MatchPostedStatus;
+  return MatchData;
 }
 
 
@@ -322,7 +334,7 @@ function fcnPostMatchResults(ss, ConfigData, shtRspn, ResponseData, MatchingRspn
 function fcnPostResultWeek(ss, ConfigData, ResultData, shtTest) {
 
   // Code Execution Options
-  var OptGameTCG = ConfigData[3][0];
+  var OptTCGBooster = ConfigData[3][0];
   
   // function variables
   var shtWeekRslt;
@@ -373,7 +385,7 @@ function fcnPostResultWeek(ss, ConfigData, ResultData, shtTest) {
       shtWeekLosrRec = shtWeekRslt.getRange(WeekLosrRow,5,1,2).getValues();
       
       // If Game Type is TCG
-      if (OptGameTCG == 'Enabled'){
+      if (OptTCGBooster == 'Enabled'){
       // Get Loser Pack Data
       shtWeekPackData = shtWeekRslt.getRange(WeekLosrRow,8,1,(PackLength*6)+1).getValues();
       }
@@ -394,7 +406,7 @@ function fcnPostResultWeek(ss, ConfigData, ResultData, shtTest) {
   shtWeekRslt.getRange(WeekLosrRow,5,1,2).setValues(shtWeekLosrRec);
   
   // If Game Type is TCG and Punishment Pack has been opened, update Punishment Pack Info
-  if (OptGameTCG == 'Enabled' && ResultData[0][8] != ''){
+  if (OptTCGBooster == 'Enabled' && ResultData[0][8] != ''){
       
     // Find the next free Punishment Pack space offset
     if (shtWeekPackData[0][1]  == '' && NextPackID == 0) NextPackID = 1;
