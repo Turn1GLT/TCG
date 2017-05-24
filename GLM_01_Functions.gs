@@ -11,7 +11,7 @@
 //
 // **********************************************
 
-function fcnFindDuplicateData(ss, ConfigData, ShtRspn, ResponseData, RspnRow, RspnStartRow, RspnMaxRows, RspnDataInputs) {
+function fcnFindDuplicateData(ss, ConfigData, shtRspn, ResponseData, RspnRow, RspnStartRow, RspnMaxRows, RspnDataInputs) {
 
   // Columns Values and Parameters
   var ColMatchID = ConfigData[8][0];
@@ -39,9 +39,9 @@ function fcnFindDuplicateData(ss, ConfigData, ShtRspn, ResponseData, RspnRow, Rs
   
   var DataConflict = -1;
   
-  var TestSht = ss.getSheetByName('Test');
+  var shtTest = ss.getSheetByName('Test');
   
-  var EntryWeekData = ShtRspn.getRange(RspnStartRow, 2, RspnMaxRows-3,1).getValues();
+  var EntryWeekData = shtRspn.getRange(RspnStartRow, 2, RspnMaxRows-3,1).getValues();
     
   // Loop to find if the other player posted the game results
   for (var EntryRow = RspnStartRow; EntryRow <= RspnMaxRows; EntryRow++){
@@ -50,7 +50,7 @@ function fcnFindDuplicateData(ss, ConfigData, ShtRspn, ResponseData, RspnRow, Rs
     if (EntryWeekData[EntryRow][0] == RspnDataWeek){
       
       // Gets Entry Data to analyze
-      EntryData = ShtRspn.getRange(EntryRow, 1, 1, RspnDataInputs).getValues();
+      EntryData = shtRspn.getRange(EntryRow, 1, 1, RspnDataInputs).getValues();
       
       EntryWeek = EntryData[0][1];
       EntryWinr = EntryData[0][2];
@@ -88,7 +88,7 @@ function fcnFindDuplicateData(ss, ConfigData, ShtRspn, ResponseData, RspnRow, Rs
 //
 // **********************************************
 
-function fcnFindMatchingData(ss, ConfigData, ShtRspn, ResponseData, RspnRow, RspnStartRow, RspnMaxRows, RspnDataInputs) {
+function fcnFindMatchingData(ss, ConfigData, shtRspn, ResponseData, RspnRow, RspnStartRow, RspnMaxRows, RspnDataInputs) {
 
   // Columns Values and Parameters
   var ColMatchID = ConfigData[8][0];
@@ -115,13 +115,13 @@ function fcnFindMatchingData(ss, ConfigData, ShtRspn, ResponseData, RspnRow, Rsp
   
   var DataConflict = -1;
   
-  var TestSht = ss.getSheetByName('Test');
+  var shtTest = ss.getSheetByName('Test');
   
   // Loop to find if the other player posted the game results
       for (var EntryRow = RspnStartRow; EntryRow <= RspnMaxRows; EntryRow++){
         
         // Gets Entry Data to analyze
-        EntryData = ShtRspn.getRange(EntryRow, 1, 1, RspnDataInputs).getValues();
+        EntryData = shtRspn.getRange(EntryRow, 1, 1, RspnDataInputs).getValues();
 
         EntryWeek = EntryData[0][1];
         EntryWinr = EntryData[0][2];
@@ -137,13 +137,13 @@ function fcnFindMatchingData(ss, ConfigData, ShtRspn, ResponseData, RspnRow, Rsp
         if (EntryRow != RspnRow && EntryPrcssd == 1 && EntryMatchID == '' && RspnDataWeek == EntryWeek && RspnDataWinr == EntryWinr && RspnDataLosr == EntryLosr){
           
           // Compare New Response Data and Entry Data. If Data is not equal to the other, the conflicting Data ID is returned
-          DataConflict = subCheckDataConflict(ResponseData, EntryData, 1, RspnDataInputs - 4, TestSht);
+          DataConflict = subCheckDataConflict(ResponseData, EntryData, 1, RspnDataInputs - 4, shtTest);
           
           // 
           if (DataConflict == 0){
             // Sets Conflict Flag to 'No Conflict'
-            ShtRspn.getRange(RspnRow, ColDataConflict).setValue('No Conflict');
-            ShtRspn.getRange(EntryRow, ColDataConflict).setValue('No Conflict');
+            shtRspn.getRange(RspnRow, ColDataConflict).setValue('No Conflict');
+            shtRspn.getRange(EntryRow, ColDataConflict).setValue('No Conflict');
             MatchingRow = EntryRow;
           }
           
@@ -151,8 +151,8 @@ function fcnFindMatchingData(ss, ConfigData, ShtRspn, ResponseData, RspnRow, Rsp
           if (DataConflict != 0 && DataConflict != -1){
 
             // Sets the Conflict Value to the Data ID value where the conflict was found
-            ShtRspn.getRange(RspnRow, ColDataConflict).setValue(DataConflict);
-            ShtRspn.getRange(EntryRow, ColDataConflict).setValue(DataConflict);
+            shtRspn.getRange(RspnRow, ColDataConflict).setValue(DataConflict);
+            shtRspn.getRange(EntryRow, ColDataConflict).setValue(DataConflict);
           }
         }
 
@@ -176,7 +176,7 @@ function fcnFindMatchingData(ss, ConfigData, ShtRspn, ResponseData, RspnRow, Rsp
 //
 // **********************************************
 
-function fcnPostMatchResults(ss, ConfigData, ShtRspn, ResponseData, MatchingRspnData, MatchID, TestSht) {
+function fcnPostMatchResults(ss, ConfigData, shtRspn, ResponseData, MatchingRspnData, MatchID, shtTest) {
   
   // Code Execution Options
   var OptDualSubmission = ConfigData[0][0]; // If Dual Submission is disabled, look for duplicate instead
@@ -185,17 +185,19 @@ function fcnPostMatchResults(ss, ConfigData, ShtRspn, ResponseData, MatchingRspn
   var OptGameTCG = ConfigData[3][0];
   
   // Match Results Sheet Variables
-  var RsltSht = ss.getSheetByName('Match Results');
-  var RsltShtMaxRows = RsltSht.getMaxRows();
-  var RsltShtMaxCol = RsltSht.getMaxColumns();
-  var RsltLastResultRowRng = RsltSht.getRange(3, 4);
+  var shtRslt = ss.getSheetByName('Match Results');
+  var shtRsltMaxRows = shtRslt.getMaxRows();
+  var shtRsltMaxCol = shtRslt.getMaxColumns();
+  var RsltLastResultRowRng = shtRslt.getRange(3, 4);
   var RsltLastResultRow = RsltLastResultRowRng.getValue() + 1;
-  var RsltRng = RsltSht.getRange(RsltLastResultRow, 1, 1, RsltShtMaxCol);
+  var RsltRng = shtRslt.getRange(RsltLastResultRow, 1, 1, shtRsltMaxCol);
   var ResultData = RsltRng.getValues();
   var MatchValidWinr = '';
   var MatchValidLosr = '';
   var RsltPlyrDataA;
   var RsltPlyrDataB;
+  
+  var MatchData = new Array(25); // 0 = MatchID, 1 = Week #, 2 = Winning Player, 3 = Losing Player, 4 = Score, 5 = Winner Points, 6 = Loser Points, 7 = Card Set, 8-21 = Cards, 22 = Masterpiece (Y-N), 23 = Reserved, 24 = MatchPostStatus
   
   var MatchPostedStatus = 0;
   
@@ -220,9 +222,9 @@ function fcnPostMatchResults(ss, ConfigData, ShtRspn, ResponseData, MatchingRspn
   if (OptPlyrMatchValidation == 'Enabled'){
     
 
-    MatchValidWinr = subPlayerMatchValidation(ss, ResultData[0][3], TestSht);
+    MatchValidWinr = subPlayerMatchValidation(ss, ResultData[0][3], shtTest);
     Logger.log('%s Match Validation: %s',ResultData[0][3], MatchValidWinr);
-    MatchValidLosr = subPlayerMatchValidation(ss, ResultData[0][4], TestSht);
+    MatchValidLosr = subPlayerMatchValidation(ss, ResultData[0][4], shtTest);
     Logger.log('%s Match Validation: %s',ResultData[0][4], MatchValidLosr);
   }
 
@@ -271,7 +273,7 @@ function fcnPostMatchResults(ss, ConfigData, ShtRspn, ResponseData, MatchingRspn
     RsltLastResultRowRng.setValue(RsltLastResultRow);
     
     // Post Results in Appropriate Week Number for Both Players
-    fcnPostResultWeek(ss, ConfigData, ResultData, TestSht);
+    fcnPostResultWeek(ss, ConfigData, ResultData, shtTest);
   }
   
   // If Match Validation was not successful, generate Error Status
@@ -300,7 +302,11 @@ function fcnPostMatchResults(ss, ConfigData, ShtRspn, ResponseData, MatchingRspn
   // returns Error that Both Players have played too many matches
   if (MatchValidWinr == -2 && MatchValidLosr == -2) MatchPostedStatus = -34;
   
-  return MatchPostedStatus;
+  MatchData[24] = MatchPostedStatus;
+  
+  return MatchData;
+  
+  //return MatchPostedStatus;
 }
 
 
@@ -313,20 +319,20 @@ function fcnPostMatchResults(ss, ConfigData, ShtRspn, ResponseData, MatchingRspn
 //
 // **********************************************
 
-function fcnPostResultWeek(ss, ConfigData, ResultData, TestSht) {
+function fcnPostResultWeek(ss, ConfigData, ResultData, shtTest) {
 
   // Code Execution Options
   var OptGameTCG = ConfigData[3][0];
   
   // function variables
-  var ShtWeekRslt;
-  var ShtWeekRsltRng;
-  var ShtWeekPlyr;
-  var ShtWeekWinrRec;
-  var ShtWeekLosrRec;
-  var ShtWeekPackData
-  var ShtWeekMaxCol;
-  var ShtWeekPlyr
+  var shtWeekRslt;
+  var shtWeekRsltRng;
+  var shtWeekPlyr;
+  var shtWeekWinrRec;
+  var shtWeekLosrRec;
+  var shtWeekPackData
+  var shtWeekMaxCol;
+  var shtWeekPlyr
   
   var ColPlyr = 2;
   var ColWin = 5;
@@ -342,69 +348,69 @@ function fcnPostResultWeek(ss, ConfigData, ResultData, TestSht) {
   var MatchDataLosr = ResultData[0][4];
   
   // Selects the appropriate Week
-  if (MatchWeek == 1) ShtWeekRslt = ss.getSheetByName('Week1');
-  if (MatchWeek == 2) ShtWeekRslt = ss.getSheetByName('Week2');
-  if (MatchWeek == 3) ShtWeekRslt = ss.getSheetByName('Week3');
-  if (MatchWeek == 4) ShtWeekRslt = ss.getSheetByName('Week4');
-  if (MatchWeek == 5) ShtWeekRslt = ss.getSheetByName('Week5');
-  if (MatchWeek == 6) ShtWeekRslt = ss.getSheetByName('Week6');
-  if (MatchWeek == 7) ShtWeekRslt = ss.getSheetByName('Week7');
+  if (MatchWeek == 1) shtWeekRslt = ss.getSheetByName('Week1');
+  if (MatchWeek == 2) shtWeekRslt = ss.getSheetByName('Week2');
+  if (MatchWeek == 3) shtWeekRslt = ss.getSheetByName('Week3');
+  if (MatchWeek == 4) shtWeekRslt = ss.getSheetByName('Week4');
+  if (MatchWeek == 5) shtWeekRslt = ss.getSheetByName('Week5');
+  if (MatchWeek == 6) shtWeekRslt = ss.getSheetByName('Week6');
+  if (MatchWeek == 7) shtWeekRslt = ss.getSheetByName('Week7');
 
-  ShtWeekMaxCol = ShtWeekRslt.getMaxColumns();
+  shtWeekMaxCol = shtWeekRslt.getMaxColumns();
 
   // Gets All Players Names
-  ShtWeekPlyr = ShtWeekRslt.getRange(5,ColPlyr,32,1).getValues();
+  shtWeekPlyr = shtWeekRslt.getRange(5,ColPlyr,32,1).getValues();
   
   // Find the Winning and Losing Player in the Week Result Tab
   for (var RsltRow = 5; RsltRow <= 36; RsltRow ++){
     
-    if (ShtWeekPlyr[RsltRow - 5][0] == MatchDataWinr) WeekWinrRow = RsltRow;
-    if (ShtWeekPlyr[RsltRow - 5][0] == MatchDataLosr) WeekLosrRow = RsltRow;
+    if (shtWeekPlyr[RsltRow - 5][0] == MatchDataWinr) WeekWinrRow = RsltRow;
+    if (shtWeekPlyr[RsltRow - 5][0] == MatchDataLosr) WeekLosrRow = RsltRow;
     
     if (WeekWinrRow != '' && WeekLosrRow != '') {
       // Get Winner and Loser Match Record 
-      ShtWeekWinrRec = ShtWeekRslt.getRange(WeekWinrRow,5,1,2).getValues();
-      ShtWeekLosrRec = ShtWeekRslt.getRange(WeekLosrRow,5,1,2).getValues();
+      shtWeekWinrRec = shtWeekRslt.getRange(WeekWinrRow,5,1,2).getValues();
+      shtWeekLosrRec = shtWeekRslt.getRange(WeekLosrRow,5,1,2).getValues();
       
       // If Game Type is TCG
       if (OptGameTCG == 'Enabled'){
       // Get Loser Pack Data
-      ShtWeekPackData = ShtWeekRslt.getRange(WeekLosrRow,8,1,(PackLength*6)+1).getValues();
+      shtWeekPackData = shtWeekRslt.getRange(WeekLosrRow,8,1,(PackLength*6)+1).getValues();
       }
       RsltRow = 37;
     }
   }
   
   // Update Winning Player Results
-  ShtWeekWinrRec[0][0] = ShtWeekWinrRec[0][0] + 1;
-  if (ShtWeekWinrRec[0][1] == '') ShtWeekWinrRec[0][1] = 0;  
+  shtWeekWinrRec[0][0] = shtWeekWinrRec[0][0] + 1;
+  if (shtWeekWinrRec[0][1] == '') shtWeekWinrRec[0][1] = 0;  
   
   // Update Losing Player Results
-  ShtWeekLosrRec[0][1] = ShtWeekLosrRec[0][1] + 1;
-  if (ShtWeekLosrRec[0][0] == '') ShtWeekLosrRec[0][0] = 0;  
+  shtWeekLosrRec[0][1] = shtWeekLosrRec[0][1] + 1;
+  if (shtWeekLosrRec[0][0] == '') shtWeekLosrRec[0][0] = 0;  
   
   // Update the Week Results Sheet
-  ShtWeekRslt.getRange(WeekWinrRow,5,1,2).setValues(ShtWeekWinrRec);
-  ShtWeekRslt.getRange(WeekLosrRow,5,1,2).setValues(ShtWeekLosrRec);
+  shtWeekRslt.getRange(WeekWinrRow,5,1,2).setValues(shtWeekWinrRec);
+  shtWeekRslt.getRange(WeekLosrRow,5,1,2).setValues(shtWeekLosrRec);
   
   // If Game Type is TCG and Punishment Pack has been opened, update Punishment Pack Info
   if (OptGameTCG == 'Enabled' && ResultData[0][8] != ''){
       
     // Find the next free Punishment Pack space offset
-    if (ShtWeekPackData[0][1]  == '' && NextPackID == 0) NextPackID = 1;
-    if (ShtWeekPackData[0][17] == '' && NextPackID == 0) NextPackID = 17;
-    if (ShtWeekPackData[0][33] == '' && NextPackID == 0) NextPackID = 33;
-    if (ShtWeekPackData[0][49] == '' && NextPackID == 0) NextPackID = 49;
-    if (ShtWeekPackData[0][65] == '' && NextPackID == 0) NextPackID = 65;
-    if (ShtWeekPackData[0][81] == '' && NextPackID == 0) NextPackID = 81;
+    if (shtWeekPackData[0][1]  == '' && NextPackID == 0) NextPackID = 1;
+    if (shtWeekPackData[0][17] == '' && NextPackID == 0) NextPackID = 17;
+    if (shtWeekPackData[0][33] == '' && NextPackID == 0) NextPackID = 33;
+    if (shtWeekPackData[0][49] == '' && NextPackID == 0) NextPackID = 49;
+    if (shtWeekPackData[0][65] == '' && NextPackID == 0) NextPackID = 65;
+    if (shtWeekPackData[0][81] == '' && NextPackID == 0) NextPackID = 81;
     
-    ShtWeekPackData[0][0] = ShtWeekPackData[0][0] + 1;
+    shtWeekPackData[0][0] = shtWeekPackData[0][0] + 1;
     // Update the Pack data
     for (var PackDataID = 0; PackDataID < PackLength; PackDataID++){
-      ShtWeekPackData[0][PackDataID + NextPackID] = ResultData[0][PackDataID + 8];
+      shtWeekPackData[0][PackDataID + NextPackID] = ResultData[0][PackDataID + 8];
     }
     // Update the Week Results Sheet with the Pack Info
-    ShtWeekRslt.getRange(WeekLosrRow,8,1,(PackLength*6)+1).setValues(ShtWeekPackData);
+    shtWeekRslt.getRange(WeekLosrRow,8,1,(PackLength*6)+1).setValues(shtWeekPackData);
   }
 }
 
@@ -418,12 +424,12 @@ function fcnPostResultWeek(ss, ConfigData, ResultData, TestSht) {
 
 function fcnUpdateStandings(ss){
 
-  var ShtCumul = ss.getSheetByName('Cumulative Results');
-  var ShtStand = ss.getSheetByName('Standings');
+  var shtCumul = ss.getSheetByName('Cumulative Results');
+  var shtStand = ss.getSheetByName('Standings');
   
   // Get Player Record Range
-  var RngCumul = ShtCumul.getRange(5,2,32,6);
-  var RngStand = ShtStand.getRange(6,2,32,6);
+  var RngCumul = shtCumul.getRange(5,2,32,6);
+  var RngStand = shtStand.getRange(6,2,32,6);
   
   // Get Cumulative Results Values and puts them in the Standings Values
   var ValCumul = RngCumul.getValues();

@@ -6,7 +6,7 @@
 //
 // **********************************************
 
-function fcnUpdateCardPool(shtCardDB, Player, TestSht){
+function fcnUpdateCardPool(shtCardDB, Player, shtTest){
   
   // Config Spreadsheet
   var ShtConfig = SpreadsheetApp.openById('14rR_7-SG9fTi-M7fpS7d6n4XrOlnbKxRW1Ni2ongUVU').getSheetByName('Config');
@@ -36,9 +36,10 @@ function fcnUpdateCardPool(shtCardDB, Player, TestSht){
       colSet = col + 1;
       SetName = shtCardDB.getRange(6,colSet+2).getValue();
       Logger.log('Set Name found for Card Pool: %s',SetName);
+
       // Get all Cards Data from set
       SetData = shtCardDB.getRange(7, colSet, 286, 4).getValues();
-      //TestSht.getRange(1,8,286,4).setValues(SetData);
+
       // Loop through each card in Set and get Card Data
       for (var CardID = 1; CardID <= 285; CardID++){
         if (SetData[CardID][0] > 0) {
@@ -48,11 +49,11 @@ function fcnUpdateCardPool(shtCardDB, Player, TestSht){
           CardPool[CardNb][3] = SetData[CardID][3]; // Card Rarity
           CardPool[CardNb][4] = SetName;            // Set Name    
           CardNb++;
-          TestSht.getRange(CardNb,5).setValue(CardPool[CardNb][0]);
-          TestSht.getRange(CardNb,6).setValue(CardPool[CardNb][1]);
-          TestSht.getRange(CardNb,7).setValue(CardPool[CardNb][2]);
-          TestSht.getRange(CardNb,8).setValue(CardPool[CardNb][3]);
-          TestSht.getRange(CardNb,9).setValue(CardPool[CardNb][4]);
+          shtTest.getRange(CardNb,5).setValue(CardPool[CardNb][0]);
+          shtTest.getRange(CardNb,6).setValue(CardPool[CardNb][1]);
+          shtTest.getRange(CardNb,7).setValue(CardPool[CardNb][2]);
+          shtTest.getRange(CardNb,8).setValue(CardPool[CardNb][3]);
+          shtTest.getRange(CardNb,9).setValue(CardPool[CardNb][4]);
         }
       }
     }

@@ -8,20 +8,20 @@
 //
 // **********************************************
 
-function subCheckDataConflict(DataArray1, DataArray2, ColStart, ColEnd, TestSht) {
+function subCheckDataConflict(DataArray1, DataArray2, ColStart, ColEnd, shtTest) {
   
   var DataConflict = 0;
   
   // Compare New Response Data and Match Data. If Data is not equal to the other
   for (var j = ColStart; j <= ColEnd; j++){
     
-    TestSht.getRange(j+30,1).setValue(DataArray1[0][j]);
-    TestSht.getRange(j+30,2).setValue(DataArray2[0][j]);
+    shtTest.getRange(j+30,1).setValue(DataArray1[0][j]);
+    shtTest.getRange(j+30,2).setValue(DataArray2[0][j]);
         
     // If Data Conflict is found, sets the data and sends email
     if (DataArray1[0][j] != DataArray2[0][j]) {
       DataConflict = j;
-      TestSht.getRange(j+30,3).setValue('Conflict Detected');
+      shtTest.getRange(j+30,3).setValue('Conflict Detected');
       j = ColEnd + 1;
     }
   }
@@ -38,16 +38,16 @@ function subCheckDataConflict(DataArray1, DataArray2, ColStart, ColEnd, TestSht)
 //
 // **********************************************
 
-function subPlayerMatchValidation(ss, PlayerName, TestSht) {
+function subPlayerMatchValidation(ss, PlayerName, shtTest) {
   
   Logger.log('%s Match Validation executed', PlayerName);
   
   // Opens Cumulative Results tab
-  var ShtCumul = ss.getSheetByName('Cumulative Results');
+  var shtCumul = ss.getSheetByName('Cumulative Results');
     
   // Get Data from Cumulative Results
-  var CumulMaxMatch = ShtCumul.getRange(3,3).getValue();
-  var CumulPlyrData = ShtCumul.getRange(5, 1, 32, 9).getValues(); // Data[i][j] i = Player List 1-32, j = ID(0), Name(1), Initials(2), MP(3), W(4), L(5), %(6), Packs(7), Status(8)
+  var CumulMaxMatch = shtCumul.getRange(3,3).getValue();
+  var CumulPlyrData = shtCumul.getRange(5, 1, 32, 9).getValues(); // Data[i][j] i = Player List 1-32, j = ID(0), Name(1), Initials(2), MP(3), W(4), L(5), %(6), Packs(7), Status(8)
   
   var PlayerStatus;
   var PlayerMatchPlayed;
