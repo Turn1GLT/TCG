@@ -1,3 +1,6 @@
+// NOT USED
+// Function to activate UI
+
 function GameResultButton(){
   showAnchor('Send Match Result','https://goo.gl/forms/jcDtOML96WlNLzVL2');
 }

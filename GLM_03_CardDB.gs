@@ -6,7 +6,7 @@
 //
 // **********************************************
 
-function fcnUpdateCardDB(Player, CardList, TestSht){
+function fcnUpdateCardDB(Player, CardList, shtTest){
   
   // Config Spreadsheet
   var ShtConfig = SpreadsheetApp.openById('14rR_7-SG9fTi-M7fpS7d6n4XrOlnbKxRW1Ni2ongUVU').getSheetByName('Config');
@@ -23,11 +23,13 @@ function fcnUpdateCardDB(Player, CardList, TestSht){
   var CardQty;
   var MstrCol = 0;
   var CardListSet = CardList[0];
-  var UpdateCardDBStatus = new Array(16); // 0 = Set, 1-14 = Card Numbers, 15 = Masterpiece
+  var CardNameList = new Array(16); // 0 = Set, 1-14 = Card Numbers, 15 = Masterpiece
   
   Logger.log('Card Set: %s',CardListSet);
   
-  UpdateCardDBStatus[0] = 1;
+  // Updates the Set Name to return to Main Function
+  CardNameList[0] = CardListSet;
+  
   // Find Set Column according to Set in Cardlist (CardList[0]) and get all card quantities (first card starts at row 8, row 7 = card 0)
   for (var SetCol = 0; SetCol <= 31; SetCol++){   
     if (CardListSet == CardDBSet[0][SetCol]){
@@ -44,19 +46,24 @@ function fcnUpdateCardDB(Player, CardList, TestSht){
     
     // Regular cards and non Masterpiece card
     if (CardListNb < 14 || (CardListNb == 14 && CardList[15] == 'No')){
-      //
+      // Get Card Name
       CardName = shtCardDB.getRange(CardID+7, CardCol).getValue();
       // If Card Name exists, set status to 1 and update card quantity
       if (CardName != ''){
-        UpdateCardDBStatus[CardListNb] = 1;
+        
         CardQty = shtCardDB.getRange(CardID+7, CardCol-2).getValue() + 1;
         shtCardDB.getRange(CardID+7, CardCol-2).setValue(CardQty);
+        
+        // Updates the Card Name to return to Main Function
+        CardNameList[CardListNb] = CardName;
+        if (CardListNb == 14) CardNameList[15] = 'No Masterpiece';
       }
+
       // If Card Name does not exist, set status to 0
       if (CardName == ''){
-        UpdateCardDBStatus[CardListNb] = 0;
+        CardNameList[CardListNb] = 'Card Name not Found for Card Number';
       }
-      //TestSht.getRange(CardListNb,3).setValue(UpdateCardDBStatus[CardListNb]);
+      //shtTest.getRange(CardListNb,3).setValue(UpdateCardDBStatus[CardListNb]);
     }
     
     // If Last card is a Masterpiece
@@ -75,15 +82,24 @@ function fcnUpdateCardDB(Player, CardList, TestSht){
         case 7 : MstrCol= 47; break;
         case 8 : MstrCol= 47; break;
       }
-      CardQty = shtCardDB.getRange(CardID+7, MstrCol-2).getValue() + 1;
-      shtCardDB.getRange(CardID+7, MstrCol-2).setValue(CardQty);
+      
+      // Get Card Name
+      CardName = shtCardDB.getRange(CardID+7, MstrCol).getValue();
+      // If Card Name exists, set status to 1 and update card quantity
+      if (CardName != ''){
+        CardQty = shtCardDB.getRange(CardID+7, MstrCol-2).getValue() + 1;
+        shtCardDB.getRange(CardID+7, MstrCol-2).setValue(CardQty);
+        // Updates the Card Name to return to Main Function
+        CardNameList[CardListNb] = CardName;
+        CardNameList[15] = 'Last Card is Masterpiece';
+      }
     }
   }
-  
-  
+    
   // Call function to generate clean card pool from Player Card DB
-  fcnUpdateCardPool(shtCardDB, Player, TestSht);
+  fcnUpdateCardPool(shtCardDB, Player, shtTest);
   
   // Return Value
-  return UpdateCardDBStatus;
+  return CardNameList;
 }
+
