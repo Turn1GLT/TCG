@@ -156,16 +156,16 @@ function fcnGameResults() {
                     }
                   }
                   // for debug
-                  for (var data = 0; data < 25; data++){
-                    shtTest.getRange(data+1, 9).setValue(MatchData[data]);
-                  }
+//                  for (var data = 0; data < 25; data++){
+//                    shtTest.getRange(data+1, 9).setValue(MatchData[data]);
+//                  }
                 }
                   
                 // Send email Confirmation that Response and Entry Data was compiled and posted to the Match Results
                 // Get Email addresses from Config File
-                Addresses = subGetEmailAddress(shtConfig, RspnDataWinr, RspnDataLosr, shtTest);
+                Addresses = subGetEmailAddress(shtConfig, RspnDataWinr, RspnDataLosr);
                 // Call the Email Function, sends Match Data
-                fcnGenEmailConfirmation(LeagueName, Addresses, MatchData, shtTest);
+                fcnGenEmailConfirmation(LeagueName, Addresses, MatchData);
               }
               
               // If MatchPostSuccess = 0, function was executed but was not able to post in the Match Result Tab

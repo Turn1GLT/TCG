@@ -6,7 +6,7 @@
 //
 // **********************************************
 
-function subGetEmailAddress(shtConfig, WinPlyr, LosPlyr, shtTest){
+function subGetEmailAddress(shtConfig, WinPlyr, LosPlyr){
   
   // Config File Email Address column
   var colEmail = 6;
@@ -40,7 +40,7 @@ function subGetEmailAddress(shtConfig, WinPlyr, LosPlyr, shtTest){
 //
 // **********************************************
 
-function fcnGenEmailConfirmation(LeagueName, Addresses, MatchData, shtTest) {
+function fcnGenEmailConfirmation(LeagueName, Addresses, MatchData) {
   
   // Variables
   var EmailSubject;
