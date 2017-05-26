@@ -53,10 +53,10 @@ function fcnGenEmailConfirmation(LeagueName, Addresses, MatchData) {
   var Headers = shtEmailTemplates.getRange(3, 1, 22, 1).getValues();
   
   // Match Data Assignation
-  var MatchID = MatchData[0];
-  var Week    = MatchData[1];
-  var Winr    = MatchData[2];
-  var Losr    = MatchData[3];
+  var MatchID = MatchData[0][0];
+  var Week    = MatchData[1][0];
+  var Winr    = MatchData[2][0];
+  var Losr    = MatchData[3][0];
  
   // Set the EmailName according to the addresses
   if (Addresses[0] != '' && Addresses[1] != '') EmailName = Addresses[0] + ', ' + Addresses[1];
@@ -64,9 +64,9 @@ function fcnGenEmailConfirmation(LeagueName, Addresses, MatchData) {
   if (Addresses[0] == '' && Addresses[1] != '') EmailName = Addresses[1];
   
   // Add Masterpiece mention if necessary
-  if (MatchData[22] == 'Last Card is Masterpiece'){
-    var Masterpiece = MatchData[21];
-    MatchData[21] = Masterpiece + ' (Masterpiece)' 
+  if (MatchData[22][2] == 'Last Card is Masterpiece'){
+    var Masterpiece = MatchData[21][2];
+    MatchData[21][2] = Masterpiece + ' (Masterpiece)' 
   }
 
   // Set Email Subject
@@ -74,9 +74,9 @@ function fcnGenEmailConfirmation(LeagueName, Addresses, MatchData) {
   
   // Set Email Message
   EmailMessage = '<html><body>Hi ' + Winr + ' and ' + Losr + ',<br><br>Your match result has been succesfully received for the ' + LeagueName + ', Week ' + Week + 
-    '<br><br>Here is your match result:<br><br><table style="border-collapse:collapse;" border = 1 cellpadding = 5><th>Item</th><th>Value</th><tr>';
+    '<br><br>Here is your match result:<br><br><table style="border-collapse:collapse;" border = 1 cellpadding = 5><tr>';
     
-  EmailMessage = composeHtmlMsg(EmailMessage, Headers,MatchData);
+  EmailMessage = composeHtmlMsg(EmailMessage, Headers, MatchData);
   
   EmailMessage = EmailMessage + '<br>Click here to access the League Standings and Results:'+
     '<br>https://docs.google.com/spreadsheets/d/1-p-yXgcXEij_CsYwg7FadKzNwS6E5xiFddGWebpgTDY/edit?usp=sharing'+
@@ -97,18 +97,27 @@ function fcnGenEmailConfirmation(LeagueName, Addresses, MatchData) {
 
 //-----------------------------------------------------------
 
-function composeHtmlMsg(message,headers,values){
-  for(var c=0;c<22;++c){
-    if(c < 5 || c > 6) {
-      message+='<tr><td>'+headers[c][0]+'</td><td>'+values[c]+'</td></tr>';
+function composeHtmlMsg(EmailMessage, Headers, MatchData){
+  for(var row=0; row<22; ++row){
+    
+    // Match Data
+    if(row < 5) {
+      EmailMessage+='<tr><td>'+Headers[row][0]+'</td><td>'+MatchData[row][0]+'</td></tr>';
     }
     
-    if(c == 5) message+='</table><br>';
+    // End of first Table
+    if(row == 5) EmailMessage+='</table><br>';
     
-    if(c == 6) message+='Booster Pack Content<br><table style="border-collapse:collapse;" border = 1 cellpadding = 5><th>Item</th><th>Value</th>';
+    //
+    if(row == 7) EmailMessage+='Booster Pack Content<br><br><font size="4"><b>'+MatchData[row][0]+'</b></font><br><table style="border-collapse:collapse;" border = 1 cellpadding = 5><th>Item</th><th>Card Number</th><th>Card Name</th><th>Rarity</th>';
+    
+    // Pack Data
+    if(row > 7) {
+      EmailMessage+='<tr><td>'+Headers[row][0]+'</td><td>'+MatchData[row][1]+'</td><td>'+MatchData[row][2]+'</td><td>'+MatchData[row][3]+'</td></tr>';
+    }
     
   }
-  return message+'</table>';
+  return EmailMessage+'</table>';
 }
 
 

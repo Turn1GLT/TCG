@@ -49,13 +49,25 @@ function fcnGameResults() {
   var MatchingRspnData;
   
   // Card List Variables
-  var CardList = new Array(16);         // 0 = Set, 1-14 = Card Numbers, 15 = Masterpiece
-  var CardNameList = new Array(16);     // 0 = Set, 1-14 = Card Numbers, 15 = Masterpiece
+  var CardList = new Array(16);         // 0 = Set Name, 1-14 = Card Numbers, 15 = Card 14 is Masterpiece (Y-N)
   var CardName;
+  var PackData = new Array(16); // 0 = Set Name, 1-14 = Card Numbers, 15 = Card 14 is Masterpiece (Y-N)
+  
+  // Create Array of 16x4 where each row is Card 1-14 and each column is Card Info
+  for(var cardnum = 0; cardnum < 16; cardnum++){
+    PackData[cardnum] = new Array(4); // 0= Card in Pack, 1= Card Number, 2= Card Name, 3= Card Rarity
+    for (var val = 0; val < 4; val++) PackData[cardnum][val] = '';
+  }
 
   // Match Data Variables
   var MatchID; 
   var MatchData = new Array(25); // 0 = MatchID, 1 = Week #, 2 = Winning Player, 3 = Losing Player, 4 = Score, 5 = Winner Points, 6 = Loser Points, 7 = Card Set, 8-21 = Cards, 22 = Masterpiece (Y-N), 23 = Reserved, 24 = MatchPostStatus
+  // Create Array of 25x4 where each row is Card 1-14 and each column is Card Info. This Info is only used for rows 8-21
+  for(var cardnum = 0; cardnum < 25; cardnum++){
+    MatchData[cardnum] = new Array(4); // 0= Card in Pack, 1= Card Number, 2= Card Name, 3= Card Rarity
+    for (var val = 0; val < 4; val++) MatchData[cardnum][val] = '';
+  }
+  
   
   // Email Addresses
   var Addresses = new Array(2);
@@ -131,7 +143,7 @@ function fcnGameResults() {
               
               // Execute function to populate Match Result Sheet from processed data
               MatchData = fcnPostMatchResults(ss, ConfigData, shtRspn, ResponseData, MatchingRspnData, MatchID, shtTest);
-              MatchPostStatus = MatchData[24];
+              MatchPostStatus = MatchData[24][0];
               
               Logger.log('Match Post Status: %s',MatchPostStatus);
               
@@ -145,20 +157,21 @@ function fcnGameResults() {
                     CardList[card] = ResponseData[0][card+5];
                   }
                   if (CardList[0] != 'No Pack Opened') {
-                    CardNameList = fcnUpdateCardDB(RspnDataLosr, CardList, shtTest);
+                    PackData = fcnUpdateCardDB(RspnDataLosr, CardList, shtTest);
                     // Copy all card names to Match Data [7-22]
                     for (var card = 0; card < NbCards; card++){
-                      CardName = CardNameList[card];
-                      MatchData[card+7] = CardName;
-                      if (CardName == 'Card Name not Found for Card Number') {
+                      MatchData[card+7][0] = PackData[card][0]; // Card in Pack
+                      MatchData[card+7][1] = PackData[card][1]; // Card Number
+                      MatchData[card+7][2] = PackData[card][2]; // Card Name
+                      MatchData[card+7][3] = PackData[card][3]; // Card Rarity
+                      
+                      if (PackData[card][2] == 'Card Name not Found for Card Number') {
                         StatusMsg = 'Card Name not Found for Card Number: ' + CardList[card]; 
                       }
                     }
                   }
                   // for debug
-//                  for (var data = 0; data < 25; data++){
-//                    shtTest.getRange(data+1, 9).setValue(MatchData[data]);
-//                  }
+                  shtTest.getRange(20,1,25,4).setValues(MatchData);
                 }
                   
                 // Send email Confirmation that Response and Entry Data was compiled and posted to the Match Results
