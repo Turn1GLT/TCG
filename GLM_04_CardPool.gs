@@ -22,9 +22,7 @@ function fcnUpdateCardPool(shtCardDB, Player, shtTest){
   var SetName;
   var colSet;
   var CardNb = 0;
-  
-  Logger.log('Update Card Pool for Player %s', Player);
-  
+    
   // Clear Player Card Pool
   rngCardPool.clearContent();
   CardPool = rngCardPool.getValues();
@@ -35,7 +33,6 @@ function fcnUpdateCardPool(shtCardDB, Player, shtTest){
     if (CardDBSetTotal[0][col] > 0){
       colSet = col + 1;
       SetName = shtCardDB.getRange(6,colSet+2).getValue();
-      Logger.log('Set Name found for Card Pool: %s',SetName);
 
       // Get all Cards Data from set
       SetData = shtCardDB.getRange(7, colSet, 286, 4).getValues();

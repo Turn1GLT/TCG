@@ -252,6 +252,8 @@ function fcnPostMatchResults(ss, ConfigData, shtRspn, ResponseData, MatchingRspn
     MatchData[4][0] = ResultData[0][5]; // Score
     MatchData[5][0] = ResultData[0][6]; // Winner Points
     MatchData[6][0] = ResultData[0][7]; // Loser Points
+    MatchData[23][0]= ResponseData[0][0]; // Submission Time Stamp
+    MatchData[23][0] = Utilities.formatDate (MatchData[23][0], Session.getScriptTimeZone(), 'YYYY-MM-dd HH:mm:ss');
     
     // Copies Card Data
     if (OptTCGBooster == 'Enabled'){
@@ -311,15 +313,6 @@ function fcnPostMatchResults(ss, ConfigData, shtRspn, ResponseData, MatchingRspn
   if (MatchValidWinr == -2 && MatchValidLosr == -2) MatchPostedStatus = -34;
   
   MatchData[24][0] = MatchPostedStatus;
-  
-  Logger.log('MatchData[0]:%s',MatchData[0][0]);
-  Logger.log('MatchData[1]:%s',MatchData[1][0]);
-  Logger.log('MatchData[2]:%s',MatchData[2][0]);
-  Logger.log('MatchData[3]:%s',MatchData[3][0]);
-  Logger.log('MatchData[4]:%s',MatchData[4][0]);
-  Logger.log('MatchData[5]:%s',MatchData[5][0]);
-  Logger.log('MatchData[6]:%s',MatchData[6][0]);
-  Logger.log('MatchData[24]:%s',MatchData[24][0]);
   
   return MatchData;
 }
@@ -501,25 +494,28 @@ function fcnCopyStandingsResults(ss){
 
 }
 
-function subCreateArray() {
+// **********************************************
+// function fcnAnalyzeLossPenalty()
+//
+// This function analyzes all players records
+// and adds a loss to a player who has not played
+// the minimum amount of games. This also 
+//
+// **********************************************
+
+function fcnAnalyzeLossPenalty(ss){
+
+  var shtCumul = ss.getSheetByName('Cumulative Results');
+  var Players = new Array(32);
   
-  var CardListData = new Array(16); // // 0 = Set Name, 1-14 = Card Numbers, 15 = Card 14 is Masterpiece (Y-N)
+  // Get Player Record Range
+  var RngCumul = shtCumul.getRange(5,2,32,6);
   
-  for (var num = 0; num < 16; num++){
-    CardListData[num] = new Array(4); // 0= Card in Pack, 1= Card Number, 2= Card Name, 3= Card Rarity
-    for (var card = 0; card < 16; card++){
-      switch (card){
-        case 0: CardListData[num][card] = card; break; // Card in Pack
-        case 1: CardListData[num][card] = card; break; // Card Number
-        case 2: CardListData[num][card] = card; break; // Card Name
-        case 3: CardListData[num][card] = card; break; // Card Rarity
-      }
-    }
+  for (var player = 0; player < 32;player++){
+    
   }
-  ss.getSheetByName('Test').getRange(1, 1, 16, 4).setValues(CardListData);
+
 }
-
-
 
 
 

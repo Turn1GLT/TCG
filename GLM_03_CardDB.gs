@@ -42,7 +42,6 @@ function fcnUpdateCardDB(Player, CardList, shtTest){
   for (var ColSet = 0; ColSet <= 31; ColSet++){   
     if (CardListSet == CardDBSet[0][ColSet]){
       ColCard = ColSet+1;
-      Logger.log('Card Set Column: %s',ColCard);
       ColSet = 32;
     }
   }
@@ -61,7 +60,6 @@ function fcnUpdateCardDB(Player, CardList, shtTest){
     if (CardListNb == 14 && CardList[15] == 'Yes'){
       // Get Set Number to find Masterpiece Column
       SetNum = shtCardDB.getRange(4, ColCard).getValue();
-      Logger.log('Masterpiece Set Number: %s',SetNum);
       // Set Masterpiece Column according to Set Number
       switch (SetNum){
         case 1 : ColCard= 35; break;
@@ -103,6 +101,7 @@ function fcnUpdateCardDB(Player, CardList, shtTest){
     
     // If Card Name does not exist, set status to 0
     if (CardName == ''){
+      PackData[CardListNb][1] = CardID; // Card Number
       PackData[CardListNb][2] = 'Card Name not Found for Card Number';
     }
     //shtTest.getRange(CardListNb,3).setValue(UpdateCardDBStatus[CardListNb]);

@@ -52,31 +52,31 @@
 // ResultData[0][22] = Card 14 / Foil
 // ResultData[0][23] = Masterpiece (Yes/No)
 
-// MatchData[0]  = MatchID
-// MatchData[1]  = Week / Round
-// MatchData[2]  = Winning Player
-// MatchData[3]  = Losing Player
-// MatchData[4]  = Score
-// MatchData[5]  = Winner Points
-// MatchData[6]  = Loser Points
-// MatchData[7]  = Card Set
-// MatchData[8]  = Name Card 1
-// MatchData[9]  = Name Card 2
-// MatchData[10] = Name Card 3
-// MatchData[11] = Name Card 4
-// MatchData[12] = Name Card 5
-// MatchData[13] = Name Card 6
-// MatchData[14] = Name Card 7
-// MatchData[15] = Name Card 8
-// MatchData[16] = Name Card 9
-// MatchData[17] = Name Card 10
-// MatchData[18] = Name Card 11
-// MatchData[19] = Name Card 12
-// MatchData[20] = Name Card 13
-// MatchData[21] = Name Card 14
-// MatchData[22] = Card 14 Masterpiece (Y-N)
-// MatchData[23] = Not Used
-// MatchData[24] = MatchPostStatus
+// MatchData [0][0] = MatchID
+// MatchData [1][0] = Week / Round
+// MatchData [2][0] = Winning Player
+// MatchData [3][0] = Losing Player
+// MatchData [4][0] = Score
+// MatchData [5][0] = Winner Points
+// MatchData [6][0] = Loser Points
+// MatchData [7][0] = Card Set
+// MatchData [8][0] = Name Card 1
+// MatchData [9][0] = Name Card 2
+// MatchData[10][0] = Name Card 3
+// MatchData[11][0] = Name Card 4
+// MatchData[12][0] = Name Card 5
+// MatchData[13][0] = Name Card 6
+// MatchData[14][0] = Name Card 7
+// MatchData[15][0] = Name Card 8
+// MatchData[16][0] = Name Card 9
+// MatchData[17][0] = Name Card 10
+// MatchData[18][0] = Name Card 11
+// MatchData[19][0] = Name Card 12
+// MatchData[20][0] = Name Card 13
+// MatchData[21][0] = Name Card 14
+// MatchData[22][0] = Card 14 Masterpiece (Y-N)
+// MatchData[23][0] = TimeStamp
+// MatchData[24][0] = MatchPostStatus
 
 // ShtWeekPackData Array
 

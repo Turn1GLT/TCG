@@ -73,7 +73,7 @@ function fcnGameResults() {
   var Addresses = new Array(2);
 
   // Data Processing Flags
-  var StatusMsg = '';
+  var Status = new Array(2); // Status[0] = Status Value, Status[1] = Status Message
   var DuplicateRspn = -99;
   var MatchingRspn = -98;
   var MatchPostStatus = -97;
@@ -156,6 +156,7 @@ function fcnGameResults() {
                   for (var card = 0; card < NbCards; card++){
                     CardList[card] = ResponseData[0][card+5];
                   }
+                  // If Pack was opened, Update Card Database and Card Pool for Appropriate player
                   if (CardList[0] != 'No Pack Opened') {
                     PackData = fcnUpdateCardDB(RspnDataLosr, CardList, shtTest);
                     // Copy all card names to Match Data [7-22]
@@ -166,19 +167,14 @@ function fcnGameResults() {
                       MatchData[card+7][3] = PackData[card][3]; // Card Rarity
                       
                       if (PackData[card][2] == 'Card Name not Found for Card Number') {
-                        StatusMsg = 'Card Name not Found for Card Number: ' + CardList[card]; 
+                        StatusMsg = 'Card Name not Found for Card Number: ' + CardList[card];
+                        PackData[card][2] = StatusMsg;
                       }
                     }
                   }
                   // for debug
-                  shtTest.getRange(20,1,25,4).setValues(MatchData);
+                  //shtTest.getRange(20,1,25,4).setValues(MatchData);
                 }
-                  
-                // Send email Confirmation that Response and Entry Data was compiled and posted to the Match Results
-                // Get Email addresses from Config File
-                Addresses = subGetEmailAddress(shtConfig, RspnDataWinr, RspnDataLosr);
-                // Call the Email Function, sends Match Data
-                fcnGenEmailConfirmation(LeagueName, Addresses, MatchData);
               }
               
               // If MatchPostSuccess = 0, function was executed but was not able to post in the Match Result Tab
@@ -186,11 +182,7 @@ function fcnGameResults() {
                 // Updates the Match ID to an empty value 
                 MatchID = '';
                 // Generate the Status Message
-                StatusMsg = subGenErrorMsg(MatchPostStatus);
-                // Get Email addresses from Config File
-                
-                // Call the Email Function, sends Match Data
-                
+                Status = subGenErrorMsg(MatchPostStatus);
               }
             }
             // If Posting is disabled, generate Match ID for testing        
@@ -205,20 +197,17 @@ function fcnGameResults() {
           // If MatchingEntry = 0, fcnFindMatchingEntry did not find a matching entry, it might be the first response entry
           if (OptDualSubmission == 'Enabled' && MatchingRspn == 0){
             // Generate the Status Message
-            StatusMsg = 'Waiting for Other Response Submission'
+            Status[0] = '';
+            Status[1] = 'Waiting for Other Response Submission';
             // Set the Data Processed Flag
             RspnDataPrcssd = 1;
+            
           } 
           
-          // If MatchingEntry = -1, fcnFindMatchingEntry was not executed properly, sends email to notify
+          // If MatchingEntry = -1, fcnFindMatchingEntry was not executed properly, send email to notify
           if (OptDualSubmission == 'Enabled' && MatchingRspn < 0){
             // Set the Status Message
-            StatusMsg = subGenErrorMsg(MatchingRspn);
-            
-            // Get Email addresses from Config File
-            
-            // Call the Email Function, sends Match Data
-            
+            Status = subGenErrorMsg(MatchingRspn);
           }
           
         }
@@ -229,15 +218,21 @@ function fcnGameResults() {
           // Updates the Match ID to an empty value 
           MatchID = '';
           
+          // Populates Match Data for Main Routine
+          MatchData[0][0] =  MatchID; // MatchID
+          MatchData[1][0] =  ResponseData[0][1]; // Week / Round
+          MatchData[2][0] =  ResponseData[0][2]; // Winning Player
+          MatchData[3][0] =  ResponseData[0][3]; // Losing Player
+          MatchData[4][0] =  ResponseData[0][4]; // Score
+          MatchData[23][0] = ResponseData[0][0]; // Submission Time Stamp
+          Logger.log('Time Stamp 1',MatchData[23][0]);
+          
           // Set the Data Processed Flag
           RspnDataPrcssd = 1;        
           
           // Sets the Status Message
-          StatusMsg = 'Duplicate Entry Found at Row: ' + DuplicateRspn;
-                
-          // Get Email addresses from Config File
-          
-          // Call the Email Function, sends Match Data to Organizer
+          Status[0] = '-10';
+          Status[1] = 'Duplicate Entry Found at Row: ' + DuplicateRspn;
         }
         
         // If FindDuplicateEntry was not executed properly, send email to notify, set Response Data Processed to -2 to represent processing error
@@ -250,11 +245,7 @@ function fcnGameResults() {
           RspnDataPrcssd = 1;  
           
           // Set the Status Message
-          StatusMsg = subGenErrorMsg(DuplicateRspn);
- 
-          // Get Email addresses from Config File
-          
-          // Call the Email Function, sends Match Data
+          Status = subGenErrorMsg(DuplicateRspn);
         }
       } 
       
@@ -268,10 +259,18 @@ function fcnGameResults() {
         RspnDataPrcssd = 1;  
         
         // Set the Status Message
-        StatusMsg = 'Same Player selected for Win and Loss'; 
-        // Get Email addresses from Config File
-        
-        // Call the Email Function, sends Match Data
+        Status = subGenErrorMsg(-51);
+      }
+      
+      // Get Email addresses from Config File
+      Addresses = subGetEmailAddress(shtConfig, RspnDataWinr, RspnDataLosr);
+      
+      // Call the Email Function, sends Match Data
+      if(StatusMsg == '') {
+        fcnSendConfirmEmail(LeagueName, Addresses, MatchData);
+      }
+      if(StatusMsg != '' && StatusMsg != 'Waiting for Other Response Submission') {
+        fcnSendErrorEmail(LeagueName, Addresses, MatchData, MatchID, StatusMsg);
       }
       
       // Set the Match ID (for both Response and Matching Entry), and Updates the Last Match ID generated, 
