@@ -262,7 +262,7 @@ function fcnGameResults() {
       
       // Call the Email Function, sends Match Data
       if(Status[1] == '') {
-        //fcnSendConfirmEmail(LeagueName, Addresses, MatchData);
+        fcnSendConfirmEmail(LeagueName, Addresses, MatchData);
       }
       if(Status[0] != '' && Status[1] != 'Waiting for Other Response Submission') {
         

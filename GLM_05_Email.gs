@@ -82,7 +82,7 @@ function fcnSendConfirmEmail(LeagueName, Addresses, MatchData) {
     '<br><br>Here is your match result:<br><br>';
     
   // Generate Match Data Table
-  EmailMessage = subComposeHtmlMsg(EmailMessage, Headers, MatchData,0);
+  EmailMessage = subComposeHtmlMsg(EmailMessage, Headers, MatchData,1);
   
   EmailMessage += '<br>Click here to access the League Standings and Results:'+
     '<br>https://docs.google.com/spreadsheets/d/1-p-yXgcXEij_CsYwg7FadKzNwS6E5xiFddGWebpgTDY/edit?usp=sharing'+

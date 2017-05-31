@@ -38,18 +38,14 @@ function fcnFindDuplicateData(ss, ConfigData, shtRspn, ResponseData, RspnRow, Rs
   
   var DuplicateRow = 0;
   
-  var EntryWeek = shtRspn.getRange(1, 4, RspnMaxRows-3,1).getValues();
+  var EntryWeekData = shtRspn.getRange(1, 4, RspnMaxRows-3,1).getValues();
+  shtTest.getRange(1,4,RspnMaxRows-3,1).setValues(EntryWeekData);
     
   // Loop to find if another entry has the same data
   for (var EntryRow = 1; EntryRow <= RspnMaxRows; EntryRow++){
     
-    Logger.log('EntryRow %s',EntryRow);
-    Logger.log('RspnStartRow %s',RspnStartRow);
-    Logger.log('RspnMaxRows %s',RspnMaxRows);
-    Logger.log('EntryWeek %s',EntryWeek[EntryRow][0]);
-    
     // Filters only entries of the same week the response was posted
-    if (EntryWeek[EntryRow][0] == RspnWeek){
+    if (EntryWeekData[EntryRow][0] == RspnWeek){
       
       // Gets Entry Data to analyze
       EntryData = shtRspn.getRange(EntryRow+1, 1, 1, RspnDataInputs).getValues();
@@ -62,9 +58,6 @@ function fcnFindDuplicateData(ss, ConfigData, shtRspn, ResponseData, RspnRow, Rs
             
       // If both rows are different, the Data Entry was processed and was compiled in the Match Results (Match as a Match ID), Look for player entry combination
       if (EntryRow != RspnRow && EntryPrcssd == 1 && EntryMatchID != ''){
-        Logger.log('Duplicate First If');
-        Logger.log('Rspn Winr: %s / Rspn Losr: %s',RspnWinr,RspnLosr);
-        Logger.log('Entry Winr: %s / Entry Losr: %s',EntryWinr,EntryLosr);
         // If combination of players are the same between the entry data and the new response data, duplicate entry was found. Save Row index
         if ((RspnWinr == EntryWinr && RspnLosr == EntryLosr) || (RspnWinr == EntryLosr && RspnLosr == EntryWinr)){
           DuplicateRow = EntryRow + 1;
@@ -72,9 +65,11 @@ function fcnFindDuplicateData(ss, ConfigData, shtRspn, ResponseData, RspnRow, Rs
         }
       }
     }
+        
+
     
     // If we do not detect any value in Week Column, we reached the end of the list and skip
-    if (EntryRow <= RspnMaxRows && EntryWeek[EntryRow][0] == ''){
+    if (EntryRow <= RspnMaxRows && EntryWeekData[EntryRow][0] == ''){
       EntryRow = RspnMaxRows + 1;
     }
   }
