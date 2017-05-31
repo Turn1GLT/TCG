@@ -40,8 +40,6 @@ function subCheckDataConflict(DataArray1, DataArray2, ColStart, ColEnd, shtTest)
 
 function subPlayerMatchValidation(ss, PlayerName, shtTest) {
   
-  Logger.log('%s Match Validation executed', PlayerName);
-  
   // Opens Cumulative Results tab
   var shtCumul = ss.getSheetByName('Cumulative Results');
     
@@ -85,29 +83,31 @@ function subPlayerMatchValidation(ss, PlayerName, shtTest) {
 //
 // **********************************************
 
-function subGenErrorMsg(ErrorVal) {
+function subGenErrorMsg(ErrorVal,Param) {
   
   var Status = new Array(2); // Status[0] = Status Value, Status[1] = Status Message
   
   switch (ErrorVal){
 
-    case -99 : Status[1] = ErrorVal; Status[1] = 'Duplicate Entry Search Not Executed'; break;    
-    case -98 : Status[1] = ErrorVal; Status[1] = 'Matching Response Search Not Executed'; break;  
-    case -97 : Status[1] = ErrorVal; Status[1] = 'Match Results Post Not Executed'; break;  
-    case -11 : Status[1] = ErrorVal; Status[1] = 'Winning Player is Eliminated from League'; break;  
-    case -12 : Status[1] = ErrorVal; Status[1] = 'Winning Player has played too many matches'; break;  
-    case -21 : Status[1] = ErrorVal; Status[1] = 'Losing Player is Eliminated from League'; break;  
-    case -22 : Status[1] = ErrorVal; Status[1] = 'Losing Player has played too many matches'; break;  
-    case -31 : Status[1] = ErrorVal; Status[1] = 'Both Players are Eliminated from the League'; break;  
-    case -32 : Status[1] = ErrorVal; Status[1] = 'Winning Player is Eliminated from the League and Losing Player has played too many matches'; break;
-    case -33 : Status[1] = ErrorVal; Status[1] = 'Winning Player has player too many matches and Losing Player is Eliminated from the League'; break;
-    case -34 : Status[1] = ErrorVal; Status[1] = 'Both Players have played too many matches'; break;
-    case -50 : Status[1] = ErrorVal; Status[1] = 'Duplicate Entry Found'; break; 
-    case -51 : Status[1] = ErrorVal; Status[1] = 'Illegal Match, Same Player selected for Win and Loss'; break; 
-//    case  : Status[1] = ErrorVal; Status[1] = ''; break;  // Add Error Message for Data Conflict on Dual Submission
-//    case  : Status[1] = ErrorVal; Status[1] = ''; break;
-//    case  : Status[1] = ErrorVal; Status[1] = ''; break;
-//    case  : Status[1] = ErrorVal; Status[1] = ''; break;
+    case -10 : Status[0] = ErrorVal; Status[1] = 'Duplicate Entry Found at Row ' + Param; break; 
+    case -11 : Status[0] = ErrorVal; Status[1] = 'Winning Player is Eliminated from League'; break;  
+    case -12 : Status[0] = ErrorVal; Status[1] = 'Winning Player has played too many matches'; break;  
+    case -21 : Status[0] = ErrorVal; Status[1] = 'Losing Player is Eliminated from League'; break;  
+    case -22 : Status[0] = ErrorVal; Status[1] = 'Losing Player has played too many matches'; break;  
+    case -31 : Status[0] = ErrorVal; Status[1] = 'Both Players are Eliminated from the League'; break;  
+    case -32 : Status[0] = ErrorVal; Status[1] = 'Winning Player is Eliminated from the League and Losing Player has played too many matches'; break;
+    case -33 : Status[0] = ErrorVal; Status[1] = 'Winning Player has player too many matches and Losing Player is Eliminated from the League'; break;
+    case -34 : Status[0] = ErrorVal; Status[1] = 'Both Players have played too many matches'; break;
+    case -50 : Status[0] = ErrorVal; Status[1] = 'Illegal Match, Same Player selected for Win and Loss'; break; 
+    case -60 : Status[0] = ErrorVal; Status[1] = 'Card Name not Found for Card Number: ' + Param; break;  // Add Error Message for Data Conflict on Dual Submission
+      
+    case -97 : Status[0] = ErrorVal; Status[1] = 'Match Results Post Not Executed'; break;   
+    case -98 : Status[0] = ErrorVal; Status[1] = 'Matching Response Search Not Executed'; break; 
+    case -99 : Status[0] = ErrorVal; Status[1] = 'Duplicate Entry Search Not Executed'; break;    
+
+//    case  : Status[0] = ErrorVal; Status[1] = ''; break;  // Add Error Message for Data Conflict on Dual Submission
+//    case  : Status[0] = ErrorVal; Status[1] = ''; break;  // Add Error Message for Data Conflict on Dual Submission
+//    case  : Status[0] = ErrorVal; Status[1] = ''; break;  // Add Error Message for Data Conflict on Dual Submission
 
 }
   
