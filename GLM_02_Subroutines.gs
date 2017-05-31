@@ -99,7 +99,7 @@ function subGenErrorMsg(ErrorVal,Param) {
     case -33 : Status[0] = ErrorVal; Status[1] = 'Winning Player has player too many matches and Losing Player is Eliminated from the League'; break;
     case -34 : Status[0] = ErrorVal; Status[1] = 'Both Players have played too many matches'; break;
     case -50 : Status[0] = ErrorVal; Status[1] = 'Illegal Match, Same Player selected for Win and Loss'; break; 
-    case -60 : Status[0] = ErrorVal; Status[1] = 'Card Name not Found for Card Number: ' + Param; break;  // Add Error Message for Data Conflict on Dual Submission
+    case -60 : Status[0] = ErrorVal; Status[1] = 'Card Name not Found for Card Number: ' + Param; break;  // Card Name not Found
       
     case -97 : Status[0] = ErrorVal; Status[1] = 'Match Results Post Not Executed'; break;   
     case -98 : Status[0] = ErrorVal; Status[1] = 'Matching Response Search Not Executed'; break; 
