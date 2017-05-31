@@ -262,7 +262,7 @@ function fcnGameResults() {
       
       // Call the Email Function, sends Match Data
       if(Status[1] == '') {
-        fcnSendConfirmEmail(LeagueName, Addresses, MatchData);
+        fcnSendConfirmEmail(LeagueName, Addresses, MatchData, shtConfig);
       }
       if(Status[0] != '' && Status[1] != 'Waiting for Other Response Submission') {
         
@@ -271,14 +271,14 @@ function fcnGameResults() {
         MatchData[0][0] = Utilities.formatDate (MatchData[0][0], Session.getScriptTimeZone(), 'YYYY-MM-dd HH:mm:ss');
         
         MatchData[1][0] = ResponseData[0][2];  // Location (Store Y/N)
-        MatchData[2][0] = ResponseData[0][24]; // MatchID
+        MatchData[2][0] = MatchID; // MatchID
         MatchData[3][0] = ResponseData[0][3];  // Week/Round Number
         MatchData[4][0] = ResponseData[0][4];  // Winning Player
         MatchData[5][0] = ResponseData[0][5];  // Losing Player
         MatchData[6][0] = ResponseData[0][6];  // Score
         
         // Send Error Message
-        fcnSendErrorEmail(LeagueName, Addresses, MatchData, MatchID, Status);
+        fcnSendErrorEmail(LeagueName, Addresses, MatchData, shtConfig, MatchID, Status);
       }
       
       // Set the Match ID (for both Response and Matching Entry), and Updates the Last Match ID generated, 
@@ -305,7 +305,7 @@ function fcnGameResults() {
   fcnUpdateStandings(ss, shtConfig);
   
   // Copy all data to League Spreadsheet
-  fcnCopyStandingsResults(ss);
+  fcnCopyStandingsResults(ss, shtConfig);
 
 }
 

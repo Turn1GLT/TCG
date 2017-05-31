@@ -468,10 +468,12 @@ function fcnUpdateStandings(ss){
 //
 // **********************************************
 
-function fcnCopyStandingsResults(ss){
+function fcnCopyStandingsResults(ss, shtConfig){
 
-  // Open League Spreadsheet
-  var ssLg = SpreadsheetApp.openById('1-p-yXgcXEij_CsYwg7FadKzNwS6E5xiFddGWebpgTDY');
+  ssLgID = shtConfig.getRange(57,2).getValue();
+  
+  // Open League Player Standings Spreadsheet
+  var ssLg = SpreadsheetApp.openById(ssLgID);
   
   var ssLgSht;
   var ssLgShtMaxRows;
@@ -482,6 +484,8 @@ function fcnCopyStandingsResults(ss){
   var ssShtMaxRows;
   var ssShtMaxCols;
   var ssShtData;
+  var MatchReporterCell;
+  var MatchReporterUrl = shtConfig.getRange(3,2).getValue();
   
   // Loops through tabs 0-8 (Standings, Cumulative Results, Week 1-7)
   for (var sht = 0; sht <=8; sht++){
@@ -498,8 +502,8 @@ function fcnCopyStandingsResults(ss){
     ssLgSht.getRange(1,1,ssLgShtMaxRows,ssLgShtMaxCols).setValues(ssShtData);
     
     if (sht == 0){
-      
-      ssLgSht.getRange(2,5).setValue('=HYPERLINK("https://goo.gl/forms/jcDtOML96WlNLzVL2";"Send Match Results")');
+      MatchReporterCell = '=HYPERLINK("' + MatchReporterUrl + '";"Send Match Results")';
+      ssLgSht.getRange(2,5).setValue(MatchReporterCell);
     }
     
   }

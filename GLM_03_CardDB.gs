@@ -10,10 +10,10 @@ function fcnUpdateCardDB(Player, CardList, shtTest){
   
   // Config Spreadsheet
   var ShtConfig = SpreadsheetApp.openById('14rR_7-SG9fTi-M7fpS7d6n4XrOlnbKxRW1Ni2ongUVU').getSheetByName('Config');
-  var CardDBShtID = ShtConfig.getRange(3, 2).getValue();
+  var ssCardDBID = ShtConfig.getRange(58,2).getValue();
   
   // Player Card DB Spreadsheet
-  var shtCardDB = SpreadsheetApp.openById(CardDBShtID).getSheetByName(Player);
+  var shtCardDB = SpreadsheetApp.openById(ssCardDBID).getSheetByName(Player);
   var CardDBSet = shtCardDB.getRange(6,1,1,32).getValues();
   var MstrSet = shtCardDB.getRange(6,33,1,16).getValues();
   var ColCard = 0;

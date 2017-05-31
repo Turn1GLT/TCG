@@ -10,10 +10,10 @@ function fcnUpdateCardPool(shtCardDB, Player, shtTest){
   
   // Config Spreadsheet
   var ShtConfig = SpreadsheetApp.openById('14rR_7-SG9fTi-M7fpS7d6n4XrOlnbKxRW1Ni2ongUVU').getSheetByName('Config');
-  var CardPoolShtID = ShtConfig.getRange(4, 2).getValue();
+  var ssCardPoolID = ShtConfig.getRange(59,2).getValue();
   
   // Card Pool Spreadsheet
-  var shtCardPool = SpreadsheetApp.openById(CardPoolShtID).getSheetByName(Player);
+  var shtCardPool = SpreadsheetApp.openById(ssCardPoolID).getSheetByName(Player);
   var rngCardPool = shtCardPool.getRange(6, 1, 224, 5); // 0 = Card Qty, 1 = Card Number, 2 = Card Name, 3 = Rarity, 4 = Set Name 
   var CardPool; // Where Card Data will be populated
   

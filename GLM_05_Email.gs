@@ -40,13 +40,18 @@ function subGetEmailAddress(shtConfig, WinPlyr, LosPlyr){
 //
 // **********************************************
 
-function fcnSendConfirmEmail(LeagueName, Addresses, MatchData) {
+function fcnSendConfirmEmail(LeagueName, Addresses, MatchData, shtConfig) {
   
   // Variables
   var EmailSubject;
   var EmailMessage;
   var EmailName1 = '';
   var EmailName2 = '';
+  
+  // Get Document URLs
+  var MatchReporterUrl = shtConfig.getRange(3,2).getValue();
+  var LeagueUrl = shtConfig.getRange(51,2).getValue();
+  var CardPoolUrl = shtConfig.getRange(52,2).getValue();
   
   // Open GLM - Email Templates
   var ssEmail = SpreadsheetApp.openById('15-IjvgcgHWx6nRc0U_Fzg0iUYS_rD6-u5tNZELdZxOo');
@@ -85,11 +90,11 @@ function fcnSendConfirmEmail(LeagueName, Addresses, MatchData) {
   EmailMessage = subComposeHtmlMsg(EmailMessage, Headers, MatchData,1);
   
   EmailMessage += '<br>Click here to access the League Standings and Results:'+
-    '<br>https://docs.google.com/spreadsheets/d/1-p-yXgcXEij_CsYwg7FadKzNwS6E5xiFddGWebpgTDY/edit?usp=sharing'+
+    '<br>'+ LeagueUrl +
       '<br><br>Click here to access your Card Pool:'+
-        '<br>https://docs.google.com/spreadsheets/d/1lFiVQaE4_LxOKePdfhhUiBHJq0q3xbzxaDiOVwOQUI8/edit?usp=sharing'+
+        '<br>'+ CardPoolUrl +
           '<br><br>Click here to send another Match Report:'+
-            '<br>https://goo.gl/forms/jcDtOML96WlNLzVL2'+
+            '<br>'+ MatchReporterUrl +
               '<br><br>If you find any problems with your match result, please reply to this message and describe the situation as best you can. You will receive a response once it has been processed.'+
                 '<br><br>Thank you for using TCG Booster League Manager from Turn 1 Gaming Leagues Applications';
   
@@ -110,13 +115,18 @@ function fcnSendConfirmEmail(LeagueName, Addresses, MatchData) {
 //
 // **********************************************
 
-function fcnSendErrorEmail(LeagueName, Addresses, MatchData, MatchID, Status) {
+function fcnSendErrorEmail(LeagueName, Addresses, MatchData, shtConfig, MatchID, Status) {
   
   // Variables
   var EmailSubject;
   var EmailMessage;
   var EmailName1 = '';
   var EmailName2 = '';
+  
+  // Get Document URLs
+  var MatchReporterUrl = shtConfig.getRange(3,2).getValue();
+  var LeagueUrl = shtConfig.getRange(51,2).getValue();
+  var CardPoolUrl = shtConfig.getRange(52,2).getValue();
   
   // Open GLM - Email Templates
   var ssEmail = SpreadsheetApp.openById('15-IjvgcgHWx6nRc0U_Fzg0iUYS_rD6-u5tNZELdZxOo');
@@ -189,12 +199,12 @@ function fcnSendErrorEmail(LeagueName, Addresses, MatchData, MatchID, Status) {
   }
   
   if (Status[0] >= -60) {
-    EmailMessage +='<br>Click here to access the League Standings and Results:'+
-      '<br>https://docs.google.com/spreadsheets/d/1-p-yXgcXEij_CsYwg7FadKzNwS6E5xiFddGWebpgTDY/edit?usp=sharing'+
+    EmailMessage += '<br>Click here to access the League Standings and Results:'+
+      '<br>'+ LeagueUrl +
         '<br><br>Click here to access your Card Pool:'+
-          '<br>https://docs.google.com/spreadsheets/d/1lFiVQaE4_LxOKePdfhhUiBHJq0q3xbzxaDiOVwOQUI8/edit?usp=sharing'+
+          '<br>'+ CardPoolUrl +
             '<br><br>Click here to send another Match Report:'+
-              '<br>https://goo.gl/forms/jcDtOML96WlNLzVL2'+
+              '<br>'+ MatchReporterUrl +
                 '<br><br>If you find any problems with your match result, please reply to this message and describe the situation as best you can. You will receive a response once it has been processed.'+
                   '<br><br>Thank you for using TCG Booster League Manager from Turn 1 Gaming Leagues Applications';
   }
