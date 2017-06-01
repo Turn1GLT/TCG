@@ -38,7 +38,7 @@ function subCheckDataConflict(DataArray1, DataArray2, ColStart, ColEnd, shtTest)
 //
 // **********************************************
 
-function subPlayerMatchValidation(ss, PlayerName, shtTest) {
+function subPlayerMatchValidation(ss, PlayerName, MatchValidation, shtTest) {
   
   // Opens Cumulative Results tab
   var shtCumul = ss.getSheetByName('Cumulative Results');
@@ -50,29 +50,28 @@ function subPlayerMatchValidation(ss, PlayerName, shtTest) {
   var PlayerStatus;
   var PlayerMatchPlayed;
   
-  var MatchValid = 0; // Match is invalid by default
-  
   // Look for Player Row and if Player is still Active or Eliminated
   for (var i = 0; i < 32; i++) {
     // Player Found, Number of Match Played and Status memorized
     if (PlayerName == CumulPlyrData[i][1]){
       PlayerMatchPlayed = CumulPlyrData[i][3];
       PlayerStatus = CumulPlyrData[i][8];
+      MatchValidation[1] = PlayerMatchPlayed;
       //Logger.log('Player Name: %s / MP: %s / Status: %s',CumulPlyrData[i][0], CumulPlyrData[i][3], CumulPlyrData[i][8]);
       i = 32; // Exit Loop
     }
   }
 
   // If Player is Active and Number of Matches Played is below or equal to the maximum permitted
-  if (PlayerStatus == 'Active' && PlayerMatchPlayed + 1 <= CumulMaxMatch) MatchValid = 1;
+  if (PlayerStatus == 'Active' && PlayerMatchPlayed + 1 <= CumulMaxMatch) MatchValidation[0] = 1;
   
   // If Player is Eliminated, return -1
-  if (PlayerStatus == 'Eliminated') MatchValid = -1;
+  if (PlayerStatus == 'Eliminated') MatchValidation[0] = -1;
   
   // If Player has played more games (counting the one to be posted) than permitted, return -2
-  if (PlayerMatchPlayed + 1 > CumulMaxMatch && PlayerStatus != 'Eliminated') MatchValid = -2;
+  if (PlayerMatchPlayed + 1 > CumulMaxMatch && PlayerStatus != 'Eliminated') MatchValidation[0] = -2;
   
-  return MatchValid;
+  return MatchValidation;
 }
 
 // **********************************************
@@ -83,10 +82,8 @@ function subPlayerMatchValidation(ss, PlayerName, shtTest) {
 //
 // **********************************************
 
-function subGenErrorMsg(ErrorVal,Param) {
-  
-  var Status = new Array(2); // Status[0] = Status Value, Status[1] = Status Message
-  
+function subGenErrorMsg(Status, ErrorVal,Param) {
+
   switch (ErrorVal){
 
     case -10 : Status[0] = ErrorVal; Status[1] = 'Duplicate Entry Found at Row ' + Param; break; 
@@ -99,7 +96,7 @@ function subGenErrorMsg(ErrorVal,Param) {
     case -33 : Status[0] = ErrorVal; Status[1] = 'Winning Player has player too many matches and Losing Player is Eliminated from the League'; break;
     case -34 : Status[0] = ErrorVal; Status[1] = 'Both Players have played too many matches'; break;
     case -50 : Status[0] = ErrorVal; Status[1] = 'Illegal Match, Same Player selected for Win and Loss'; break; 
-    case -60 : Status[0] = ErrorVal; Status[1] = 'Card Name not Found for Card Number: ' + Param; break;  // Add Error Message for Data Conflict on Dual Submission
+    case -60 : Status[0] = ErrorVal; Status[1] = 'Card Name not Found for Card Number: ' + Param; break;  // Card Name not Found
       
     case -97 : Status[0] = ErrorVal; Status[1] = 'Match Results Post Not Executed'; break;   
     case -98 : Status[0] = ErrorVal; Status[1] = 'Matching Response Search Not Executed'; break; 

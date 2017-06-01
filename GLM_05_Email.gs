@@ -6,14 +6,14 @@
 //
 // **********************************************
 
-function subGetEmailAddress(shtConfig, WinPlyr, LosPlyr){
+function subGetEmailAddress(shtConfig, Addresses, WinPlyr, LosPlyr){
   
   // Config File Email Address column
   var colEmail = 6;
   var NbPlayers = shtConfig.getRange(16,7).getValue();
   var rowWinr = 0;
   var rowLosr = 0;
-  var Addresses = new Array(2);
+  //var Addresses = new Array(3);
   
   var PlayerNames = shtConfig.getRange(17,2,NbPlayers,1).getValues();
   
@@ -25,8 +25,8 @@ function subGetEmailAddress(shtConfig, WinPlyr, LosPlyr){
   }
   
   // Get Email addresses using the players rows
-  Addresses[0] = shtConfig.getRange(rowWinr,colEmail).getValue();
-  Addresses[1] = shtConfig.getRange(rowLosr,colEmail).getValue();
+  Addresses[1] = shtConfig.getRange(rowWinr,colEmail).getValue();
+  Addresses[2] = shtConfig.getRange(rowLosr,colEmail).getValue();
   
   return Addresses;
 }
@@ -40,13 +40,16 @@ function subGetEmailAddress(shtConfig, WinPlyr, LosPlyr){
 //
 // **********************************************
 
-function fcnSendConfirmEmail(LeagueName, Addresses, MatchData) {
+function fcnSendConfirmEmail(LeagueName, Address, MatchData, shtConfig) {
   
   // Variables
   var EmailSubject;
   var EmailMessage;
-  var EmailName1 = '';
-  var EmailName2 = '';
+  
+  // Get Document URLs
+  var MatchReporterUrl = shtConfig.getRange(3,2).getValue();
+  var LeagueUrl = shtConfig.getRange(51,2).getValue();
+  var CardPoolUrl = shtConfig.getRange(52,2).getValue();
   
   // Open GLM - Email Templates
   var ssEmail = SpreadsheetApp.openById('15-IjvgcgHWx6nRc0U_Fzg0iUYS_rD6-u5tNZELdZxOo');
@@ -58,10 +61,6 @@ function fcnSendConfirmEmail(LeagueName, Addresses, MatchData) {
   var Week    = MatchData[3][0];
   var Winr    = MatchData[4][0];
   var Losr    = MatchData[5][0];
- 
-  // Set the EmailName according to the addresses
-  if (Addresses[0] != '') EmailName1 = Addresses[0];
-  if (Addresses[0] != '') EmailName2 = Addresses[1];
   
   // Add Masterpiece mention if necessary
   if (MatchData[24][2] == 'Last Card is Masterpiece'){
@@ -71,10 +70,7 @@ function fcnSendConfirmEmail(LeagueName, Addresses, MatchData) {
 
   // Set Email Subject
   EmailSubject = LeagueName + " - Week " + Week + " - Match Result" ;
-  
-  // Set Email Subject
-  EmailSubject = LeagueName + ' - Week ' + Week + ' - Match Result' ;
-  
+    
   // Start of Email Message
   EmailMessage = '<html><body>';
   
@@ -85,11 +81,11 @@ function fcnSendConfirmEmail(LeagueName, Addresses, MatchData) {
   EmailMessage = subComposeHtmlMsg(EmailMessage, Headers, MatchData,1);
   
   EmailMessage += '<br>Click here to access the League Standings and Results:'+
-    '<br>https://docs.google.com/spreadsheets/d/1-p-yXgcXEij_CsYwg7FadKzNwS6E5xiFddGWebpgTDY/edit?usp=sharing'+
+    '<br>'+ LeagueUrl +
       '<br><br>Click here to access your Card Pool:'+
-        '<br>https://docs.google.com/spreadsheets/d/1lFiVQaE4_LxOKePdfhhUiBHJq0q3xbzxaDiOVwOQUI8/edit?usp=sharing'+
+        '<br>'+ CardPoolUrl +
           '<br><br>Click here to send another Match Report:'+
-            '<br>https://goo.gl/forms/jcDtOML96WlNLzVL2'+
+            '<br>'+ MatchReporterUrl +
               '<br><br>If you find any problems with your match result, please reply to this message and describe the situation as best you can. You will receive a response once it has been processed.'+
                 '<br><br>Thank you for using TCG Booster League Manager from Turn 1 Gaming Leagues Applications';
   
@@ -97,8 +93,8 @@ function fcnSendConfirmEmail(LeagueName, Addresses, MatchData) {
   EmailMessage += '</body></html>';
   
   // Sends email to both players with the Match Data
-  if (EmailName1 != '') MailApp.sendEmail(EmailName1, EmailSubject, EmailMessage,{name:'TCG Booster League Manager',htmlBody:EmailMessage});
-  if (EmailName2 != '') MailApp.sendEmail(EmailName2, EmailSubject, EmailMessage,{name:'TCG Booster League Manager',htmlBody:EmailMessage});
+  if (Address[1] != '') MailApp.sendEmail(Address[1], EmailSubject, EmailMessage,{name:'TCG Booster League Manager',htmlBody:EmailMessage});
+  if (Address[2] != '') MailApp.sendEmail(Address[2], EmailSubject, EmailMessage,{name:'TCG Booster League Manager',htmlBody:EmailMessage});
 }
 
 
@@ -110,13 +106,18 @@ function fcnSendConfirmEmail(LeagueName, Addresses, MatchData) {
 //
 // **********************************************
 
-function fcnSendErrorEmail(LeagueName, Addresses, MatchData, MatchID, Status) {
+function fcnSendErrorEmail(LeagueName, Address, MatchData, shtConfig, MatchID, Status) {
   
   // Variables
   var EmailSubject;
   var EmailMessage;
   var EmailName1 = '';
   var EmailName2 = '';
+  
+  // Get Document URLs
+  var MatchReporterUrl = shtConfig.getRange(3,2).getValue();
+  var LeagueUrl = shtConfig.getRange(51,2).getValue();
+  var CardPoolUrl = shtConfig.getRange(52,2).getValue();
   
   // Open GLM - Email Templates
   var ssEmail = SpreadsheetApp.openById('15-IjvgcgHWx6nRc0U_Fzg0iUYS_rD6-u5tNZELdZxOo');
@@ -130,57 +131,126 @@ function fcnSendErrorEmail(LeagueName, Addresses, MatchData, MatchID, Status) {
   var Losr    = MatchData[5][0];
   
   var StatusMsg;
- 
-  // Set the EmailName according to the addresses
-  if (Addresses[0] != '') EmailName1 = Addresses[0];
-  if (Addresses[0] != '') EmailName2 = Addresses[1];
-  
+   
   // Selects the Appropriate Error Message
   switch (Status[0]){
-    case 0: StatusMsg = 'Error 0'; break;
-    case 1: StatusMsg = 'Error 1'; break;
+  
+    case -10 : StatusMsg = 'Match Result has already been submitted.'; break; // Administrator + Players
+    case -11 : StatusMsg = '<b>'+Winr+'</b> is eliminated from League.'; break;    // Administrator + Players
+    case -12 : StatusMsg = '<b>'+Winr+'</b> has played too many matches this week. Matches played: '+MatchData[4][1]; break;  // Administrator + Players 
+    case -21 : StatusMsg = '<b>'+Losr+'</b> is eliminated from League.'; break;    // Administrator + Players
+    case -22 : StatusMsg = '<b>'+Losr+'</b> has played too many matches this week. Matches played: '+MatchData[5][1]; break;  // Administrator + Players 
+    case -31 : StatusMsg = 'Both players are eliminated from League.'; break; // Administrator + Players 
+    case -32 : StatusMsg = '<b>'+Winr+'</b> is eliminated from League.<br><b>'+Losr+'</b> has played too many matches this week. Matches played: '+MatchData[5][1]; break;  // Administrator + Players
+    case -33 : StatusMsg = '<b>'+Winr+'</b> has player too many matches this week. Matches played: <b>'+MatchData[4][1]+'</b>.<br><b>'+Losr+'</b> is eliminated from League.'; break;  // Administrator + Players
+    case -34 : StatusMsg = 'Both Players have played too many matches this week.<br><b>'+Winr+'</b> Matches played: <b>'+MatchData[4][1]+'</b><br><b>'+Losr+'</b> Matches played: <b>'+MatchData[5][1]+'</b>'; break; // Administrator + Players
+    case -50 : StatusMsg = 'Same player selected for Win and Loss.<br>Winner: <b>'+Winr+'</b><br>Loser: <b>' +Losr+ '</b>'; break; // Administrator + Players
+    case -60 : StatusMsg = Status[1]; break;  // Administrator + Players
+	case -97 : StatusMsg = 'Process Error, Match Results Post Not Executed'; break;        // Administrator
+    case -98 : StatusMsg = 'Process Error, Matching Response Search Not Executed'; break;  // Administrator
+    case -99 : StatusMsg = 'Process Error, Duplicate Entry Search Not Executed'; break;    // Administrator
   }
   
   // Set Email Subject
-  EmailSubject = LeagueName + ' - Week ' + Week + ' - Process Error' ;
+  EmailSubject = LeagueName + ' - Week ' + Week + ' - Match Report Error' ;
+  
+  // Start of Email Message
+  EmailMessage = '<html><body>';
+
+  // If Error prevented Match Data to be processed (Duplicate Entry or Player Match is not valid)  
+  if (Status[0] < 0 && Status[0] > -60) {
+    EmailMessage += 'Hi ' + Winr + ' and ' + Losr + ',<br><br>Your match result has been succesfully received for the ' + LeagueName + ', Week ' + Week + 
+      "<br><br>An error has been detected in one of the player's record. Unfortunately, this error prevented us to process the match report.<br><br>"+
+        "<b>Error Message</b><br>" + StatusMsg +
+          '<br><br>Here is your match result:<br><br>';
+    
+    // Populate the Match Data Table
+    EmailMessage = subComposeHtmlMsg(EmailMessage, Headers, MatchData,StatusMsg);
+  }
+
+  // If Error did not prevent Match Data to be processed (Card Name not Found for Card Number X)    
+  if (Status[0] == -60){
+    EmailMessage += 'Hi ' + Winr + ' and ' + Losr + ',<br><br>Your match result has been succesfully received for the ' + LeagueName + ', Week ' + Week + 
+      "<br><br>We were able to process the match data but an error has been detected in the submitted form.<br>Please contact us to resolve this error as soon as possible<br><br>"+
+        "<b>Error Message</b><br>" + StatusMsg +
+          '<br><br>Here is your match result:<br><br>';
+    
+    // Populate the Match Data Table
+    EmailMessage = subComposeHtmlMsg(EmailMessage, Headers, MatchData,StatusMsg);
+  }
+
+  // If Process Error was Detected 
+  if (Status[0] < -60) {
+    EmailMessage += 'Process Error was detected<br><br>'+
+        "<b>Error Message</b><br>" + StatusMsg;
+  }
+  
+  if (Status[0] >= -60) {
+    EmailMessage += '<br>Click here to access the League Standings and Results:'+
+      '<br>'+ LeagueUrl +
+        '<br><br>Click here to access your Card Pool:'+
+          '<br>'+ CardPoolUrl +
+            '<br><br>Click here to send another Match Report:'+
+              '<br>'+ MatchReporterUrl +
+                '<br><br>If you find any problems with your match result, please reply to this message and describe the situation as best you can. You will receive a response once it has been processed.'+
+                  '<br><br>Thank you for using TCG Booster League Manager from Turn 1 Gaming Leagues Applications';
+  }
+  
+  // End of Email Message
+  EmailMessage += '</body></html>';
+   
+  // Send email to Administrator
+  MailApp.sendEmail(Address[0], EmailSubject, EmailMessage,{name:'TCG Booster League Manager',htmlBody:EmailMessage});
+  
+  // If Error is between 0 and -60, send email to players. If not, only send to Administrator
+  if (Status[0] >= -60){
+    // Sends email to both players with the Match Data
+    if (Address[1] != '') {
+      MailApp.sendEmail(Address[1], EmailSubject, EmailMessage,{name:'TCG Booster League Manager',htmlBody:EmailMessage});
+    }
+    if (Address[2] != '' && Address[1] != Address[2]) {
+      MailApp.sendEmail(Address[2], EmailSubject, EmailMessage,{name:'TCG Booster League Manager',htmlBody:EmailMessage});
+    }
+  }
+}
+
+
+// **********************************************
+// function fcnSendFeedbackEmail()
+//
+// This function generates the feedback email 
+//
+// **********************************************
+
+function fcnSendFeedbackEmail(LeagueName, Address, MatchData, Feedback) {
+  
+  // Variables
+  var EmailSubject;
+  var EmailMessage;
+    
+  // Match Data Assignation
+  var MatchID = MatchData[2][0];
+  var Week    = MatchData[3][0];
+  var Winr    = MatchData[4][0];
+  var Losr    = MatchData[5][0];
+  
+  // Set Email Subject
+  EmailSubject = LeagueName + ' - Week ' + Week + ' - Player Feedback' ;
   
   // Start of Email Message
   EmailMessage = '<html><body>';
   
-  if (MatchID > 0){
-    EmailMessage += 'Hi ' + Winr + ' and ' + Losr + ',<br><br>Your match result has been succesfully received for the ' + LeagueName + ', Week ' + Week + 
-      "<br><br>We were able to process the match data but an error has been detected in the submitted form.<br>Please contact us to resolve this error as soon as possible<br><br>"+
-        "Error Message:<br>" + StatusMsg +
-          '<br><br>Here is your match result:<br><br>';
-  } 
-  
-  else {
-    EmailMessage += 'Hi ' + Winr + ' and ' + Losr + ',<br><br>Your match result has been succesfully received for the ' + LeagueName + ', Week ' + Week + 
-      "<br><br>An error has been detected in the submitted form or in one of the player's record. Unfortunately, this error prevented us to process the match report.<br><br>"+
-        "Error Message:<br>" + StatusMsg +
-          '<br><br>Here is your match result:<br><br>';
-  }
-  
-  EmailMessage = subComposeHtmlMsg(EmailMessage, Headers, MatchData,StatusMsg);
-  
-  EmailMessage +='<br>Click here to access the League Standings and Results:'+
-    '<br>https://docs.google.com/spreadsheets/d/1-p-yXgcXEij_CsYwg7FadKzNwS6E5xiFddGWebpgTDY/edit?usp=sharing'+
-      '<br><br>Click here to access your Card Pool:'+
-        '<br>https://docs.google.com/spreadsheets/d/1lFiVQaE4_LxOKePdfhhUiBHJq0q3xbzxaDiOVwOQUI8/edit?usp=sharing'+
-          '<br><br>Click here to send another Match Report:'+
-            '<br>https://goo.gl/forms/jcDtOML96WlNLzVL2'+
-              '<br><br>If you find any problems with your match result, please reply to this message and describe the situation as best you can. You will receive a response once it has been processed.'+
-                '<br><br>Thank you for using TCG Booster League Manager from Turn 1 Gaming Leagues Applications';
+  EmailMessage += 'Here is the feedback received by:<br><br>'+
+    Address[1]+'<br>'+
+      Address[2]+'<br><br>'+
+        Feedback;
   
   // End of Email Message
   EmailMessage += '</body></html>';
   
-  // Sends email to both players with the Match Data
-  if (EmailName1 != '') MailApp.sendEmail(EmailName1, EmailSubject, EmailMessage,{name:'TCG Booster League Manager',htmlBody:EmailMessage});
-  if (EmailName2 != '') MailApp.sendEmail(EmailName2, EmailSubject, EmailMessage,{name:'TCG Booster League Manager',htmlBody:EmailMessage});
-  MailApp.sendEmail("gamingleaguemanager@gmail.com", EmailSubject, EmailMessage,{name:'TCG Booster League Manager',htmlBody:EmailMessage});
+  // Send email to Administrator
+  MailApp.sendEmail(Address[0], EmailSubject, EmailMessage,{name:'TCG Booster League Manager',htmlBody:EmailMessage});
 }
-
 
 
 

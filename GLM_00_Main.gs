@@ -12,25 +12,26 @@ function fcnGameResults() {
   
   // Config Sheet to get options
   var shtConfig = SpreadsheetApp.openById('14rR_7-SG9fTi-M7fpS7d6n4XrOlnbKxRW1Ni2ongUVU').getSheetByName('Config');
-  var ConfigData = shtConfig.getRange(3, 9, 20, 1).getValues();
-  var LeagueName = shtConfig.getRange(2, 2).getValue();
+  var ConfigData = shtConfig.getRange(3,9,26,1).getValues();
+  var LeagueName = shtConfig.getRange(2,2).getValue();
   
   // Code Execution Options
   var OptDualSubmission = ConfigData[0][0]; // If Dual Submission is disabled, look for duplicate instead
   var OptPostResult = ConfigData[1][0];
   var OptPlyrMatchValidation = ConfigData[2][0];
   var OptTCGBooster = ConfigData[3][0];
+  var OptSendEmail = ConfigData[6][0];
   
   // Columns Values and Parameters
-  var ColMatchID = ConfigData[8][0];
-  var ColPrcsd = ConfigData[9][0];
-  var ColDataConflict = ConfigData[10][0];
-  var ColErrorMsg = ConfigData[11][0];
-  var ColPrcsdLastVal = ConfigData[12][0];
-  var ColMatchIDLastVal = ConfigData[13][0];
-  var RspnStartRow = ConfigData[14][0];
-  var RspnDataInputs = ConfigData[15][0]; // from Time Stamp to Data Processed
-  var NbCards = ConfigData[16][0];
+  var ColMatchID = ConfigData[14][0];
+  var ColPrcsd = ConfigData[15][0];
+  var ColDataConflict = ConfigData[16][0];
+  var ColErrorMsg = ConfigData[17][0];
+  var ColPrcsdLastVal = ConfigData[18][0];
+  var ColMatchIDLastVal = ConfigData[19][0];
+  var RspnStartRow = ConfigData[20][0];
+  var RspnDataInputs = ConfigData[21][0]; // from Time Stamp to Data Processed
+  var NbCards = ConfigData[22][0];
 
   // Test Sheet (for Debug)
   var shtTest = ss.getSheetByName('Test') ; 
@@ -51,11 +52,11 @@ function fcnGameResults() {
   var MatchingRspnData;
   
   // Card List Variables
-  var CardList = new Array(16);         // 0 = Set Name, 1-14 = Card Numbers, 15 = Card 14 is Masterpiece (Y-N)
+  var CardList = new Array(16); // 0 = Set Name, 1-14 = Card Numbers, 15 = Card 14 is Masterpiece (Y-N)
   var CardName;
-  var PackData = new Array(16); // 0 = Set Name, 1-14 = Card Numbers, 15 = Card 14 is Masterpiece (Y-N)
   
   // Create Array of 16x4 where each row is Card 1-14 and each column is Card Info
+  var PackData = new Array(16); // 0 = Set Name, 1-14 = Card Numbers, 15 = Card 14 is Masterpiece (Y-N)
   for(var cardnum = 0; cardnum < 16; cardnum++){
     PackData[cardnum] = new Array(4); // 0= Card in Pack, 1= Card Number, 2= Card Name, 3= Card Rarity
     for (var val = 0; val < 4; val++) PackData[cardnum][val] = '';
@@ -71,23 +72,27 @@ function fcnGameResults() {
   }
   
   // Email Addresses
-  var Addresses = new Array(2);
+  var EmailAddresses = new Array(3);
+  EmailAddresses[0] = 'gamingleaguemanager@gmail.com';
+  EmailAddresses[1] = '';
+  EmailAddresses[2] = '';
 
   // Data Processing Flags
   var Status = new Array(2); // Status[0] = Status Value, Status[1] = Status Message
-  Status[0] = '';
+  Status[0] = 1;
   Status[1] = '';
+  
   var DuplicateRspn = -99;
   var MatchingRspn = -98;
   var MatchPostStatus = -97;
   var CardDBUpdated = -96;
   
   Logger.log('Start of Main Function Executed');
-  
   Logger.log('Dual Submission Option: %s',OptDualSubmission);
   Logger.log('Post Results Option: %s',OptPostResult);
   Logger.log('Player Match Validation Option: %s',OptPlyrMatchValidation);
   Logger.log('TCG Option: %s',OptTCGBooster);
+  Logger.log('Send Email Option: %s',OptSendEmail);
   
   // Find a Row that is not processed in the Response Sheet (added data)
   for (var RspnRow = RspnNextRowPrcss; RspnRow <= RspnMaxRows; RspnRow++){
@@ -148,7 +153,7 @@ function fcnGameResults() {
               MatchingRspnData = shtRspn.getRange(MatchingRspn, 1, 1, RspnDataInputs).getValues();
               
               // Execute function to populate Match Result Sheet from processed data
-              MatchData = fcnPostMatchResults(ss, ConfigData, shtRspn, ResponseData, MatchingRspnData, MatchID, shtTest);
+              MatchData = fcnPostMatchResults(ss, ConfigData, shtRspn, ResponseData, MatchingRspnData, MatchID, MatchData, shtTest);
               MatchPostStatus = MatchData[25][0];
               
               Logger.log('Match Post Status: %s',MatchPostStatus);
@@ -173,7 +178,7 @@ function fcnGameResults() {
                       MatchData[card+9][3] = PackData[card][3]; // Card Rarity
                       
                       if (PackData[card][2] == 'Card Name not Found for Card Number') {
-                        Status = subGenErrorMsg(-60,CardList[card]);
+                        Status = subGenErrorMsg(Status, -60,CardList[card]);
                         PackData[card][2] = Status[1];
                       }
                     }
@@ -188,7 +193,7 @@ function fcnGameResults() {
                 // Updates the Match ID to an empty value 
                 MatchID = '';
                 // Generate the Status Message
-                Status = subGenErrorMsg(MatchPostStatus,0);
+                Status = subGenErrorMsg(Status, MatchPostStatus,0);
               }
             }
             // If Posting is disabled, generate Match ID for testing        
@@ -213,7 +218,7 @@ function fcnGameResults() {
           // If MatchingEntry = -1, fcnFindMatchingEntry was not executed properly, send email to notify
           if (OptDualSubmission == 'Enabled' && MatchingRspn == -1){
             // Set the Status Message
-            Status = subGenErrorMsg(MatchingRspn,0);
+            Status = subGenErrorMsg(Status, MatchingRspn,0);
           }
         }
         
@@ -227,7 +232,7 @@ function fcnGameResults() {
           RspnDataPrcssd = 1;        
           
           // Sets the Status Message
-          Status = subGenErrorMsg(-10,DuplicateRspn);
+          Status = subGenErrorMsg(Status, -10,DuplicateRspn);
         }
         
         // If FindDuplicateEntry was not executed properly, send email to notify, set Response Data Processed to -2 to represent processing error
@@ -240,7 +245,7 @@ function fcnGameResults() {
           RspnDataPrcssd = 1;  
           
           // Set the Status Message
-          Status = subGenErrorMsg(DuplicateRspn,0);
+          Status = subGenErrorMsg(Status, DuplicateRspn,0);
         }
       } 
       
@@ -254,31 +259,46 @@ function fcnGameResults() {
         RspnDataPrcssd = 1;  
         
         // Set the Status Message
-        Status = subGenErrorMsg(-50,0);
+        Status = subGenErrorMsg(Status, -50,0);
       }
       
-      // Get Email addresses from Config File
-      Addresses = subGetEmailAddress(shtConfig, RspnDataWinr, RspnDataLosr);
+      Logger.log('Status Value: %s',Status[0]);
+      Logger.log('Status Message: %s',Status[1]);
       
-      // Call the Email Function, sends Match Data
-      if(Status[1] == '') {
-        fcnSendConfirmEmail(LeagueName, Addresses, MatchData);
+      // Call the Email Function, sends Match Data if Send Email Option is Enabled
+      if(Status[0] == 1 && Status[1] == '' && OptSendEmail == 'Enabled') {
+        // Get Email addresses from Config File
+        EmailAddresses = subGetEmailAddress(shtConfig, EmailAddresses, RspnDataWinr, RspnDataLosr);
+        fcnSendConfirmEmail(LeagueName, EmailAddresses, MatchData, shtConfig);
       }
-      if(Status[0] != '' && Status[1] != 'Waiting for Other Response Submission') {
+      
+      // If an Error has been detected that prevented to process the Match Data, send available data and Error Message
+      if(Status[0] != 1 && Status[1] != 'Waiting for Other Response Submission') {
         
         // Populates Match Data
         MatchData[0][0] = ResponseData[0][0]; // TimeStamp
         MatchData[0][0] = Utilities.formatDate (MatchData[0][0], Session.getScriptTimeZone(), 'YYYY-MM-dd HH:mm:ss');
         
         MatchData[1][0] = ResponseData[0][2];  // Location (Store Y/N)
-        MatchData[2][0] = ResponseData[0][24]; // MatchID
+        MatchData[2][0] = MatchID;             // MatchID
         MatchData[3][0] = ResponseData[0][3];  // Week/Round Number
         MatchData[4][0] = ResponseData[0][4];  // Winning Player
         MatchData[5][0] = ResponseData[0][5];  // Losing Player
         MatchData[6][0] = ResponseData[0][6];  // Score
         
+        // Get Player Email Addresses if Send Email Option is Enabled
+        if (OptSendEmail == 'Enabled') {
+          // Get Email addresses from Config File
+          EmailAddresses = subGetEmailAddress(shtConfig, EmailAddresses, RspnDataWinr, RspnDataLosr);
+        }
         // Send Error Message
-        fcnSendErrorEmail(LeagueName, Addresses, MatchData, MatchID, Status);
+        fcnSendErrorEmail(LeagueName, EmailAddresses, MatchData, shtConfig, MatchID, Status);
+      }
+      
+      // If Player Submitted Feedback, send Feedback to Administrator
+      if (ResponseData[0][23] != '') {
+        if (EmailAddresses[1] == '' && EmailAddresses[2] == '') EmailAddresses = subGetEmailAddress(shtConfig, EmailAddresses, RspnDataWinr, RspnDataLosr);
+        fcnSendFeedbackEmail(LeagueName, EmailAddresses, MatchData, ResponseData[0][23]);
       }
       
       // Set the Match ID (for both Response and Matching Entry), and Updates the Last Match ID generated, 
@@ -305,7 +325,7 @@ function fcnGameResults() {
   fcnUpdateStandings(ss, shtConfig);
   
   // Copy all data to League Spreadsheet
-  fcnCopyStandingsResults(ss);
+  fcnCopyStandingsResults(ss, shtConfig);
 
 }
 

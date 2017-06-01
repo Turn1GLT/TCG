@@ -14,14 +14,15 @@
 function fcnFindDuplicateData(ss, ConfigData, shtRspn, ResponseData, RspnRow, RspnStartRow, RspnMaxRows, RspnDataInputs, shtTest) {
 
   // Columns Values and Parameters
-  var ColMatchID = ConfigData[8][0];
-  var ColPrcsd = ConfigData[9][0];
-  var ColDataConflict = ConfigData[10][0];
-  var ColErrorMsg = ConfigData[11][0];
-  var ColPrcsdLastVal = ConfigData[12][0];
-  var ColMatchIDLastVal = ConfigData[13][0];
-  var RspnStartRow = ConfigData[14][0];
-  var RspnDataInputs = ConfigData[15][0]; // from Time Stamp to Data Processed
+  var ColMatchID = ConfigData[14][0];
+  var ColPrcsd = ConfigData[15][0];
+  var ColDataConflict = ConfigData[16][0];
+  var ColErrorMsg = ConfigData[17][0];
+  var ColPrcsdLastVal = ConfigData[18][0];
+  var ColMatchIDLastVal = ConfigData[19][0];
+  var RspnStartRow = ConfigData[20][0];
+  var RspnDataInputs = ConfigData[21][0]; // from Time Stamp to Data Processed
+  var NbCards = ConfigData[22][0];
   
   // Response Data
   var RspnWeek = ResponseData[0][3];
@@ -39,7 +40,6 @@ function fcnFindDuplicateData(ss, ConfigData, shtRspn, ResponseData, RspnRow, Rs
   var DuplicateRow = 0;
   
   var EntryWeekData = shtRspn.getRange(1, 4, RspnMaxRows-3,1).getValues();
-  shtTest.getRange(1,4,RspnMaxRows-3,1).setValues(EntryWeekData);
     
   // Loop to find if another entry has the same data
   for (var EntryRow = 1; EntryRow <= RspnMaxRows; EntryRow++){
@@ -185,7 +185,7 @@ function fcnFindMatchingData(ss, ConfigData, shtRspn, ResponseData, RspnRow, Rsp
 //
 // **********************************************
 
-function fcnPostMatchResults(ss, ConfigData, shtRspn, ResponseData, MatchingRspnData, MatchID, shtTest) {
+function fcnPostMatchResults(ss, ConfigData, shtRspn, ResponseData, MatchingRspnData, MatchID, MatchData, shtTest) {
   
   // Code Execution Options
   var OptDualSubmission = ConfigData[0][0]; // If Dual Submission is disabled, look for duplicate instead
@@ -201,17 +201,11 @@ function fcnPostMatchResults(ss, ConfigData, shtRspn, ResponseData, MatchingRspn
   var RsltLastResultRow = RsltLastResultRowRng.getValue() + 1;
   var RsltRng = shtRslt.getRange(RsltLastResultRow, 1, 1, shtRsltMaxCol);
   var ResultData = RsltRng.getValues();
-  var MatchValidWinr = '';
-  var MatchValidLosr = '';
+  var MatchValidWinr = new Array(2); // [0] = Status, [1] = Matches Played by Player used for Error Validation
+  var MatchValidLosr = new Array(2); // [0] = Status, [1] = Matches Played by Player used for Error Validation
   var RsltPlyrDataA;
   var RsltPlyrDataB;
   
-  var MatchData = new Array(26); // 0 = MatchID, 1 = Week #, 2 = Winning Player, 3 = Losing Player, 4 = Score, 5 = Winner Points, 6 = Loser Points, 7 = Card Set, 8-21 = Cards, 22 = Masterpiece (Y-N), 23 = Reserved, 24 = MatchPostStatus
-  // Create Array of 26x4 where each row is Card 1-14 and each column is Card Info. This Info is only used for rows 8-21
-  for(var cardnum = 0; cardnum < 26; cardnum++){
-    MatchData[cardnum] = new Array(4); // 0= Item Value or Card In Pack, 1= Card Number, 2= Card Name, 3= Card Rarity
-    for (var val = 0; val < 4; val++) MatchData[cardnum][val] = '';
-  }  
   var MatchPostedStatus = 0;
   
   // Sets which Data set is Player A and Player B. Data[0][1] = Player who posted the data
@@ -234,21 +228,21 @@ function fcnPostMatchResults(ss, ConfigData, shtRspn, ResponseData, MatchingRspn
   // If option is enabled, Validate if players are allowed to post results (look for number of games played versus total amount of games allowed
   if (OptPlyrMatchValidation == 'Enabled'){
     // Call subroutine to check if players match are valid
-    MatchValidWinr = subPlayerMatchValidation(ss, ResultData[0][4], shtTest);
-    Logger.log('%s Match Validation: %s',ResultData[0][4], MatchValidWinr);
+    MatchValidWinr = subPlayerMatchValidation(ss, ResultData[0][4], MatchValidWinr, shtTest);
+    Logger.log('%s Match Validation: %s',ResultData[0][4], MatchValidWinr[0]);
     
-    MatchValidLosr = subPlayerMatchValidation(ss, ResultData[0][5], shtTest);
-    Logger.log('%s Match Validation: %s',ResultData[0][5], MatchValidLosr);
+    MatchValidLosr = subPlayerMatchValidation(ss, ResultData[0][5], MatchValidLosr,shtTest);
+    Logger.log('%s Match Validation: %s',ResultData[0][5], MatchValidLosr[0]);
   }
 
   // If option is disabled, Consider Matches are valid
   if (OptPlyrMatchValidation == 'Disabled'){
-    MatchValidWinr = 1;
-    MatchValidLosr = 1;
+    MatchValidWinr[0] = 1;
+    MatchValidLosr[0] = 1;
   }
   
   // If both players have played a valid match
-  if (MatchValidWinr == 1 && MatchValidLosr == 1){
+  if (MatchValidWinr[0] == 1 && MatchValidLosr[0] == 1){
     // Copies Result Data
     // ResultData[0][0] = Result ID 
     ResultData[0][1] = MatchID; // Match ID
@@ -280,7 +274,7 @@ function fcnPostMatchResults(ss, ConfigData, shtRspn, ResponseData, MatchingRspn
     // Sets Data in Match Result Tab
     RsltRng.setValues(ResultData);
     
-    // Update the 
+    // Update the Match Posted Status
     MatchPostedStatus = 1;
     RsltLastResultRowRng.setValue(RsltLastResultRow);
     
@@ -291,28 +285,28 @@ function fcnPostMatchResults(ss, ConfigData, shtRspn, ResponseData, MatchingRspn
   // If Match Validation was not successful, generate Error Status
   
   // returns Error that Winning Player is Eliminated from the League
-  if (MatchValidWinr == -1 && MatchValidLosr == 1)  MatchPostedStatus = -11;
+  if (MatchValidWinr[0] == -1 && MatchValidLosr[0] == 1)  MatchPostedStatus = -11;
   
   // returns Error that Winning Player has played too many matches
-  if (MatchValidWinr == -2 && MatchValidLosr == 1)  MatchPostedStatus = -12;  
+  if (MatchValidWinr[0] == -2 && MatchValidLosr[0] == 1)  MatchPostedStatus = -12;  
   
   // returns Error that Losing Player is Eliminated from the League
-  if (MatchValidLosr == -1 && MatchValidWinr == 1)  MatchPostedStatus = -21;
+  if (MatchValidLosr[0] == -1 && MatchValidWinr[0] == 1)  MatchPostedStatus = -21;
   
   // returns Error that Losing Player has played too many matches
-  if (MatchValidLosr == -2 && MatchValidWinr == 1)  MatchPostedStatus = -22;
+  if (MatchValidLosr[0] == -2 && MatchValidWinr[0] == 1)  MatchPostedStatus = -22;
   
   // returns Error that Both Players are Eliminated from the League
-  if (MatchValidWinr == -1 && MatchValidLosr == -1) MatchPostedStatus = -31;
+  if (MatchValidWinr[0] == -1 && MatchValidLosr[0] == -1) MatchPostedStatus = -31;
   
   // returns Error that Winning Player is Eliminated from the League and Losing Player has played too many matches
-  if (MatchValidWinr == -1 && MatchValidLosr == -2) MatchPostedStatus = -32;
+  if (MatchValidWinr[0] == -1 && MatchValidLosr[0] == -2) MatchPostedStatus = -32;
 
   // returns Error that Winning Player has player too many matches and Losing Player is Eliminated from the League
-  if (MatchValidWinr == -2 && MatchValidLosr == -1) MatchPostedStatus = -33;
+  if (MatchValidWinr[0] == -2 && MatchValidLosr[0] == -1) MatchPostedStatus = -33;
   
   // returns Error that Both Players have played too many matches
-  if (MatchValidWinr == -2 && MatchValidLosr == -2) MatchPostedStatus = -34;
+  if (MatchValidWinr[0] == -2 && MatchValidLosr[0] == -2) MatchPostedStatus = -34;
   
   // Populates Match Data for Main Routine
   MatchData[0][0] = ResponseData[0][0]; // TimeStamp
@@ -322,7 +316,9 @@ function fcnPostMatchResults(ss, ConfigData, shtRspn, ResponseData, MatchingRspn
   MatchData[2][0] = MatchID;             // MatchID
   MatchData[3][0] = ResponseData[0][3];  // Week/Round Number
   MatchData[4][0] = ResponseData[0][4];  // Winning Player
+  MatchData[4][1] = MatchValidWinr[1];   // Winning Player Matches Played
   MatchData[5][0] = ResponseData[0][5];  // Losing Player
+  MatchData[5][1] = MatchValidLosr[1];   // Losing Player Matches Played
   MatchData[6][0] = ResponseData[0][6];  // Score
   MatchData[25][0] = MatchPostedStatus;
   
@@ -468,10 +464,12 @@ function fcnUpdateStandings(ss){
 //
 // **********************************************
 
-function fcnCopyStandingsResults(ss){
+function fcnCopyStandingsResults(ss, shtConfig){
 
-  // Open League Spreadsheet
-  var ssLg = SpreadsheetApp.openById('1-p-yXgcXEij_CsYwg7FadKzNwS6E5xiFddGWebpgTDY');
+  ssLgID = shtConfig.getRange(57,2).getValue();
+  
+  // Open League Player Standings Spreadsheet
+  var ssLg = SpreadsheetApp.openById(ssLgID);
   
   var ssLgSht;
   var ssLgShtMaxRows;
@@ -482,6 +480,8 @@ function fcnCopyStandingsResults(ss){
   var ssShtMaxRows;
   var ssShtMaxCols;
   var ssShtData;
+  var MatchReporterCell;
+  var MatchReporterUrl = shtConfig.getRange(3,2).getValue();
   
   // Loops through tabs 0-8 (Standings, Cumulative Results, Week 1-7)
   for (var sht = 0; sht <=8; sht++){
@@ -498,8 +498,8 @@ function fcnCopyStandingsResults(ss){
     ssLgSht.getRange(1,1,ssLgShtMaxRows,ssLgShtMaxCols).setValues(ssShtData);
     
     if (sht == 0){
-      
-      ssLgSht.getRange(2,5).setValue('=HYPERLINK("https://goo.gl/forms/jcDtOML96WlNLzVL2";"Send Match Results")');
+      MatchReporterCell = '=HYPERLINK("' + MatchReporterUrl + '";"Send Match Results")';
+      ssLgSht.getRange(2,5).setValue(MatchReporterCell);
     }
     
   }
