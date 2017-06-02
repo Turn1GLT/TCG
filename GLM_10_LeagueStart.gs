@@ -10,7 +10,7 @@ function fcnGenPlayerCardDB(){
   
   // Config Spreadsheet
   var shtConfig = SpreadsheetApp.openById('14rR_7-SG9fTi-M7fpS7d6n4XrOlnbKxRW1Ni2ongUVU').getSheetByName('Config');
-  var CardDBShtID = shtConfig.getRange(3, 2).getValue();
+  var CardDBShtID = shtConfig.getRange(58, 2).getValue();
   var NbPlayers = shtConfig.getRange(16,7).getValue();
   
   // Card DB Spreadsheet
@@ -57,17 +57,19 @@ function fcnGenPlayerCardPoolSht(){
   
   // Config Spreadsheet
   var shtConfig = SpreadsheetApp.openById('14rR_7-SG9fTi-M7fpS7d6n4XrOlnbKxRW1Ni2ongUVU').getSheetByName('Config');
-  var CardPoolShtID = shtConfig.getRange(4, 2).getValue();
+  var CardPoolShtEnID = shtConfig.getRange(59, 2).getValue();
+  var CardPoolShtFrID = shtConfig.getRange(60, 2).getValue();
   var NbPlayers = shtConfig.getRange(16,7).getValue();
   
   // Card Pool Spreadsheet
-  var ssCardPool = SpreadsheetApp.openById(CardPoolShtID);
-  var shtCardPool = ssCardPool.getSheetByName('Template');
+  var ssCardPoolEn = SpreadsheetApp.openById(CardPoolShtEnID);
+  var ssCardPoolFr = SpreadsheetApp.openById(CardPoolShtFrID);
+  var shtCardPoolEn = ssCardPoolEn.getSheetByName('Template');
+  var shtCardPoolFr = ssCardPoolFr.getSheetByName('Template');
   var shtCardPoolNum;
-    
-  var NbSheets = ssCardPool.getNumSheets();
   
-  var shtPlyrCardPool;
+  var shtPlyrCardPoolEn;
+  var shtPlyrCardPoolFr;
   var shtPlyrName;
   var PlyrRow
   
@@ -79,14 +81,27 @@ function fcnGenPlayerCardPoolSht(){
     shtPlyrName = shtConfig.getRange(PlyrRow, 2).getValue();
   
     // INSERTS TAB BEFORE "Card DB" TAB
-    ssCardPool.insertSheet(shtPlyrName, 0, {template: shtCardPool});
-    shtPlyrCardPool = ssCardPool.getSheets()[0];
-        
+    // English Version
+    ssCardPoolEn.insertSheet(shtPlyrName, 0, {template: shtCardPoolEn});
+    shtPlyrCardPoolEn = ssCardPoolEn.getSheets()[0];
+       
     // Opens the new sheet and modify appropriate data (Player Name, Header)
-    shtPlyrCardPool.getRange(2,1).setValue(shtPlyrName);
+    shtPlyrCardPoolEn.getRange(2,1).setValue(shtPlyrName);
+    
+    // French Version
+    ssCardPoolFr.insertSheet(shtPlyrName, 0, {template: shtCardPoolFr});
+    shtPlyrCardPoolFr = ssCardPoolFr.getSheets()[0];
+    
+    // Opens the new sheet and modify appropriate data (Player Name, Header)
+    shtPlyrCardPoolFr.getRange(2,1).setValue(shtPlyrName);    
   }
-  shtPlyrCardPool = ssCardPool.getSheets()[0];
-  ssCardPool.setActiveSheet(shtPlyrCardPool);
+  // English Version
+  shtPlyrCardPoolEn = ssCardPoolEn.getSheets()[0];
+  ssCardPoolEn.setActiveSheet(shtPlyrCardPoolEn);
+  
+  // French Version
+  shtPlyrCardPoolFr = ssCardPoolFr.getSheets()[0];
+  ssCardPoolFr.setActiveSheet(shtPlyrCardPoolFr);
 }
 
 
@@ -102,7 +117,7 @@ function fcnDelPlayerCardDB(){
 
   // Config Spreadsheet
   var shtConfig = SpreadsheetApp.openById('14rR_7-SG9fTi-M7fpS7d6n4XrOlnbKxRW1Ni2ongUVU').getSheetByName('Config');
-  var CardDBShtID = shtConfig.getRange(3, 2).getValue();
+  var CardDBShtID = shtConfig.getRange(58, 2).getValue();
   
   // Card DB Spreadsheet
   var ssCardDB = SpreadsheetApp.openById(CardDBShtID);
@@ -133,21 +148,34 @@ function fcnDelPlayerCardPoolSht(){
 
   // Config Spreadsheet
   var shtConfig = SpreadsheetApp.openById('14rR_7-SG9fTi-M7fpS7d6n4XrOlnbKxRW1Ni2ongUVU').getSheetByName('Config');
-  var CardPoolShtID = shtConfig.getRange(4, 2).getValue();
+  var CardPoolShtIDEn = shtConfig.getRange(59, 2).getValue();
+  var CardPoolShtIDFr = shtConfig.getRange(60, 2).getValue();
   
   // Card Pool Spreadsheet
-  var ssCardPool = SpreadsheetApp.openById(CardPoolShtID);
-  var ssNbSheet = ssCardPool.getNumSheets();
-  var shtCurr;
-  var shtCurrName;
-  var shtTemplate = ssCardPool.getSheetByName('Template');
+  var ssCardPoolEn = SpreadsheetApp.openById(CardPoolShtIDEn);
+  var ssCardPoolFr = SpreadsheetApp.openById(CardPoolShtIDFr);
+  var ssNbSheet = ssCardPoolEn.getNumSheets();
+  var shtCurrEn;
+  var shtCurrNameEn;
+  var shtCurrFr;
+  var shtCurrNameFr;
+  var shtTemplateEn = ssCardPoolEn.getSheetByName('Template');
+  var shtTemplateFr = ssCardPoolFr.getSheetByName('Template');
   
   // Activates Template Sheet
-  ssCardPool.setActiveSheet(shtTemplate);
+  ssCardPoolEn.setActiveSheet(shtTemplateEn);
+  ssCardPoolFr.setActiveSheet(shtTemplateFr);
   
   for (var sht = 0; sht < ssNbSheet - 1; sht ++){
-    shtCurr = ssCardPool.getSheets()[0];
-    shtCurrName = shtCurr.getName();
-    if( shtCurrName != 'Template') ssCardPool.deleteSheet(shtCurr);
+    
+    // English Version
+    shtCurrEn = ssCardPoolEn.getSheets()[0];
+    shtCurrNameEn = shtCurrEn.getName();
+    if( shtCurrNameEn != 'Template') ssCardPoolEn.deleteSheet(shtCurrEn);
+    
+    // French Version   
+    shtCurrFr = ssCardPoolFr.getSheets()[0];
+    shtCurrNameFr = shtCurrFr.getName();
+    if( shtCurrNameFr != 'Template') ssCardPoolFr.deleteSheet(shtCurrFr);
   }
 }

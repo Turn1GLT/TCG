@@ -466,44 +466,44 @@ function fcnUpdateStandings(ss){
 
 function fcnCopyStandingsResults(ss, shtConfig){
 
-  ssLgID = shtConfig.getRange(57,2).getValue();
+  var ssLgIDEn = shtConfig.getRange(57,2).getValue();
+  //var ssLgIDFr = shtConfig.getRange(57,2).getValue();
   
   // Open League Player Standings Spreadsheet
-  var ssLg = SpreadsheetApp.openById(ssLgID);
+  var ssLgEn = SpreadsheetApp.openById(ssLgIDEn);
+  //var ssLgFr = SpreadsheetApp.openById(ssLgIDFr);
+  
+  var ssMstrSht;
+  var ssMstrShtStartRow;
+  var ssMstrShtMaxRows;
+  var ssMstrShtMaxCols;
+  var ssMstrShtData;
   
   var ssLgSht;
   var ssLgShtMaxRows;
   var ssLgShtMaxCols;
   var ssLgShtData;
   
-  var ssSht;
-  var ssShtMaxRows;
-  var ssShtMaxCols;
-  var ssShtData;
   var MatchReporterCell;
-  var MatchReporterUrl = shtConfig.getRange(3,2).getValue();
+  var MatchReporterUrlEn = shtConfig.getRange(3,2).getValue();
+  var MatchReporterUrlFr;
   
   // Loops through tabs 0-8 (Standings, Cumulative Results, Week 1-7)
   for (var sht = 0; sht <=8; sht++){
-    ssSht = ss.getSheets()[sht];
-    ssShtMaxRows = ssSht.getMaxRows();
-    ssShtMaxCols = ssSht.getMaxColumns();
+    ssMstrSht = ss.getSheets()[sht];
+    ssMstrShtMaxRows = ssMstrSht.getMaxRows();
+    ssMstrShtMaxCols = ssMstrSht.getMaxColumns();
     
-    ssLgSht = ssLg.getSheets()[sht];
-    ssLgShtMaxRows = ssLgSht.getMaxRows();
-    ssLgShtMaxCols = ssLgSht.getMaxColumns();
+    ssLgSht = ssLgEn.getSheets()[sht];
+    
+    if (sht == 0) ssMstrShtStartRow = 6;
+    if (sht >= 1 && sht <= 9) ssMstrShtStartRow = 5;
+    
+    // Get Range and Data from Master
+    ssMstrShtData = ssMstrSht.getRange(ssMstrShtStartRow,1,ssMstrShtMaxRows-ssMstrShtStartRow-1,ssMstrShtMaxCols).getValues();
+    ssLgSht.getRange(ssMstrShtStartRow,1,ssMstrShtMaxRows-ssMstrShtStartRow-1,ssMstrShtMaxCols).setValues(ssMstrShtData);
         
-    ssLgSht.clearContents();
-    ssShtData = ssSht.getRange(1,1,ssShtMaxRows,ssShtMaxCols).getValues();
-    ssLgSht.getRange(1,1,ssLgShtMaxRows,ssLgShtMaxCols).setValues(ssShtData);
-    
-    if (sht == 0){
-      MatchReporterCell = '=HYPERLINK("' + MatchReporterUrl + '";"Send Match Results")';
-      ssLgSht.getRange(2,5).setValue(MatchReporterCell);
-    }
-    
   }
-
 }
 
 // **********************************************
