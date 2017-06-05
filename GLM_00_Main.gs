@@ -13,7 +13,10 @@ function fcnGameResults() {
   // Config Sheet to get options
   var shtConfig = SpreadsheetApp.openById('14rR_7-SG9fTi-M7fpS7d6n4XrOlnbKxRW1Ni2ongUVU').getSheetByName('Config');
   var ConfigData = shtConfig.getRange(3,9,26,1).getValues();
-  var LeagueName = shtConfig.getRange(2,2).getValue();
+  var GameType = shtConfig.getRange(11,2).getValue();
+  var LeagueType = shtConfig.getRange(12,2).getValue();
+  var LeagueName = shtConfig.getRange(3,2).getValue() + " " + GameType + " " + LeagueType;
+  
   
   // Code Execution Options
   var OptDualSubmission = ConfigData[0][0]; // If Dual Submission is disabled, look for duplicate instead
@@ -169,7 +172,7 @@ function fcnGameResults() {
                   }
                   // If Pack was opened, Update Card Database and Card Pool for Appropriate player
                   if (CardList[0] != 'No Pack Opened') {
-                    PackData = fcnUpdateCardDB(RspnDataLosr, CardList, shtTest);
+                    PackData = fcnUpdateCardDB(shtConfig, RspnDataLosr, CardList, PackData, shtTest);
                     // Copy all card names to Match Data [7-22]
                     for (var card = 0; card < NbCards; card++){
                       MatchData[card+9][0] = PackData[card][0]; // Card in Pack
@@ -269,7 +272,7 @@ function fcnGameResults() {
       if(Status[0] == 1 && Status[1] == '' && OptSendEmail == 'Enabled') {
         // Get Email addresses from Config File
         EmailAddresses = subGetEmailAddress(shtConfig, EmailAddresses, RspnDataWinr, RspnDataLosr);
-        fcnSendConfirmEmail(LeagueName, EmailAddresses, MatchData, shtConfig);
+        fcnSendConfirmEmailEn(shtConfig, LeagueName, EmailAddresses, MatchData);
       }
       
       // If an Error has been detected that prevented to process the Match Data, send available data and Error Message
@@ -292,7 +295,7 @@ function fcnGameResults() {
           EmailAddresses = subGetEmailAddress(shtConfig, EmailAddresses, RspnDataWinr, RspnDataLosr);
         }
         // Send Error Message
-        fcnSendErrorEmail(LeagueName, EmailAddresses, MatchData, shtConfig, MatchID, Status);
+        fcnSendErrorEmail(shtConfig, LeagueName, EmailAddresses, MatchData, MatchID, Status);
       }
       
       // If Player Submitted Feedback, send Feedback to Administrator
@@ -322,7 +325,7 @@ function fcnGameResults() {
     }
   }
   // Execute Ranking function in Standing tab
-  fcnUpdateStandings(ss, shtConfig);
+  fcnUpdateStandings(ss);
   
   // Copy all data to League Spreadsheet
   fcnCopyStandingsResults(ss, shtConfig);

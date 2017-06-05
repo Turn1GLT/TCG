@@ -6,11 +6,10 @@
 //
 // **********************************************
 
-function fcnUpdateCardDB(Player, CardList, shtTest){
+function fcnUpdateCardDB(shtConfig, Player, CardList, PackData, shtTest){
   
   // Config Spreadsheet
-  var ShtConfig = SpreadsheetApp.openById('14rR_7-SG9fTi-M7fpS7d6n4XrOlnbKxRW1Ni2ongUVU').getSheetByName('Config');
-  var ssCardDBID = ShtConfig.getRange(58,2).getValue();
+  var ssCardDBID = shtConfig.getRange(61,2).getValue();
   
   // Player Card DB Spreadsheet
   var shtCardDB = SpreadsheetApp.openById(ssCardDBID).getSheetByName(Player);
@@ -25,13 +24,6 @@ function fcnUpdateCardDB(Player, CardList, shtTest){
   var CardRarity;
   var CardListSet = CardList[0];
   var CardInfo; 
-  var PackData = new Array(16); // 0 = Set Name, 1-14 = Card Numbers, 15 = Card 14 is Masterpiece (Y-N)
-  
-  // Create Array of 16x4 where each row is Card 1-14 and each column is Card Info
-  for(var cardnum = 0; cardnum < 16; cardnum++){
-    PackData[cardnum] = new Array(4); // 0= Card in Pack, 1= Card Number, 2= Card Name, 3= Card Rarity
-    for (var val = 0; val < 4; val++) PackData[cardnum][val] = '';
-  }
   
   Logger.log('Card Set: %s',CardListSet);
   
@@ -45,6 +37,10 @@ function fcnUpdateCardDB(Player, CardList, shtTest){
       ColSet = 32;
     }
   }
+
+  // Looks for French at CardList[15] and translates
+  if (CardList[15] == 'Oui') CardList[15] = 'Yes';
+  if (CardList[15] == 'Non') CardList[15] = 'No';
   
   // Loop through each card in CardList to find the appropriate column to find card (Masterpiece or not)
   for (var CardListNb = 1; CardListNb <= 14; CardListNb++){
@@ -52,7 +48,7 @@ function fcnUpdateCardDB(Player, CardList, shtTest){
     CardID = CardList[CardListNb];
     
     // Regular cards and non Masterpiece card
-    if (CardListNb < 14 || (CardListNb == 14 && CardList[15] == 'No')){
+    if (CardListNb < 14 || (CardListNb == 14 && (CardList[15] == 'No'))){
       ColCard = ColCard;
     }
     
@@ -62,14 +58,14 @@ function fcnUpdateCardDB(Player, CardList, shtTest){
       SetNum = shtCardDB.getRange(4, ColCard).getValue();
       // Set Masterpiece Column according to Set Number
       switch (SetNum){
-        case 1 : ColCard= 35; break;
-        case 2 : ColCard= 35; break;
-        case 3 : ColCard= 39; break;
-        case 4 : ColCard= 39; break;
-        case 5 : ColCard= 43; break;
-        case 6 : ColCard= 43; break;
-        case 7 : ColCard= 47; break;
-        case 8 : ColCard= 47; break;
+        case 1 : ColCard= 47; break;
+        case 2 : ColCard= 47; break;
+        case 3 : ColCard= 43; break;
+        case 4 : ColCard= 43; break;
+        case 5 : ColCard= 39; break;
+        case 6 : ColCard= 39; break;
+        case 7 : ColCard= 35; break;
+        case 8 : ColCard= 35; break;
       }
     }
         
@@ -111,7 +107,7 @@ function fcnUpdateCardDB(Player, CardList, shtTest){
   //shtTest.getRange(1,1,16,4).setValues(PackData);
   
   // Call function to generate clean card pool from Player Card DB
-  fcnUpdateCardPool(shtCardDB, Player, shtTest);
+  fcnUpdateCardPool(shtConfig, shtCardDB, Player, shtTest);
   
   // Return Value
   return PackData;

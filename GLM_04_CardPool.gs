@@ -6,26 +6,31 @@
 //
 // **********************************************
 
-function fcnUpdateCardPool(shtCardDB, Player, shtTest){
+function fcnUpdateCardPool(shtConfig, shtCardDB, Player, shtTest){
   
   // Config Spreadsheet
-  var ShtConfig = SpreadsheetApp.openById('14rR_7-SG9fTi-M7fpS7d6n4XrOlnbKxRW1Ni2ongUVU').getSheetByName('Config');
-  var ssCardPoolID = ShtConfig.getRange(59,2).getValue();
+  var ssCardPoolEnID = shtConfig.getRange(62,2).getValue();
+  var ssCardPoolFrID = shtConfig.getRange(63,2).getValue();
   
   // Card Pool Spreadsheet
-  var shtCardPool = SpreadsheetApp.openById(ssCardPoolID).getSheetByName(Player);
-  var rngCardPool = shtCardPool.getRange(6, 1, 224, 5); // 0 = Card Qty, 1 = Card Number, 2 = Card Name, 3 = Rarity, 4 = Set Name 
+  var shtCardPoolEn = SpreadsheetApp.openById(ssCardPoolEnID).getSheetByName(Player);
+  var shtCardPoolFr = SpreadsheetApp.openById(ssCardPoolFrID).getSheetByName(Player);
+  var rngCardPoolEn = shtCardPoolEn.getRange(6, 1, 224, 5); // 0 = Card Qty, 1 = Card Number, 2 = Card Name, 3 = Rarity, 4 = Set Name 
+  var rngCardPoolFr = shtCardPoolFr.getRange(6, 1, 224, 5); // 0 = Card Qty, 1 = Card Number, 2 = Card Name, 3 = Rarity, 4 = Set Name 
   var CardPool; // Where Card Data will be populated
   
   var CardDBSetTotal = shtCardDB.getRange(2,1,1,48).getValues(); // Gets Sum of all set Quantity, if > 0, set is present in card pool
+  var CardTotal = shtCardDB.getRange(3,7).getValue();
   var SetData;
   var SetName;
   var colSet;
   var CardNb = 0;
     
   // Clear Player Card Pool
-  rngCardPool.clearContent();
-  CardPool = rngCardPool.getValues();
+  rngCardPoolEn.clearContent();
+  CardPool = rngCardPoolEn.getValues();
+  rngCardPoolFr.clearContent();
+  CardPool = rngCardPoolFr.getValues();
     
   // Look for Set with cards present in pool
   for (var col = 0; col <= 48; col++){   
@@ -56,7 +61,11 @@ function fcnUpdateCardPool(shtCardDB, Player, shtTest){
     }
   }
   // Updates the Player Card Pool
-  rngCardPool.setValues(CardPool);
+  rngCardPoolEn.setValues(CardPool);
+  shtCardPoolEn.getRange(3,1).setValue(CardTotal);
+  rngCardPoolFr.setValues(CardPool);
+  shtCardPoolFr.getRange(3,1).setValue(CardTotal);
+  
   
   // Return Value
 }

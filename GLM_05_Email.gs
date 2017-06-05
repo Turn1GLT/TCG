@@ -40,16 +40,16 @@ function subGetEmailAddress(shtConfig, Addresses, WinPlyr, LosPlyr){
 //
 // **********************************************
 
-function fcnSendConfirmEmail(LeagueName, Address, MatchData, shtConfig) {
+function fcnSendConfirmEmailEn(shtConfig, LeagueName, Address, MatchData) {
   
   // Variables
   var EmailSubject;
   var EmailMessage;
   
   // Get Document URLs
-  var MatchReporterUrl = shtConfig.getRange(3,2).getValue();
-  var LeagueUrl = shtConfig.getRange(51,2).getValue();
-  var CardPoolUrl = shtConfig.getRange(52,2).getValue();
+  var StandingsUrl = shtConfig.getRange(51,2).getValue();
+  var CardPoolUrl = shtConfig.getRange(53,2).getValue();
+  var MatchReporterUrl = shtConfig.getRange(55,2).getValue();
   
   // Open GLM - Email Templates
   var ssEmail = SpreadsheetApp.openById('15-IjvgcgHWx6nRc0U_Fzg0iUYS_rD6-u5tNZELdZxOo');
@@ -78,10 +78,10 @@ function fcnSendConfirmEmail(LeagueName, Address, MatchData, shtConfig) {
     '<br><br>Here is your match result:<br><br>';
     
   // Generate Match Data Table
-  EmailMessage = subComposeHtmlMsg(EmailMessage, Headers, MatchData,1);
+  EmailMessage = subMatchReportTable(EmailMessage, Headers, MatchData,1);
   
   EmailMessage += '<br>Click here to access the League Standings and Results:'+
-    '<br>'+ LeagueUrl +
+    '<br>'+ StandingsUrl +
       '<br><br>Click here to access your Card Pool:'+
         '<br>'+ CardPoolUrl +
           '<br><br>Click here to send another Match Report:'+
@@ -106,7 +106,7 @@ function fcnSendConfirmEmail(LeagueName, Address, MatchData, shtConfig) {
 //
 // **********************************************
 
-function fcnSendErrorEmail(LeagueName, Address, MatchData, shtConfig, MatchID, Status) {
+function fcnSendErrorEmail(shtConfig, LeagueName, Address, MatchData, MatchID, Status) {
   
   // Variables
   var EmailSubject;
@@ -115,9 +115,9 @@ function fcnSendErrorEmail(LeagueName, Address, MatchData, shtConfig, MatchID, S
   var EmailName2 = '';
   
   // Get Document URLs
-  var MatchReporterUrl = shtConfig.getRange(3,2).getValue();
-  var LeagueUrl = shtConfig.getRange(51,2).getValue();
-  var CardPoolUrl = shtConfig.getRange(52,2).getValue();
+  var StandingsUrl = shtConfig.getRange(51,2).getValue();
+  var CardPoolUrl = shtConfig.getRange(53,2).getValue();
+  var MatchReporterUrl = shtConfig.getRange(55,2).getValue();
   
   // Open GLM - Email Templates
   var ssEmail = SpreadsheetApp.openById('15-IjvgcgHWx6nRc0U_Fzg0iUYS_rD6-u5tNZELdZxOo');
@@ -165,7 +165,7 @@ function fcnSendErrorEmail(LeagueName, Address, MatchData, shtConfig, MatchID, S
           '<br><br>Here is your match result:<br><br>';
     
     // Populate the Match Data Table
-    EmailMessage = subComposeHtmlMsg(EmailMessage, Headers, MatchData,StatusMsg);
+    EmailMessage = subMatchReportTable(EmailMessage, Headers, MatchData,StatusMsg);
   }
 
   // If Error did not prevent Match Data to be processed (Card Name not Found for Card Number X)    
@@ -176,7 +176,7 @@ function fcnSendErrorEmail(LeagueName, Address, MatchData, shtConfig, MatchID, S
           '<br><br>Here is your match result:<br><br>';
     
     // Populate the Match Data Table
-    EmailMessage = subComposeHtmlMsg(EmailMessage, Headers, MatchData,StatusMsg);
+    EmailMessage = subMatchReportTable(EmailMessage, Headers, MatchData,StatusMsg);
   }
 
   // If Process Error was Detected 
@@ -187,7 +187,7 @@ function fcnSendErrorEmail(LeagueName, Address, MatchData, shtConfig, MatchID, S
   
   if (Status[0] >= -60) {
     EmailMessage += '<br>Click here to access the League Standings and Results:'+
-      '<br>'+ LeagueUrl +
+      '<br>'+ StandingsUrl +
         '<br><br>Click here to access your Card Pool:'+
           '<br>'+ CardPoolUrl +
             '<br><br>Click here to send another Match Report:'+
@@ -255,14 +255,14 @@ function fcnSendFeedbackEmail(LeagueName, Address, MatchData, Feedback) {
 
 
 // **********************************************
-// function subComposeHtmlMsg()
+// function subMatchReportTable()
 //
 // This function generates the HTML table that displays 
 // the Match Data and Booster Pack Data
 //
 // **********************************************
 
-function subComposeHtmlMsg(EmailMessage, Headers, MatchData, Param){
+function subMatchReportTable(EmailMessage, Headers, MatchData, Param){
   for(var row=0; row<24; ++row){
 
     if(row == 1) ++row;
@@ -296,6 +296,36 @@ function subComposeHtmlMsg(EmailMessage, Headers, MatchData, Param){
       row = 24;
     }
     
+  }
+  return EmailMessage +'</table>';
+}
+
+// **********************************************
+// function subMatchReportTable()
+//
+// This function generates the HTML table that displays 
+// the Match Data and Booster Pack Data
+//
+// **********************************************
+
+function subPlayerPenaltyTable(PlayerData){
+  
+  var EmailMessage;
+  
+  for(var row=0; row<33; ++row){
+
+    if(PlayerData[row][0] != ''){
+      
+      // Start of Table
+      if(row == 0) {
+        EmailMessage += '<table style="border-collapse:collapse;" border = 1 cellpadding = 5><tr>';
+        EmailMessage += '<tr><td><b>Player Name</b></td><td><b>Penalty Losses</b></td></tr>';
+      }
+      
+      // Player Data
+      EmailMessage += '<tr><td>'+PlayerData[row][0]+'</td><td>'+PlayerData[row][1]+'</td></tr>';
+    }
+    if(PlayerData[row][0] == '') row = 33;
   }
   return EmailMessage +'</table>';
 }

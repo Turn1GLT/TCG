@@ -199,7 +199,7 @@ function fcnPostMatchResults(ss, ConfigData, shtRspn, ResponseData, MatchingRspn
   var shtRsltMaxCol = shtRslt.getMaxColumns();
   var RsltLastResultRowRng = shtRslt.getRange(3, 4);
   var RsltLastResultRow = RsltLastResultRowRng.getValue() + 1;
-  var RsltRng = shtRslt.getRange(RsltLastResultRow, 1, 1, shtRsltMaxCol);
+  var RsltRng = shtRslt.getRange(RsltLastResultRow, 1, 1, shtRsltMaxCol-1);
   var ResultData = RsltRng.getValues();
   var MatchValidWinr = new Array(2); // [0] = Status, [1] = Matches Played by Player used for Error Validation
   var MatchValidLosr = new Array(2); // [0] = Status, [1] = Matches Played by Player used for Error Validation
@@ -276,7 +276,6 @@ function fcnPostMatchResults(ss, ConfigData, shtRspn, ResponseData, MatchingRspn
     
     // Update the Match Posted Status
     MatchPostedStatus = 1;
-    RsltLastResultRowRng.setValue(RsltLastResultRow);
     
     // Post Results in Appropriate Week Number for Both Players
     fcnPostResultWeek(ss, ConfigData, ResultData, shtTest);
@@ -364,13 +363,16 @@ function fcnPostResultWeek(ss, ConfigData, ResultData, shtTest) {
   var MatchDataLosr = ResultData[0][5];
   
   // Selects the appropriate Week
-  if (MatchWeek == 1) shtWeekRslt = ss.getSheetByName('Week1');
-  if (MatchWeek == 2) shtWeekRslt = ss.getSheetByName('Week2');
-  if (MatchWeek == 3) shtWeekRslt = ss.getSheetByName('Week3');
-  if (MatchWeek == 4) shtWeekRslt = ss.getSheetByName('Week4');
-  if (MatchWeek == 5) shtWeekRslt = ss.getSheetByName('Week5');
-  if (MatchWeek == 6) shtWeekRslt = ss.getSheetByName('Week6');
-  if (MatchWeek == 7) shtWeekRslt = ss.getSheetByName('Week7');
+  var Week = 'Week'+MatchWeek;
+  shtWeekRslt = ss.getSheetByName(Week);
+//  if (MatchWeek == 1) shtWeekRslt = ss.getSheetByName('Week1');
+//  if (MatchWeek == 2) shtWeekRslt = ss.getSheetByName('Week2');
+//  if (MatchWeek == 3) shtWeekRslt = ss.getSheetByName('Week3');
+//  if (MatchWeek == 4) shtWeekRslt = ss.getSheetByName('Week4');
+//  if (MatchWeek == 5) shtWeekRslt = ss.getSheetByName('Week5');
+//  if (MatchWeek == 6) shtWeekRslt = ss.getSheetByName('Week6');
+//  if (MatchWeek == 7) shtWeekRslt = ss.getSheetByName('Week7');
+//  if (MatchWeek == 8) shtWeekRslt = ss.getSheetByName('Week8');
 
   shtWeekMaxCol = shtWeekRslt.getMaxColumns();
 
@@ -466,12 +468,12 @@ function fcnUpdateStandings(ss){
 
 function fcnCopyStandingsResults(ss, shtConfig){
 
-  var ssLgIDEn = shtConfig.getRange(57,2).getValue();
-  //var ssLgIDFr = shtConfig.getRange(57,2).getValue();
+  var ssLgStdIDEn = shtConfig.getRange(64,2).getValue();
+  var ssLgStdIDFr = shtConfig.getRange(65,2).getValue();
   
   // Open League Player Standings Spreadsheet
-  var ssLgEn = SpreadsheetApp.openById(ssLgIDEn);
-  //var ssLgFr = SpreadsheetApp.openById(ssLgIDFr);
+  var ssLgEn = SpreadsheetApp.openById(ssLgStdIDEn);
+  var ssLgFr = SpreadsheetApp.openById(ssLgStdIDFr);
   
   var ssMstrSht;
   var ssMstrShtStartRow;
@@ -479,14 +481,11 @@ function fcnCopyStandingsResults(ss, shtConfig){
   var ssMstrShtMaxCols;
   var ssMstrShtData;
   
-  var ssLgSht;
-  var ssLgShtMaxRows;
-  var ssLgShtMaxCols;
-  var ssLgShtData;
-  
-  var MatchReporterCell;
-  var MatchReporterUrlEn = shtConfig.getRange(3,2).getValue();
-  var MatchReporterUrlFr;
+  var ssLgShtEn;
+  var ssLgShtFr;
+//  var ssLgShtMaxRows;
+//  var ssLgShtMaxCols;
+//  var ssLgShtData;
   
   // Loops through tabs 0-8 (Standings, Cumulative Results, Week 1-7)
   for (var sht = 0; sht <=8; sht++){
@@ -494,14 +493,16 @@ function fcnCopyStandingsResults(ss, shtConfig){
     ssMstrShtMaxRows = ssMstrSht.getMaxRows();
     ssMstrShtMaxCols = ssMstrSht.getMaxColumns();
     
-    ssLgSht = ssLgEn.getSheets()[sht];
+    ssLgShtEn = ssLgEn.getSheets()[sht];
+    ssLgShtFr = ssLgFr.getSheets()[sht];
     
     if (sht == 0) ssMstrShtStartRow = 6;
     if (sht >= 1 && sht <= 9) ssMstrShtStartRow = 5;
     
-    // Get Range and Data from Master
+    // Get Range and Data from Master and copy to Standings
     ssMstrShtData = ssMstrSht.getRange(ssMstrShtStartRow,1,ssMstrShtMaxRows-ssMstrShtStartRow-1,ssMstrShtMaxCols).getValues();
-    ssLgSht.getRange(ssMstrShtStartRow,1,ssMstrShtMaxRows-ssMstrShtStartRow-1,ssMstrShtMaxCols).setValues(ssMstrShtData);
+    ssLgShtEn.getRange(ssMstrShtStartRow,1,ssMstrShtMaxRows-ssMstrShtStartRow-1,ssMstrShtMaxCols).setValues(ssMstrShtData);
+    ssLgShtFr.getRange(ssMstrShtStartRow,1,ssMstrShtMaxRows-ssMstrShtStartRow-1,ssMstrShtMaxCols).setValues(ssMstrShtData);
         
   }
 }
@@ -515,18 +516,44 @@ function fcnCopyStandingsResults(ss, shtConfig){
 //
 // **********************************************
 
-function fcnAnalyzeLossPenalty(ss){
+function fcnAnalyzeLossPenalty(ss, Week, PlayerData){
 
   var shtCumul = ss.getSheetByName('Cumulative Results');
-  var Players = new Array(32);
+  var WeekName = 'Week'+Week;
+  var shtWeek = ss.getSheetByName(WeekName);
+  var MissingMatch;
+  var Loss;
+  var PlayerDataPntr = 0;
+  
+  var shtTest = ss.getSheetByName('Test');
   
   // Get Player Record Range
-  var RngCumul = shtCumul.getRange(5,2,32,6);
+  var RngCumul = shtCumul.getRange(5,2,32,10);
+  var ValCumul = RngCumul.getValues(); // 0= Player Name, 1= N/A, 2= MP, 3= Win, 4= Loss, 5= Win%, 6= Packs, 7= Status, 8= Matches Missing, 9= Warning 
   
-  for (var player = 0; player < 32;player++){
-    
+  for (var plyr = 0; plyr < 32; plyr++){
+    if (ValCumul[plyr][0] != ''){      
+      if (ValCumul[plyr][8] > 0){
+        // Saves Missing Match and Losses
+        MissingMatch = ValCumul[plyr][8];
+        Loss = ValCumul[plyr][4];
+        // Updates Losses
+        Loss = Loss + MissingMatch;
+        
+        // Updates Week Results Sheet 
+        shtWeek.getRange(plyr+5,6).setValue(Loss);
+        
+        // Saves Player and Missing Matches for Weekly Report
+        PlayerData[PlayerDataPntr][0] = ValCumul[plyr][0];
+        PlayerData[PlayerDataPntr][1] = MissingMatch;
+        //if (PlayerData[PlayerDataPntr][0] != '') Logger.log('Player: %s - Missing: %s',PlayerData[PlayerDataPntr][0], PlayerData[PlayerDataPntr][1]);
+        PlayerDataPntr++;
+      }
+    }
+    // Exit when the loop reaches the end of the list 
+    if (ValCumul[plyr][0] == '') plyr = 32;
   }
-
+  return PlayerData;
 }
 
 
