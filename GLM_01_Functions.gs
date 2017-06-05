@@ -365,14 +365,6 @@ function fcnPostResultWeek(ss, ConfigData, ResultData, shtTest) {
   // Selects the appropriate Week
   var Week = 'Week'+MatchWeek;
   shtWeekRslt = ss.getSheetByName(Week);
-//  if (MatchWeek == 1) shtWeekRslt = ss.getSheetByName('Week1');
-//  if (MatchWeek == 2) shtWeekRslt = ss.getSheetByName('Week2');
-//  if (MatchWeek == 3) shtWeekRslt = ss.getSheetByName('Week3');
-//  if (MatchWeek == 4) shtWeekRslt = ss.getSheetByName('Week4');
-//  if (MatchWeek == 5) shtWeekRslt = ss.getSheetByName('Week5');
-//  if (MatchWeek == 6) shtWeekRslt = ss.getSheetByName('Week6');
-//  if (MatchWeek == 7) shtWeekRslt = ss.getSheetByName('Week7');
-//  if (MatchWeek == 8) shtWeekRslt = ss.getSheetByName('Week8');
 
   shtWeekMaxCol = shtWeekRslt.getMaxColumns();
 
@@ -393,7 +385,7 @@ function fcnPostResultWeek(ss, ConfigData, ResultData, shtTest) {
       // If Game Type is TCG
       if (OptTCGBooster == 'Enabled'){
       // Get Loser Pack Data
-      shtWeekPackData = shtWeekRslt.getRange(WeekLosrRow,8,1,(PackLength*6)+1).getValues();
+      shtWeekPackData = shtWeekRslt.getRange(WeekLosrRow,9,1,(PackLength*6)+1).getValues();
       }
       RsltRow = 37;
     }
@@ -428,7 +420,7 @@ function fcnPostResultWeek(ss, ConfigData, ResultData, shtTest) {
       shtWeekPackData[0][PackDataID + NextPackID] = ResultData[0][PackDataID + 9];
     }
     // Update the Week Results Sheet with the Pack Info
-    shtWeekRslt.getRange(WeekLosrRow,8,1,(PackLength*6)+1).setValues(shtWeekPackData);
+    shtWeekRslt.getRange(WeekLosrRow,9,1,(PackLength*6)+1).setValues(shtWeekPackData);
   }
 }
 
@@ -542,6 +534,7 @@ function fcnAnalyzeLossPenalty(ss, Week, PlayerData){
         
         // Updates Week Results Sheet 
         shtWeek.getRange(plyr+5,6).setValue(Loss);
+        shtWeek.getRange(plyr+5,8).setValue(MissingMatch);
         
         // Saves Player and Missing Matches for Weekly Report
         PlayerData[PlayerDataPntr][0] = ValCumul[plyr][0];

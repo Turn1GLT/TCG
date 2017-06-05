@@ -308,7 +308,7 @@ function subMatchReportTable(EmailMessage, Headers, MatchData, Param){
 //
 // **********************************************
 
-function subPlayerPenaltyTable(PlayerData){
+function subEmailPlayerPenaltyTable(PlayerData){
   
   var EmailMessage;
   
@@ -318,7 +318,7 @@ function subPlayerPenaltyTable(PlayerData){
       
       // Start of Table
       if(row == 0) {
-        EmailMessage += '<table style="border-collapse:collapse;" border = 1 cellpadding = 5><tr>';
+        EmailMessage = 'Players who have not completed the minimum number of matches have received penalty losses on their record.<br>Here is the list of penalty losses this week.<br><font size="4"><b><table style="border-collapse:collapse;" border = 1 cellpadding = 5><tr>';
         EmailMessage += '<tr><td><b>Player Name</b></td><td><b>Penalty Losses</b></td></tr>';
       }
       

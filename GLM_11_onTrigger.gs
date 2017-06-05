@@ -32,12 +32,24 @@ function onOpen() {
 
 function onWeekChange(){
 
-  // Opens Spreadsheet
+  // Open Configuration Spreadsheet
+  var shtConfig = SpreadsheetApp.openById('14rR_7-SG9fTi-M7fpS7d6n4XrOlnbKxRW1Ni2ongUVU').getSheetByName('Config');
+  var GameType = shtConfig.getRange(11,2).getValue();
+  var LeagueType = shtConfig.getRange(12,2).getValue();
+  var LeagueName = shtConfig.getRange(3,2).getValue() + " " + GameType + " " + LeagueType;
+  
+  // Open Spreadsheet
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var shtCumul = ss.getSheetByName('Cumulative Results');
   var Week = shtCumul.getRange(2,3).getValue();
   var LastWeek = Week - 1;
+  var WeekName = 'Week'+Week;
+  var shtWeek = ss.getSheetByName(WeekName);
   var PenaltyTable;
+  var EmailSubject;
+  var EmailMessage;
+  var MPArray;
+  var MatchesPlayed = 0;
   
   // Players Array to return Penalty Losses
   var PlayerData = new Array(32); // 0= Player Name, 1= Penalty Losses
@@ -46,21 +58,37 @@ function onWeekChange(){
     for (var val = 0; val < 2; val++) PlayerData[plyr][val] = '';
   }
   
-  // Analyze
+  // Get Amount of matches played this week.
+  MPArray = shtWeek.getRange(5, 5, 32, 1).getValues();
+  for(var plyr=0; plyr<32; plyr++){
+    //Logger.log('MP Value: %s',MPArray[plyr][0]);
+    if(MPArray[plyr][0] > 0) MatchesPlayed = MatchesPlayed + MPArray[plyr][0];
+  }
+
+  // Analyze if Players have missing matches to apply Loss Penalties
   PlayerData = fcnAnalyzeLossPenalty(ss, Week, PlayerData);
   
   for(var row = 0; row<32; row++){
     if (PlayerData[row][0] != '') Logger.log('Player: %s - Missing: %s',PlayerData[row][0], PlayerData[row][1]);
   }
   
-  PenaltyTable = subPlayerPenaltyTable(PlayerData);
+  // Populate the Penalty Table for the Weekly Report
+  PenaltyTable = subEmailPlayerPenaltyTable(PlayerData);
   
-
-  var EmailSubject = 'Week ' + LastWeek + ' Report';
-  var EmailMessage = 'Week ' + LastWeek + ' is now complete and Week '+ Week +' has started. <br><br>Here is the week report for Week ' + LastWeek + '.<br><br>Insert Report here...<br><br>';
+  // Send Weekly Report Email
+  EmailSubject = LeagueName +' - Week ' + LastWeek + ' Report';
+  EmailMessage = 'Week ' + LastWeek + ' is now complete and Week '+ Week +' has started. <br><br>Here is the week report for Week ' + LastWeek + '.<br><br>' +
+    MatchesPlayed +' matches were played this week.<br>'+
+      'etc etc etc...<br><br>';
+  
   EmailMessage += PenaltyTable;
-
   
   MailApp.sendEmail('gamingleaguemanager@gmail.com', EmailSubject, EmailMessage,{name:'TCG Booster League Manager',htmlBody:EmailMessage});
+  
+  // Execute Ranking function in Standing tab
+  fcnUpdateStandings(ss);
+  
+  // Copy all data to League Spreadsheet
+  fcnCopyStandingsResults(ss, shtConfig);
   
 }
