@@ -11,7 +11,7 @@
 //
 // **********************************************
 
-function fcnFindDuplicateData(ss, ConfigData, shtRspn, ResponseData, RspnRow, RspnStartRow, RspnMaxRows, RspnDataInputs, shtTest) {
+function fcnFindDuplicateData(ss, ConfigData, shtMatchups, shtRspn, ResponseData, RspnRow, RspnStartRow, RspnMaxRows, RspnDataInputs, shtTest) {
 
   // Columns Values and Parameters
   var ColMatchID = ConfigData[14][0];

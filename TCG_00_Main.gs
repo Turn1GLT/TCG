@@ -1,4 +1,50 @@
 // **********************************************
+// function fcnMain()
+//
+// This function populates the Game Results tab 
+// once a player submitted his Form
+//
+// **********************************************
+
+function fcnMain() {
+  
+  // Opens Spreadsheet
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  
+  // Config Sheet to get options
+  var shtConfig = SpreadsheetApp.openById('14rR_7-SG9fTi-M7fpS7d6n4XrOlnbKxRW1Ni2ongUVU').getSheetByName('Config');
+  var ConfigData = shtConfig.getRange(3,9,26,1).getValues();
+  var GameType = shtConfig.getRange(11,2).getValue();
+  var LeagueType = shtConfig.getRange(12,2).getValue();
+  var LeagueName = shtConfig.getRange(3,2).getValue() + " " + GameType + " " + LeagueType;
+  
+  // Code Execution Options
+  var OptDualSubmission = ConfigData[0][0]; // If Dual Submission is disabled, look for duplicate instead
+  var OptPostResult = ConfigData[1][0];
+  var OptPlyrMatchValidation = ConfigData[2][0];
+  var OptTCGBooster = ConfigData[3][0];
+  var OptSendEmail = ConfigData[6][0];
+  
+  // Columns Values and Parameters
+  var ColMatchID = ConfigData[14][0];
+  var ColPrcsd = ConfigData[15][0];
+  var ColDataConflict = ConfigData[16][0];
+  var ColStatus = ConfigData[17][0];
+  var ColErrorMsg = ConfigData[18][0];
+  var ColMatchIDLastVal = ConfigData[19][0];
+  var ColNextEmptyRow = ConfigData[24][0];
+  var RspnStartRow = ConfigData[20][0];
+  var RspnDataInputs = ConfigData[21][0]; // from Time Stamp to Data Processed
+  var NbCards = ConfigData[22][0];
+
+  
+  // Test Sheet (for Debug)
+  var shtTest = ss.getSheetByName('Test') ; 
+  
+  
+}
+
+// **********************************************
 // function fcnGameResults()
 //
 // This function populates the Game Results tab 
@@ -6,7 +52,8 @@
 //
 // **********************************************
 
-function fcnGameResults() {
+function fcnGameResults(ss, shtConfig, ConfigData) {
+  
   // Opens Spreadsheet
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   
@@ -34,12 +81,13 @@ function fcnGameResults() {
   var RspnStartRow = ConfigData[20][0];
   var RspnDataInputs = ConfigData[21][0]; // from Time Stamp to Data Processed
   var NbCards = ConfigData[22][0];
-
+  var ColNextEmptyRow = ConfigData[24][0];
+  
   // Test Sheet (for Debug)
   var shtTest = ss.getSheetByName('Test') ; 
   
   // Form Responses Sheet Variables
-  var shtRspn = ss.getSheetByName('Form Responses 16');
+  var shtRspn = ss.getSheetByName('Responses EN');
   var RspnMaxRows = shtRspn.getMaxRows();
   var RspnMaxCols = shtRspn.getMaxColumns();
   var RspnNextRowPrcss = shtRspn.getRange(1, ColPrcsdLastVal).getValue() + 1;
@@ -102,6 +150,9 @@ function fcnGameResults() {
     // Copy the new response data (from Time Stamp to Data Processed Field
     ResponseData = shtRspn.getRange(RspnRow, 1, 1, RspnDataInputs).getValues();
     
+    // Set the Last Column (Next Emtpy Row) to this formula
+    //shtRspn.getRange(RspnRow,ColNextEmptyRow).setValue('=IF(INDIRECT("R[0]C[-30]",FALSE)<>"",1,"")');
+    
     RspnDataPrcssd = ResponseData[0][25];
     RspnPlyrSubmit = ResponseData[0][1]; // Player Submitting
     RspnLocation   = ResponseData[0][2]; // Match Location (Store Yes or No)
@@ -163,6 +214,7 @@ function fcnGameResults() {
               // If Match was populated in Match Results Tab
               if (MatchPostStatus == 1){
                 // Match ID doesn't change because we assumed it was already OK
+                Logger.log('Match Posted ID: %s',MatchID);
                 
                 // Copies all cards added to the Card Database
                 if (OptTCGBooster == 'Enabled'){
