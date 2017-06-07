@@ -12,7 +12,8 @@ function fcnMain() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   
   // Config Sheet to get options
-  var shtConfig = SpreadsheetApp.openById('1oXXEjOF9EoVxnR8pcmeNBSqJ1V-nPqPYNDwOnHWwznA').getSheetByName('Config');
+  var ssConfig = SpreadsheetApp.openById('1oXXEjOF9EoVxnR8pcmeNBSqJ1V-nPqPYNDwOnHWwznA');
+  var shtConfig = ssConfig.getSheetByName('Config');
   var ConfigData = shtConfig.getRange(3,9,26,1).getValues();
   
   // Code Execution Options
@@ -92,10 +93,11 @@ function fcnMain() {
     shtRspn.getRange(RspnNextRow, 1, 1, RspnDataInputs).setValues(ResponseData);
     
     // Execute Game Results Analysis
-    fcnGameResults(ss, shtConfig, ConfigData, shtRspn);
+    fcnGameResults(ss, ssConfig, ConfigData, shtRspn);
   }
   
 }
+
 
 // **********************************************
 // function fcnGameResults()
@@ -105,7 +107,10 @@ function fcnMain() {
 //
 // **********************************************
 
-function fcnGameResults(ss, shtConfig, ConfigData, shtRspn) {
+function fcnGameResults(ss, ssConfig, ConfigData, shtRspn) {
+  
+  // Sheets from Configuration File
+  var shtConfig = ssConfig.getSheetByName('Config');
   
   // Code Execution Options
   var OptDualSubmission = ConfigData[0][0]; // If Dual Submission is disabled, look for duplicate instead
@@ -162,14 +167,6 @@ function fcnGameResults(ss, shtConfig, ConfigData, shtRspn) {
     MatchData[cardnum] = new Array(4); // 0= Item Value or Card In Pack, 1= Card Number, 2= Card Name, 3= Card Rarity
     for (var val = 0; val < 4; val++) MatchData[cardnum][val] = '';
   }
-  
-  // League Name
-  var GameType = shtConfig.getRange(11,2).getValue();
-  var LeagueType = shtConfig.getRange(12,2).getValue();
-  var LeagueName;
-  if (GameType != '') LeagueName = shtConfig.getRange(3,2).getValue() + ' ' + GameType + ' ' + LeagueType;
-  if (GameType == '') LeagueName = shtConfig.getRange(3,2).getValue() + ' ' + LeagueType;
-  
   
   // Email Addresses
   var EmailAddresses = new Array(3);
@@ -367,8 +364,8 @@ function fcnGameResults(ss, shtConfig, ConfigData, shtRspn) {
       // Call the Email Function, sends Match Data if Send Email Option is Enabled
       if(Status[0] == 1 && Status[1] == '' && OptSendEmail == 'Enabled') {
         // Get Email addresses from Config File
-        EmailAddresses = subGetEmailAddress(shtConfig, EmailAddresses, RspnDataWinr, RspnDataLosr);
-        fcnSendConfirmEmailEn(shtConfig, LeagueName, EmailAddresses, MatchData);
+        EmailAddresses = subGetEmailAddress(ss, EmailAddresses, RspnDataWinr, RspnDataLosr);
+        fcnSendConfirmEmailEN(shtConfig, EmailAddresses, MatchData);
       }
       
       // If an Error has been detected that prevented to process the Match Data, send available data and Error Message
@@ -388,16 +385,16 @@ function fcnGameResults(ss, shtConfig, ConfigData, shtRspn) {
         // Get Player Email Addresses if Send Email Option is Enabled
         if (OptSendEmail == 'Enabled') {
           // Get Email addresses from Config File
-          EmailAddresses = subGetEmailAddress(shtConfig, EmailAddresses, RspnDataWinr, RspnDataLosr);
+          EmailAddresses = subGetEmailAddress(ss, EmailAddresses, RspnDataWinr, RspnDataLosr);
         }
         // Send Error Message
-        fcnSendErrorEmail(shtConfig, LeagueName, EmailAddresses, MatchData, MatchID, Status);
+        fcnSendErrorEmailEN(shtConfig, EmailAddresses, MatchData, MatchID, Status);
       }
       
       // If Player Submitted Feedback, send Feedback to Administrator
       if (ResponseData[0][23] != '') {
-        if (EmailAddresses[1] == '' && EmailAddresses[2] == '') EmailAddresses = subGetEmailAddress(shtConfig, EmailAddresses, RspnDataWinr, RspnDataLosr);
-        fcnSendFeedbackEmail(LeagueName, EmailAddresses, MatchData, ResponseData[0][23]);
+        if (EmailAddresses[1] == '' && EmailAddresses[2] == '') EmailAddresses = subGetEmailAddress(ss, EmailAddresses, RspnDataWinr, RspnDataLosr);
+        fcnSendFeedbackEmail(shtConfig, EmailAddresses, MatchData, ResponseData[0][23]);
       }
       
       // Set the Match ID (for both Response and Matching Entry), and Updates the Last Match ID generated, 

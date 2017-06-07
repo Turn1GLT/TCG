@@ -21,67 +21,6 @@ function onOpen() {
   ss.addMenu("League Fctn", StartMenuButtons);
 }
 
-
-// **********************************************
-// function fcnCopyResults()
-//
-// This function populates the Game Results tab 
-// once a player submitted his Form
-//
-// **********************************************
-
-function fcnCopyResults() {
-  
-  // Opens Spreadsheet
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  
-  // Config Sheet to get options
-  var shtConfig = SpreadsheetApp.openById('1oXXEjOF9EoVxnR8pcmeNBSqJ1V-nPqPYNDwOnHWwznA').getSheetByName('Config');
-  var ConfigData = shtConfig.getRange(3,9,26,1).getValues();
-  
-  // Columns Values and Parameters  
-  var ColPrcsd = ConfigData[15][0];
-  var ColPrcsdLastVal = ConfigData[18][0];
-  var RspnDataInputs = ConfigData[21][0]; // from Time Stamp to Data Processed
-  var ColNextEmptyRow = ConfigData[24][0];
-    
-  // Open both EN and FR Responses Sheets
-  var shtRspnFR = ss.getSheetByName('Responses FR');
-  var shtRspnEN = ss.getSheetByName('Responses EN');
-  
-  var shtRspnFRMaxRows = shtRspnFR.getMaxRows();
-  var RspnProcessed;
-  
-  // Get Main Document Next Empty Row
-  var RspnNextRowPrcssEN = shtRspnEN.getRange(1, ColNextEmptyRow).getValue();
-  
-  // Get Next Row to Process (copy)
-  var RspnNextRowPrcssFR = shtRspnFR.getRange(1, ColPrcsdLastVal).getValue() + 1;
-
-  
-  for (var row = 2; row <= shtRspnFRMaxRows; row++){
-    RspnProcessed = shtRspnFR.getRange(row, ColPrcsd).getValue();
-    if (RspnProcessed != 1){
-      RspnNextRowPrcssFR = row;
-      row = shtRspnFRMaxRows + 1;
-    }
-  }
-  
-  // Get Data from FR Response sheet
-  var RspnDataFR = shtRspnFR.getRange(RspnNextRowPrcssFR, 1, 1, RspnDataInputs).getValues();
-  
-  // Copy to EN Response sheet
-  shtRspnEN.getRange(RspnNextRowPrcssEN,1,1,RspnDataInputs).setValues(RspnDataFR);
-  
-  // Get Confirmation Data was copied
-  var CopyConfirm = shtRspnEN.getRange(RspnNextRowPrcssEN,ColNextEmptyRow).getValue();
-  
-  // Update Processed Column
-  if(CopyConfirm == 1) shtRspnFR.getRange(RspnNextRowPrcssFR,ColPrcsd).setValue(1);
-  
-}
-
-
 // **********************************************
 // function fcnWeekChange()
 //
@@ -94,9 +33,16 @@ function onWeekChange(){
 
   // Open Configuration Spreadsheet
   var shtConfig = SpreadsheetApp.openById('1oXXEjOF9EoVxnR8pcmeNBSqJ1V-nPqPYNDwOnHWwznA').getSheetByName('Config');
-  var GameType = shtConfig.getRange(11,2).getValue();
-  var LeagueType = shtConfig.getRange(12,2).getValue();
-  var LeagueName = shtConfig.getRange(3,2).getValue() + " " + GameType + " " + LeagueType;
+  
+  // League Name EN
+  var Location = shtConfig.getRange(11,2).getValue();
+  var LeagueTypeEN = shtConfig.getRange(12,2).getValue();
+  var LeagueNameEN = shtConfig.getRange(3,2).getValue() + ' ' + LeagueTypeEN;
+  
+  // League Name FR
+  var Location = shtConfig.getRange(11,2).getValue();
+  var LeagueTypeFR = shtConfig.getRange(13,2).getValue();
+  var LeagueNameFR = LeagueTypeFR + ' ' + shtConfig.getRange(3,2).getValue();
   
   // Open Spreadsheet
   var ss = SpreadsheetApp.getActiveSpreadsheet();

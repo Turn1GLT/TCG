@@ -9,8 +9,8 @@
 function fcnUpdateCardPool(shtConfig, shtCardDB, Player, shtTest){
   
   // Config Spreadsheet
-  var ssCardPoolEnID = shtConfig.getRange(62,2).getValue();
-  var ssCardPoolFrID = shtConfig.getRange(63,2).getValue();
+  var ssCardPoolEnID = shtConfig.getRange(33,2).getValue();
+  var ssCardPoolFrID = shtConfig.getRange(34,2).getValue();
   
   // Card Pool Spreadsheet
   var shtCardPoolEn = SpreadsheetApp.openById(ssCardPoolEnID).getSheetByName(Player);

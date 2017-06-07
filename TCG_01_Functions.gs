@@ -461,12 +461,15 @@ function fcnUpdateStandings(ss){
 
 function fcnCopyStandingsResults(ss, shtConfig){
 
-  var ssLgStdIDEn = shtConfig.getRange(64,2).getValue();
-  var ssLgStdIDFr = shtConfig.getRange(65,2).getValue();
+  var ssLgStdIDEn = shtConfig.getRange(35,2).getValue();
+  var ssLgStdIDFr = shtConfig.getRange(36,2).getValue();
   
   // Open League Player Standings Spreadsheet
   var ssLgEn = SpreadsheetApp.openById(ssLgStdIDEn);
   var ssLgFr = SpreadsheetApp.openById(ssLgStdIDFr);
+  
+  var FormUrlEN = shtConfig.getRange(19,2).getValue();
+  var FormUrlFR = shtConfig.getRange(22,2).getValue();
   
   var ssMstrSht;
   var ssMstrShtStartRow;
@@ -476,9 +479,6 @@ function fcnCopyStandingsResults(ss, shtConfig){
   
   var ssLgShtEn;
   var ssLgShtFr;
-//  var ssLgShtMaxRows;
-//  var ssLgShtMaxCols;
-//  var ssLgShtData;
   
   // Loops through tabs 0-8 (Standings, Cumulative Results, Week 1-7)
   for (var sht = 0; sht <=8; sht++){
@@ -496,6 +496,12 @@ function fcnCopyStandingsResults(ss, shtConfig){
     ssMstrShtData = ssMstrSht.getRange(ssMstrShtStartRow,1,ssMstrShtMaxRows-ssMstrShtStartRow-1,ssMstrShtMaxCols).getValues();
     ssLgShtEn.getRange(ssMstrShtStartRow,1,ssMstrShtMaxRows-ssMstrShtStartRow-1,ssMstrShtMaxCols).setValues(ssMstrShtData);
     ssLgShtFr.getRange(ssMstrShtStartRow,1,ssMstrShtMaxRows-ssMstrShtStartRow-1,ssMstrShtMaxCols).setValues(ssMstrShtData);
+    
+    if (sht == 0){
+      // Update Form Link
+      ssLgShtEn.getRange(2,5).setValue('=HYPERLINK("' + FormUrlEN + '","Send Match Results")');      
+      ssLgShtFr.getRange(2,5).setValue('=HYPERLINK("' + FormUrlFR + '","Envoyer Résultats de Match")'); 
+    }
         
   }
 }

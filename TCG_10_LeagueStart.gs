@@ -8,16 +8,22 @@
 
 function fcnGenPlayerCardDB(){
   
+  // Main Spreadsheet
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  
   // Config Spreadsheet
   var shtConfig = SpreadsheetApp.openById('1oXXEjOF9EoVxnR8pcmeNBSqJ1V-nPqPYNDwOnHWwznA').getSheetByName('Config');
-  var CardDBShtID = shtConfig.getRange(61, 2).getValue();
-  var NbPlayers = shtConfig.getRange(16,7).getValue();
   
   // Card DB Spreadsheet
+  var CardDBShtID = shtConfig.getRange(32, 2).getValue();
   var ssCardDB = SpreadsheetApp.openById(CardDBShtID);
   var shtCardDB = ssCardDB.getSheetByName('Template');
   var shtCardDBNum;
   var CardDBHeader = shtCardDB.getRange(4,1,4,36).getValues();
+
+  // Players 
+  var shtPlayers = ss.getSheetByName('Players'); 
+  var NbPlayers = shtPlayers.getRange(2,6).getValue();
     
   var NbSheets = ssCardDB.getNumSheets();
   
@@ -29,8 +35,8 @@ function fcnGenPlayerCardDB(){
   for (var plyr = NbPlayers; plyr > 0; plyr--){
     
     // Update the Player Row and Get Player Name from Config File
-    PlyrRow = plyr + 16; // 16 is the row where the player list starts
-    shtPlyrName = shtConfig.getRange(PlyrRow, 2).getValue();
+    PlyrRow = plyr + 2; // 2 is the row where the player list starts
+    shtPlyrName = shtPlayers.getRange(PlyrRow, 2).getValue();
   
     // INSERTS TAB BEFORE "Card DB" TAB
     ssCardDB.insertSheet(shtPlyrName, 0, {template: shtCardDB});
@@ -54,12 +60,14 @@ function fcnGenPlayerCardDB(){
 // **********************************************
 
 function fcnGenPlayerCardPoolSht(){
+    
+  // Main Spreadsheet
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
   
   // Config Spreadsheet
   var shtConfig = SpreadsheetApp.openById('1oXXEjOF9EoVxnR8pcmeNBSqJ1V-nPqPYNDwOnHWwznA').getSheetByName('Config');
-  var CardPoolShtEnID = shtConfig.getRange(62, 2).getValue();
-  var CardPoolShtFrID = shtConfig.getRange(63, 2).getValue();
-  var NbPlayers = shtConfig.getRange(16,7).getValue();
+  var CardPoolShtEnID = shtConfig.getRange(33, 2).getValue();
+  var CardPoolShtFrID = shtConfig.getRange(34, 2).getValue();
   
   // Card Pool Spreadsheet
   var ssCardPoolEn = SpreadsheetApp.openById(CardPoolShtEnID);
@@ -67,6 +75,10 @@ function fcnGenPlayerCardPoolSht(){
   var shtCardPoolEn = ssCardPoolEn.getSheetByName('Template');
   var shtCardPoolFr = ssCardPoolFr.getSheetByName('Template');
   var shtCardPoolNum;
+  
+  // Players 
+  var shtPlayers = ss.getSheetByName('Players'); 
+  var NbPlayers = shtPlayers.getRange(2,6).getValue();
   
   var shtPlyrCardPoolEn;
   var shtPlyrCardPoolFr;
@@ -77,8 +89,8 @@ function fcnGenPlayerCardPoolSht(){
   for (var plyr = NbPlayers; plyr > 0; plyr--){
     
     // Update the Player Row and Get Player Name from Config File
-    PlyrRow = plyr + 16; // 16 is the row where the player list starts
-    shtPlyrName = shtConfig.getRange(PlyrRow, 2).getValue();
+    PlyrRow = plyr + 2; // 2 is the row where the player list starts
+    shtPlyrName = shtPlayers.getRange(PlyrRow, 2).getValue();
   
     // INSERTS TAB BEFORE "Card DB" TAB
     // English Version
@@ -117,7 +129,7 @@ function fcnDelPlayerCardDB(){
 
   // Config Spreadsheet
   var shtConfig = SpreadsheetApp.openById('1oXXEjOF9EoVxnR8pcmeNBSqJ1V-nPqPYNDwOnHWwznA').getSheetByName('Config');
-  var CardDBShtID = shtConfig.getRange(61, 2).getValue();
+  var CardDBShtID = shtConfig.getRange(32, 2).getValue();
   
   // Card DB Spreadsheet
   var ssCardDB = SpreadsheetApp.openById(CardDBShtID);
@@ -148,8 +160,8 @@ function fcnDelPlayerCardPoolSht(){
 
   // Config Spreadsheet
   var shtConfig = SpreadsheetApp.openById('1oXXEjOF9EoVxnR8pcmeNBSqJ1V-nPqPYNDwOnHWwznA').getSheetByName('Config');
-  var CardPoolShtIDEn = shtConfig.getRange(62, 2).getValue();
-  var CardPoolShtIDFr = shtConfig.getRange(63, 2).getValue();
+  var CardPoolShtIDEn = shtConfig.getRange(33, 2).getValue();
+  var CardPoolShtIDFr = shtConfig.getRange(34, 2).getValue();
   
   // Card Pool Spreadsheet
   var ssCardPoolEn = SpreadsheetApp.openById(CardPoolShtIDEn);
