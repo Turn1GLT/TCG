@@ -12,11 +12,100 @@ function fcnMain() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   
   // Config Sheet to get options
-  var shtConfig = SpreadsheetApp.openById('14rR_7-SG9fTi-M7fpS7d6n4XrOlnbKxRW1Ni2ongUVU').getSheetByName('Config');
+  var shtConfig = SpreadsheetApp.openById('1oXXEjOF9EoVxnR8pcmeNBSqJ1V-nPqPYNDwOnHWwznA').getSheetByName('Config');
   var ConfigData = shtConfig.getRange(3,9,26,1).getValues();
-  var GameType = shtConfig.getRange(11,2).getValue();
-  var LeagueType = shtConfig.getRange(12,2).getValue();
-  var LeagueName = shtConfig.getRange(3,2).getValue() + " " + GameType + " " + LeagueType;
+  
+  // Code Execution Options
+  var OptDualSubmission = ConfigData[0][0]; // If Dual Submission is disabled, look for duplicate instead
+  var OptPostResult = ConfigData[1][0];
+  var OptPlyrMatchValidation = ConfigData[2][0];
+  var OptTCGBooster = ConfigData[3][0];
+  var OptSendEmail = ConfigData[6][0];
+  
+  // Columns Values and Parameters
+  var ColDataCopied = ConfigData[15][0];
+  var ColNextEmptyRow = ConfigData[24][0];
+  var RspnDataInputs = ConfigData[21][0]; // from Time Stamp to Data Processed
+
+  // Open Responses sheets
+  var shtRspn = ss.getSheetByName('Responses');
+  var shtRspnEN = ss.getSheetByName('Responses EN');
+  var shtRspnFR = ss.getSheetByName('Responses FR');
+
+  var RspnMaxRowsEN = shtRspnEN.getMaxRows();
+  var RspnMaxRowsFR = shtRspnFR.getMaxRows();
+  
+  // Function Variables
+  var ResponseData;
+  var DataCopied;
+  var TimeStamp;
+  var RspnRow;
+  
+  // Function Polled Values
+  var RspnNextRow = shtRspn.getRange(1, ColNextEmptyRow).getValue();
+  var RspnNextRowEN = shtRspnEN.getRange(1, ColNextEmptyRow).getValue();
+  var RspnNextRowFR = shtRspnFR.getRange(1, ColNextEmptyRow).getValue();
+
+  // Look for Unprocessed Data in Responses EN
+  for (RspnRow = RspnNextRowEN; RspnRow <= RspnMaxRowsEN; RspnRow++){
+
+    // Copy the new response data (from Time Stamp to Data Copied Field)
+    ResponseData = shtRspnEN.getRange(RspnRow, 1, 1, RspnDataInputs).getValues();
+    TimeStamp = ResponseData[0][0];
+    DataCopied = ResponseData[0][25];
+    
+    // Check if DataCopied Field is null and TimeStamp is not null, we found new data to copy
+    if (DataCopied == '' && TimeStamp != ''){
+      DataCopied = 1;
+      shtRspnEN.getRange(RspnRow, ColDataCopied).setValue(DataCopied);
+      shtRspnEN.getRange(RspnRow, ColNextEmptyRow).setValue('=IF(INDIRECT("R[0]C[-30]",FALSE)<>"",1,"")');
+    }
+    // If Data is copied or TimeStamp is null, Exit loop Responses EN
+    if (DataCopied == 1 || TimeStamp == '') RspnRow = RspnMaxRowsEN + 1;
+  }
+  
+  // Executes Responses FR loop only if Responses EN did not find anything
+  if (DataCopied != 1){
+
+    // Look for Unprocessed Data in Responses FR
+    for (RspnRow = RspnNextRowFR; RspnRow <= RspnMaxRowsFR; RspnRow++){
+      
+      // Copy the new response data (from Time Stamp to Data Copied Field)
+      ResponseData = shtRspnFR.getRange(RspnRow, 1, 1, RspnDataInputs).getValues();
+      TimeStamp = ResponseData[0][0];
+      DataCopied = ResponseData[0][25];
+      
+      // Check if DataCopied Field is null and TimeStamp is not null, we found new data to copy
+      if (DataCopied == '' && TimeStamp != ''){
+        DataCopied = 1;
+        shtRspnFR.getRange(RspnRow, ColDataCopied).setValue(DataCopied);
+        shtRspnFR.getRange(RspnRow, ColNextEmptyRow).setValue('=IF(INDIRECT("R[0]C[-30]",FALSE)<>"",1,"")');
+      }
+      // If Data is copied or TimeStamp is null, Exit loop Responses EN
+      if (DataCopied == 1 || TimeStamp == '') RspnRow = RspnMaxRowsFR + 1;
+    }
+  }
+  
+  // If Data is copied, put it in Responses Sheet
+  if (DataCopied == 1){
+    
+    shtRspn.getRange(RspnNextRow, 1, 1, RspnDataInputs).setValues(ResponseData);
+    
+    // Execute Game Results Analysis
+    fcnGameResults(ss, shtConfig, ConfigData, shtRspn);
+  }
+  
+}
+
+// **********************************************
+// function fcnGameResults()
+//
+// This function populates the Game Results tab 
+// once a player submitted his Form
+//
+// **********************************************
+
+function fcnGameResults(ss, shtConfig, ConfigData, shtRspn) {
   
   // Code Execution Options
   var OptDualSubmission = ConfigData[0][0]; // If Dual Submission is disabled, look for duplicate instead
@@ -32,52 +121,6 @@ function fcnMain() {
   var ColStatus = ConfigData[17][0];
   var ColErrorMsg = ConfigData[18][0];
   var ColMatchIDLastVal = ConfigData[19][0];
-  var ColNextEmptyRow = ConfigData[24][0];
-  var RspnStartRow = ConfigData[20][0];
-  var RspnDataInputs = ConfigData[21][0]; // from Time Stamp to Data Processed
-  var NbCards = ConfigData[22][0];
-
-  
-  // Test Sheet (for Debug)
-  var shtTest = ss.getSheetByName('Test') ; 
-  
-  
-}
-
-// **********************************************
-// function fcnGameResults()
-//
-// This function populates the Game Results tab 
-// once a player submitted his Form
-//
-// **********************************************
-
-function fcnGameResults(ss, shtConfig, ConfigData) {
-  
-  // Opens Spreadsheet
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  
-  // Config Sheet to get options
-  var shtConfig = SpreadsheetApp.openById('14rR_7-SG9fTi-M7fpS7d6n4XrOlnbKxRW1Ni2ongUVU').getSheetByName('Config');
-  var ConfigData = shtConfig.getRange(3,9,26,1).getValues();
-  var GameType = shtConfig.getRange(11,2).getValue();
-  var LeagueType = shtConfig.getRange(12,2).getValue();
-  var LeagueName = shtConfig.getRange(3,2).getValue() + " " + GameType + " " + LeagueType;
-  
-  // Code Execution Options
-  var OptDualSubmission = ConfigData[0][0]; // If Dual Submission is disabled, look for duplicate instead
-  var OptPostResult = ConfigData[1][0];
-  var OptPlyrMatchValidation = ConfigData[2][0];
-  var OptTCGBooster = ConfigData[3][0];
-  var OptSendEmail = ConfigData[6][0];
-  
-  // Columns Values and Parameters
-  var ColMatchID = ConfigData[14][0];
-  var ColPrcsd = ConfigData[15][0];
-  var ColDataConflict = ConfigData[16][0];
-  var ColErrorMsg = ConfigData[17][0];
-  var ColPrcsdLastVal = ConfigData[18][0];
-  var ColMatchIDLastVal = ConfigData[19][0];
   var RspnStartRow = ConfigData[20][0];
   var RspnDataInputs = ConfigData[21][0]; // from Time Stamp to Data Processed
   var NbCards = ConfigData[22][0];
@@ -87,10 +130,9 @@ function fcnGameResults(ss, shtConfig, ConfigData) {
   var shtTest = ss.getSheetByName('Test') ; 
   
   // Form Responses Sheet Variables
-  var shtRspn = ss.getSheetByName('Responses EN');
   var RspnMaxRows = shtRspn.getMaxRows();
   var RspnMaxCols = shtRspn.getMaxColumns();
-  var RspnNextRowPrcss = shtRspn.getRange(1, ColPrcsdLastVal).getValue() + 1;
+  var RspnNextRowPrcss = shtRspn.getRange(1, ColNextEmptyRow).getValue();
   var RspnPlyrSubmit;
   var RspnLocation;
   var RspnWeekNum;
@@ -121,9 +163,17 @@ function fcnGameResults(ss, shtConfig, ConfigData) {
     for (var val = 0; val < 4; val++) MatchData[cardnum][val] = '';
   }
   
+  // League Name
+  var GameType = shtConfig.getRange(11,2).getValue();
+  var LeagueType = shtConfig.getRange(12,2).getValue();
+  var LeagueName;
+  if (GameType != '') LeagueName = shtConfig.getRange(3,2).getValue() + ' ' + GameType + ' ' + LeagueType;
+  if (GameType == '') LeagueName = shtConfig.getRange(3,2).getValue() + ' ' + LeagueType;
+  
+  
   // Email Addresses
   var EmailAddresses = new Array(3);
-  EmailAddresses[0] = 'gamingleaguemanager@gmail.com';
+  EmailAddresses[0] = 'triadgaminglt@gmail.com';
   EmailAddresses[1] = '';
   EmailAddresses[2] = '';
 
@@ -146,13 +196,11 @@ function fcnGameResults(ss, shtConfig, ConfigData) {
   
   // Find a Row that is not processed in the Response Sheet (added data)
   for (var RspnRow = RspnNextRowPrcss; RspnRow <= RspnMaxRows; RspnRow++){
-   
+       
     // Copy the new response data (from Time Stamp to Data Processed Field
     ResponseData = shtRspn.getRange(RspnRow, 1, 1, RspnDataInputs).getValues();
     
-    // Set the Last Column (Next Emtpy Row) to this formula
-    //shtRspn.getRange(RspnRow,ColNextEmptyRow).setValue('=IF(INDIRECT("R[0]C[-30]",FALSE)<>"",1,"")');
-    
+    // Values from Response Data
     RspnDataPrcssd = ResponseData[0][25];
     RspnPlyrSubmit = ResponseData[0][1]; // Player Submitting
     RspnLocation   = ResponseData[0][2]; // Match Location (Store Yes or No)
@@ -171,8 +219,8 @@ function fcnGameResults(ss, shtConfig, ConfigData) {
         
         Logger.log('New Data Found at Row: %s',RspnRow);
         
-        // Copy the new response data to Data Array
-        ResponseData = shtRspn.getRange(RspnRow, 1, 1, RspnDataInputs).getValues();
+//        // Copy the new response data to Data Array
+//        ResponseData = shtRspn.getRange(RspnRow, 1, 1, RspnDataInputs).getValues();
         
         // Look for Duplicate Entry (looks in all entries with MatchID and combination of Week Number, Winner and Loser) 
         // Real code will look at Player Posting Data as well
@@ -359,7 +407,7 @@ function fcnGameResults(ss, shtConfig, ConfigData) {
       }
       // Set the Processed Flag and Status Message for the response
       shtRspn.getRange(RspnRow, ColPrcsd).setValue(RspnDataPrcssd);
-      shtRspn.getRange(RspnRow, ColPrcsdLastVal).setValue(Status[0]);
+      shtRspn.getRange(RspnRow, ColNextEmptyRow).setValue('=IF(INDIRECT("R[0]C[-30]",FALSE)<>"",1,"")');
       shtRspn.getRange(RspnRow, ColErrorMsg).setValue(Status[1]);
       
       // Set the Matching Response Match ID if Matching Response found

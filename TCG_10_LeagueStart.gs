@@ -9,7 +9,7 @@
 function fcnGenPlayerCardDB(){
   
   // Config Spreadsheet
-  var shtConfig = SpreadsheetApp.openById('14rR_7-SG9fTi-M7fpS7d6n4XrOlnbKxRW1Ni2ongUVU').getSheetByName('Config');
+  var shtConfig = SpreadsheetApp.openById('1oXXEjOF9EoVxnR8pcmeNBSqJ1V-nPqPYNDwOnHWwznA').getSheetByName('Config');
   var CardDBShtID = shtConfig.getRange(61, 2).getValue();
   var NbPlayers = shtConfig.getRange(16,7).getValue();
   
@@ -56,7 +56,7 @@ function fcnGenPlayerCardDB(){
 function fcnGenPlayerCardPoolSht(){
   
   // Config Spreadsheet
-  var shtConfig = SpreadsheetApp.openById('14rR_7-SG9fTi-M7fpS7d6n4XrOlnbKxRW1Ni2ongUVU').getSheetByName('Config');
+  var shtConfig = SpreadsheetApp.openById('1oXXEjOF9EoVxnR8pcmeNBSqJ1V-nPqPYNDwOnHWwznA').getSheetByName('Config');
   var CardPoolShtEnID = shtConfig.getRange(62, 2).getValue();
   var CardPoolShtFrID = shtConfig.getRange(63, 2).getValue();
   var NbPlayers = shtConfig.getRange(16,7).getValue();
@@ -116,7 +116,7 @@ function fcnGenPlayerCardPoolSht(){
 function fcnDelPlayerCardDB(){
 
   // Config Spreadsheet
-  var shtConfig = SpreadsheetApp.openById('14rR_7-SG9fTi-M7fpS7d6n4XrOlnbKxRW1Ni2ongUVU').getSheetByName('Config');
+  var shtConfig = SpreadsheetApp.openById('1oXXEjOF9EoVxnR8pcmeNBSqJ1V-nPqPYNDwOnHWwznA').getSheetByName('Config');
   var CardDBShtID = shtConfig.getRange(61, 2).getValue();
   
   // Card DB Spreadsheet
@@ -147,7 +147,7 @@ function fcnDelPlayerCardDB(){
 function fcnDelPlayerCardPoolSht(){
 
   // Config Spreadsheet
-  var shtConfig = SpreadsheetApp.openById('14rR_7-SG9fTi-M7fpS7d6n4XrOlnbKxRW1Ni2ongUVU').getSheetByName('Config');
+  var shtConfig = SpreadsheetApp.openById('1oXXEjOF9EoVxnR8pcmeNBSqJ1V-nPqPYNDwOnHWwznA').getSheetByName('Config');
   var CardPoolShtIDEn = shtConfig.getRange(62, 2).getValue();
   var CardPoolShtIDFr = shtConfig.getRange(63, 2).getValue();
   

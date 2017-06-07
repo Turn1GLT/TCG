@@ -11,18 +11,19 @@
 //
 // **********************************************
 
-function fcnFindDuplicateData(ss, ConfigData, shtMatchups, shtRspn, ResponseData, RspnRow, RspnStartRow, RspnMaxRows, RspnDataInputs, shtTest) {
+function fcnFindDuplicateData(ss, ConfigData, shtRspn, ResponseData, RspnRow, RspnStartRow, RspnMaxRows, RspnDataInputs, shtTest) {
 
   // Columns Values and Parameters
   var ColMatchID = ConfigData[14][0];
   var ColPrcsd = ConfigData[15][0];
   var ColDataConflict = ConfigData[16][0];
-  var ColErrorMsg = ConfigData[17][0];
-  var ColPrcsdLastVal = ConfigData[18][0];
+  var ColStatus = ConfigData[17][0];
+  var ColErrorMsg = ConfigData[18][0];
   var ColMatchIDLastVal = ConfigData[19][0];
   var RspnStartRow = ConfigData[20][0];
   var RspnDataInputs = ConfigData[21][0]; // from Time Stamp to Data Processed
   var NbCards = ConfigData[22][0];
+  var ColNextEmptyRow = ConfigData[24][0];
   
   // Response Data
   var RspnWeek = ResponseData[0][3];

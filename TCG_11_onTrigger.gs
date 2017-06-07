@@ -14,31 +14,13 @@ function onOpen() {
   
   ss.setActiveSheet(shtFirst);
   
-  var FuncMenuButtons  = [{name: 'Analyze New Match Entry', functionName: 'fcnGameResults'}];
+  var FuncMenuButtons  = [{name: 'Analyze New Match Entry', functionName: 'fcnMain'}];
   var StartMenuButtons = [{name: 'Generate Players Card DB', functionName:'fcnGenPlayerCardDB'}, {name:'Generate Players Card Pool', functionName:'fcnGenPlayerCardPoolSht'}, {name:'Delete Players Card DB', functionName:'fcnDelPlayerCardDB'}, {name:'Delete Players Card Pool', functionName:'fcnDelPlayerCardPoolSht'}];
   
   ss.addMenu("General Fctn", FuncMenuButtons);
   ss.addMenu("League Fctn", StartMenuButtons);
 }
 
-// **********************************************
-// function onFormSubmitFR()
-//
-// When the French Match Reporter is submitted, copy data to 
-// Main Responses and Trigger fcnGameResults
-//
-// **********************************************
-
-function onFormSubmitFR(event){
-  
-
- 
-  
-  // Open Configuration Spreadsheet
-  var shtConfig = SpreadsheetApp.openById('14rR_7-SG9fTi-M7fpS7d6n4XrOlnbKxRW1Ni2ongUVU').getSheetByName('Config');
-
-
-}
 
 // **********************************************
 // function fcnCopyResults()
@@ -54,7 +36,7 @@ function fcnCopyResults() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   
   // Config Sheet to get options
-  var shtConfig = SpreadsheetApp.openById('14rR_7-SG9fTi-M7fpS7d6n4XrOlnbKxRW1Ni2ongUVU').getSheetByName('Config');
+  var shtConfig = SpreadsheetApp.openById('1oXXEjOF9EoVxnR8pcmeNBSqJ1V-nPqPYNDwOnHWwznA').getSheetByName('Config');
   var ConfigData = shtConfig.getRange(3,9,26,1).getValues();
   
   // Columns Values and Parameters  
@@ -76,6 +58,7 @@ function fcnCopyResults() {
   // Get Next Row to Process (copy)
   var RspnNextRowPrcssFR = shtRspnFR.getRange(1, ColPrcsdLastVal).getValue() + 1;
 
+  
   for (var row = 2; row <= shtRspnFRMaxRows; row++){
     RspnProcessed = shtRspnFR.getRange(row, ColPrcsd).getValue();
     if (RspnProcessed != 1){
@@ -110,7 +93,7 @@ function fcnCopyResults() {
 function onWeekChange(){
 
   // Open Configuration Spreadsheet
-  var shtConfig = SpreadsheetApp.openById('14rR_7-SG9fTi-M7fpS7d6n4XrOlnbKxRW1Ni2ongUVU').getSheetByName('Config');
+  var shtConfig = SpreadsheetApp.openById('1oXXEjOF9EoVxnR8pcmeNBSqJ1V-nPqPYNDwOnHWwznA').getSheetByName('Config');
   var GameType = shtConfig.getRange(11,2).getValue();
   var LeagueType = shtConfig.getRange(12,2).getValue();
   var LeagueName = shtConfig.getRange(3,2).getValue() + " " + GameType + " " + LeagueType;
@@ -159,7 +142,7 @@ function onWeekChange(){
   
   EmailMessage += PenaltyTable;
   
-  MailApp.sendEmail('gamingleaguemanager@gmail.com', EmailSubject, EmailMessage,{name:'TCG Booster League Manager',htmlBody:EmailMessage});
+  MailApp.sendEmail('triadgaminglt@gmail.com', EmailSubject, EmailMessage,{name:'Triad Gaming Booster League Manager',htmlBody:EmailMessage});
   
   // Execute Ranking function in Standing tab
   fcnUpdateStandings(ss);

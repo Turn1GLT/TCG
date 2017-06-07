@@ -93,8 +93,8 @@ function fcnSendConfirmEmailEn(shtConfig, LeagueName, Address, MatchData) {
   EmailMessage += '</body></html>';
   
   // Sends email to both players with the Match Data
-  if (Address[1] != '') MailApp.sendEmail(Address[1], EmailSubject, EmailMessage,{name:'TCG Booster League Manager',htmlBody:EmailMessage});
-  if (Address[2] != '') MailApp.sendEmail(Address[2], EmailSubject, EmailMessage,{name:'TCG Booster League Manager',htmlBody:EmailMessage});
+  if (Address[1] != '') MailApp.sendEmail(Address[1], EmailSubject, EmailMessage,{name:'Triad Gaming League Manager',htmlBody:EmailMessage});
+  if (Address[2] != '') MailApp.sendEmail(Address[2], EmailSubject, EmailMessage,{name:'Triad Gaming League Manager',htmlBody:EmailMessage});
 }
 
 
@@ -200,16 +200,16 @@ function fcnSendErrorEmail(shtConfig, LeagueName, Address, MatchData, MatchID, S
   EmailMessage += '</body></html>';
    
   // Send email to Administrator
-  MailApp.sendEmail(Address[0], EmailSubject, EmailMessage,{name:'TCG Booster League Manager',htmlBody:EmailMessage});
+  MailApp.sendEmail(Address[0], EmailSubject, EmailMessage,{name:'Triad Gaming Booster League Manager',htmlBody:EmailMessage});
   
   // If Error is between 0 and -60, send email to players. If not, only send to Administrator
   if (Status[0] >= -60){
     // Sends email to both players with the Match Data
     if (Address[1] != '') {
-      MailApp.sendEmail(Address[1], EmailSubject, EmailMessage,{name:'TCG Booster League Manager',htmlBody:EmailMessage});
+      MailApp.sendEmail(Address[1], EmailSubject, EmailMessage,{name:'Triad Gaming League Manager',htmlBody:EmailMessage});
     }
     if (Address[2] != '' && Address[1] != Address[2]) {
-      MailApp.sendEmail(Address[2], EmailSubject, EmailMessage,{name:'TCG Booster League Manager',htmlBody:EmailMessage});
+      MailApp.sendEmail(Address[2], EmailSubject, EmailMessage,{name:'Triad Gaming League Manager',htmlBody:EmailMessage});
     }
   }
 }
@@ -249,7 +249,7 @@ function fcnSendFeedbackEmail(LeagueName, Address, MatchData, Feedback) {
   EmailMessage += '</body></html>';
   
   // Send email to Administrator
-  MailApp.sendEmail(Address[0], EmailSubject, EmailMessage,{name:'TCG Booster League Manager',htmlBody:EmailMessage});
+  MailApp.sendEmail(Address[0], EmailSubject, EmailMessage,{name:'Triad Gaming League Manager',htmlBody:EmailMessage});
 }
 
 
@@ -329,25 +329,4 @@ function subEmailPlayerPenaltyTable(PlayerData){
   }
   return EmailMessage +'</table>';
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
