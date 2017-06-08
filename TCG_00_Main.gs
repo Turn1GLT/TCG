@@ -12,8 +12,7 @@ function fcnMain() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   
   // Config Sheet to get options
-  var ssConfig = SpreadsheetApp.openById('1oXXEjOF9EoVxnR8pcmeNBSqJ1V-nPqPYNDwOnHWwznA');
-  var shtConfig = ssConfig.getSheetByName('Config');
+  var shtConfig = ss.getSheetByName('Config');
   var ConfigData = shtConfig.getRange(3,9,26,1).getValues();
   
   // Code Execution Options
@@ -93,7 +92,7 @@ function fcnMain() {
     shtRspn.getRange(RspnNextRow, 1, 1, RspnDataInputs).setValues(ResponseData);
     
     // Execute Game Results Analysis
-    fcnGameResults(ss, ssConfig, ConfigData, shtRspn);
+    fcnGameResults(ss, shtConfig, ConfigData, shtRspn);
   }
   
 }
@@ -107,11 +106,9 @@ function fcnMain() {
 //
 // **********************************************
 
-function fcnGameResults(ss, ssConfig, ConfigData, shtRspn) {
+function fcnGameResults(ss, shtConfig, ConfigData, shtRspn) {
   
-  // Sheets from Configuration File
-  var shtConfig = ssConfig.getSheetByName('Config');
-  
+  // Data from Configuration File
   // Code Execution Options
   var OptDualSubmission = ConfigData[0][0]; // If Dual Submission is disabled, look for duplicate instead
   var OptPostResult = ConfigData[1][0];

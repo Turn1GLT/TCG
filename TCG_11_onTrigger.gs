@@ -31,8 +31,11 @@ function onOpen() {
 
 function onWeekChange(){
 
+  // Main Spreadsheet
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+
   // Open Configuration Spreadsheet
-  var shtConfig = SpreadsheetApp.openById('1oXXEjOF9EoVxnR8pcmeNBSqJ1V-nPqPYNDwOnHWwznA').getSheetByName('Config');
+  var shtConfig = ss.getSheetByName('Config');
   
   // League Name EN
   var Location = shtConfig.getRange(11,2).getValue();
@@ -44,13 +47,12 @@ function onWeekChange(){
   var LeagueTypeFR = shtConfig.getRange(13,2).getValue();
   var LeagueNameFR = LeagueTypeFR + ' ' + shtConfig.getRange(3,2).getValue();
   
-  // Open Spreadsheet
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  // Open Cumulative Spreadsheet
   var shtCumul = ss.getSheetByName('Cumulative Results');
   var Week = shtCumul.getRange(2,3).getValue();
   var LastWeek = Week - 1;
-  var WeekName = 'Week'+Week;
-  var shtWeek = ss.getSheetByName(WeekName);
+  var WeekShtName = 'Week'+Week;
+  var shtWeek = ss.getSheetByName(WeekShtName);
   var PenaltyTable;
   var EmailSubject;
   var EmailMessage;

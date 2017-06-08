@@ -12,10 +12,10 @@ function fcnGenPlayerCardDB(){
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   
   // Config Spreadsheet
-  var shtConfig = SpreadsheetApp.openById('1oXXEjOF9EoVxnR8pcmeNBSqJ1V-nPqPYNDwOnHWwznA').getSheetByName('Config');
+  var shtConfig = ss.getSheetByName('Config');
   
   // Card DB Spreadsheet
-  var CardDBShtID = shtConfig.getRange(32, 2).getValue();
+  var CardDBShtID = shtConfig.getRange(31, 2).getValue();
   var ssCardDB = SpreadsheetApp.openById(CardDBShtID);
   var shtCardDB = ssCardDB.getSheetByName('Template');
   var shtCardDBNum;
@@ -65,11 +65,11 @@ function fcnGenPlayerCardPoolSht(){
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   
   // Config Spreadsheet
-  var shtConfig = SpreadsheetApp.openById('1oXXEjOF9EoVxnR8pcmeNBSqJ1V-nPqPYNDwOnHWwznA').getSheetByName('Config');
-  var CardPoolShtEnID = shtConfig.getRange(33, 2).getValue();
-  var CardPoolShtFrID = shtConfig.getRange(34, 2).getValue();
+  var shtConfig = ss.getSheetByName('Config');
   
   // Card Pool Spreadsheet
+  var CardPoolShtEnID = shtConfig.getRange(32, 2).getValue();
+  var CardPoolShtFrID = shtConfig.getRange(33, 2).getValue();
   var ssCardPoolEn = SpreadsheetApp.openById(CardPoolShtEnID);
   var ssCardPoolFr = SpreadsheetApp.openById(CardPoolShtFrID);
   var shtCardPoolEn = ssCardPoolEn.getSheetByName('Template');
@@ -127,16 +127,21 @@ function fcnGenPlayerCardPoolSht(){
 
 function fcnDelPlayerCardDB(){
 
+  // Main Spreadsheet
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  
   // Config Spreadsheet
-  var shtConfig = SpreadsheetApp.openById('1oXXEjOF9EoVxnR8pcmeNBSqJ1V-nPqPYNDwOnHWwznA').getSheetByName('Config');
-  var CardDBShtID = shtConfig.getRange(32, 2).getValue();
+  var shtConfig = ss.getSheetByName('Config');
   
   // Card DB Spreadsheet
+  var CardDBShtID = shtConfig.getRange(31, 2).getValue();
   var ssCardDB = SpreadsheetApp.openById(CardDBShtID);
+  var shtTemplate = ssCardDB.getSheetByName('Template');
   var ssNbSheet = ssCardDB.getNumSheets();
+  
+  // Routine Variables
   var shtCurr;
   var shtCurrName;
-  var shtTemplate = ssCardDB.getSheetByName('Template');
   
   // Activates Template Sheet
   ssCardDB.setActiveSheet(shtTemplate);
@@ -158,21 +163,26 @@ function fcnDelPlayerCardDB(){
 
 function fcnDelPlayerCardPoolSht(){
 
+  // Main Spreadsheet
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+
   // Config Spreadsheet
-  var shtConfig = SpreadsheetApp.openById('1oXXEjOF9EoVxnR8pcmeNBSqJ1V-nPqPYNDwOnHWwznA').getSheetByName('Config');
-  var CardPoolShtIDEn = shtConfig.getRange(33, 2).getValue();
-  var CardPoolShtIDFr = shtConfig.getRange(34, 2).getValue();
+  var shtConfig = ss.getSheetByName('Config');
   
   // Card Pool Spreadsheet
+  var CardPoolShtIDEn = shtConfig.getRange(33, 2).getValue();
+  var CardPoolShtIDFr = shtConfig.getRange(34, 2).getValue();
   var ssCardPoolEn = SpreadsheetApp.openById(CardPoolShtIDEn);
   var ssCardPoolFr = SpreadsheetApp.openById(CardPoolShtIDFr);
+  var shtTemplateEn = ssCardPoolEn.getSheetByName('Template');
+  var shtTemplateFr = ssCardPoolFr.getSheetByName('Template');
   var ssNbSheet = ssCardPoolEn.getNumSheets();
+  
+  // Routine Variables
   var shtCurrEn;
   var shtCurrNameEn;
   var shtCurrFr;
   var shtCurrNameFr;
-  var shtTemplateEn = ssCardPoolEn.getSheetByName('Template');
-  var shtTemplateFr = ssCardPoolFr.getSheetByName('Template');
   
   // Activates Template Sheet
   ssCardPoolEn.setActiveSheet(shtTemplateEn);

@@ -9,7 +9,7 @@
 function fcnUpdateCardDB(shtConfig, Player, CardList, PackData, shtTest){
   
   // Config Spreadsheet
-  var ssCardDBID = shtConfig.getRange(32,2).getValue();
+  var ssCardDBID = shtConfig.getRange(31,2).getValue();
   
   // Player Card DB Spreadsheet
   var shtCardDB = SpreadsheetApp.openById(ssCardDBID).getSheetByName(Player);

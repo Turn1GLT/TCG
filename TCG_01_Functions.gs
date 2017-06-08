@@ -461,8 +461,8 @@ function fcnUpdateStandings(ss){
 
 function fcnCopyStandingsResults(ss, shtConfig){
 
-  var ssLgStdIDEn = shtConfig.getRange(35,2).getValue();
-  var ssLgStdIDFr = shtConfig.getRange(36,2).getValue();
+  var ssLgStdIDEn = shtConfig.getRange(34,2).getValue();
+  var ssLgStdIDFr = shtConfig.getRange(35,2).getValue();
   
   // Open League Player Standings Spreadsheet
   var ssLgEn = SpreadsheetApp.openById(ssLgStdIDEn);
@@ -518,8 +518,8 @@ function fcnCopyStandingsResults(ss, shtConfig){
 function fcnAnalyzeLossPenalty(ss, Week, PlayerData){
 
   var shtCumul = ss.getSheetByName('Cumulative Results');
-  var WeekName = 'Week'+Week;
-  var shtWeek = ss.getSheetByName(WeekName);
+  var WeekShtName = 'Week'+Week;
+  var shtWeek = ss.getSheetByName(WeekShtName);
   var MissingMatch;
   var Loss;
   var PlayerDataPntr = 0;
