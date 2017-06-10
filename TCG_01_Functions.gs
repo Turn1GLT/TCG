@@ -479,6 +479,7 @@ function fcnCopyStandingsResults(ss, shtConfig){
   
   var ssLgShtEn;
   var ssLgShtFr;
+  var WeekGame;
   
   // Loops through tabs 0-8 (Standings, Cumulative Results, Week 1-7)
   for (var sht = 0; sht <=8; sht++){
@@ -501,6 +502,12 @@ function fcnCopyStandingsResults(ss, shtConfig){
       // Update Form Link
       ssLgShtEn.getRange(2,5).setValue('=HYPERLINK("' + FormUrlEN + '","Send Match Results")');      
       ssLgShtFr.getRange(2,5).setValue('=HYPERLINK("' + FormUrlFR + '","Envoyer Résultats de Match")'); 
+    }
+    
+    if (sht == 1){
+      WeekGame = ssMstrSht.getRange(2,3,3,1).getValues();
+      ssLgShtEn.getRange(2,3,3,1).setValues(WeekGame);
+      ssLgShtFr.getRange(2,3,3,1).setValues(WeekGame);
     }
         
   }

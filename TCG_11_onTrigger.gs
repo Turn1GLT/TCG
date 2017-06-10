@@ -15,7 +15,7 @@ function onOpen() {
   ss.setActiveSheet(shtFirst);
   
   var FuncMenuButtons  = [{name: 'Analyze New Match Entry', functionName: 'fcnMain'}];
-  var StartMenuButtons = [{name: 'Generate Players Card DB', functionName:'fcnGenPlayerCardDB'}, {name:'Generate Players Card Pool', functionName:'fcnGenPlayerCardPoolSht'}, {name:'Delete Players Card DB', functionName:'fcnDelPlayerCardDB'}, {name:'Delete Players Card Pool', functionName:'fcnDelPlayerCardPoolSht'}];
+  var StartMenuButtons = [{name: 'Update Config ID & Links', functionName:'fcnUpdateLinksIDs'}, {name: 'Generate Players Card DB', functionName:'fcnGenPlayerCardDB'}, {name:'Generate Players Card Pool', functionName:'fcnGenPlayerCardPoolSht'}, {name:'Delete Players Card DB', functionName:'fcnDelPlayerCardDB'}, {name:'Delete Players Card Pool', functionName:'fcnDelPlayerCardPoolSht'}];
   
   ss.addMenu("General Fctn", FuncMenuButtons);
   ss.addMenu("League Fctn", StartMenuButtons);
@@ -83,7 +83,7 @@ function onWeekChange(){
   PenaltyTable = subEmailPlayerPenaltyTable(PlayerData);
   
   // Send Weekly Report Email
-  EmailSubject = LeagueName +' - Week ' + LastWeek + ' Report';
+  EmailSubject = LeagueNameEN +' - Week ' + LastWeek + ' Report';
   EmailMessage = 'Week ' + LastWeek + ' is now complete and Week '+ Week +' has started. <br><br>Here is the week report for Week ' + LastWeek + '.<br><br>' +
     MatchesPlayed +' matches were played this week.<br>'+
       'etc etc etc...<br><br>';

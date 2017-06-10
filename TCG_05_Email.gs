@@ -459,16 +459,20 @@ function fcnSendFeedbackEmail(shtConfig, Address, MatchData, Feedback) {
   // Start of Email Message
   EmailMessage = '<html><body>';
   
+  EmailMessage += 'Match ID: ' + MatchID + '<br>' +
+    'Week: ' + Week + '<br>' +
+      'Winning Player: ' + Winr + '<br>' +
+        'Losing Player: ' + Losr + '<br><br>';
   EmailMessage += 'Here is the feedback received by:<br><br>'+
-    Address[1]+'<br>'+
-      Address[2]+'<br><br>'+
+    Address[1][1]+'<br>'+
+      Address[2][1]+'<br><br>'+
         Feedback;
   
   // End of Email Message
   EmailMessage += '</body></html>';
   
   // Send email to Administrator
-  MailApp.sendEmail(Address[0], EmailSubject, EmailMessage,{name:'Triad Gaming League Manager',htmlBody:EmailMessage});
+  MailApp.sendEmail(Address[0][1], EmailSubject, EmailMessage,{name:'Triad Gaming League Manager',htmlBody:EmailMessage});
 }
 
 
@@ -543,7 +547,7 @@ function subEmailPlayerPenaltyTable(PlayerData){
       
       // Start of Table
       if(row == 0) {
-        EmailMessage = 'Players who have not completed the minimum number of matches have received penalty losses on their record.<br>Here is the list of penalty losses this week.<br><font size="4"><b><table style="border-collapse:collapse;" border = 1 cellpadding = 5><tr>';
+        EmailMessage = 'Players who have not completed the minimum number of matches have received penalty losses on their record.<br>Here is the list of penalty losses this week.<br><br><font size="4"><b><table style="border-collapse:collapse;" border = 1 cellpadding = 5><tr>';
         EmailMessage += '<tr><td><b>Player Name</b></td><td><b>Penalty Losses</b></td></tr>';
       }
       
