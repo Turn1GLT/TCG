@@ -16,71 +16,72 @@ function fcnUpdateLinksIDs(){
   
   // Copy Log Spreadsheet
   var shtCopyLogID = shtConfig.getRange(27, 2).getValue();
-  var shtCopyLog = SpreadsheetApp.openById(shtCopyLogID).getSheets()[0];
   
-  var CopyLogNbFiles = shtCopyLog.getRange(2, 6).getValue();
-  var StartRowCopyLog = 5;
-  var StartRowConfigId = 30
-  var StartRowConfigLink = 17;
-
-  var CopyLogVal = shtCopyLog.getRange(StartRowCopyLog, 2, CopyLogNbFiles, 3).getValues();
-   
-  var FileName;
-  var Link;
-  var Formula;
-  var ConfigRowID = 'Not Found';
-  var ConfigRowLk = 'Not Found';
+  if (shtCopyLogID != '') {
+    var shtCopyLog = SpreadsheetApp.openById(shtCopyLogID).getSheets()[0];
   
-  // Loop through all Copied Sheets and get their Link and ID
-  for (var row = 0; row < CopyLogNbFiles; row++){
-    // Get File Name
-    FileName = CopyLogVal[row][0];
+    var CopyLogNbFiles = shtCopyLog.getRange(2, 6).getValue();
+    var StartRowCopyLog = 5;
+    var StartRowConfigId = 30
+    var StartRowConfigLink = 17;
     
-   switch(FileName){
-      case 'Master TCG Booster League' :
-       ConfigRowID = StartRowConfigId + 0;
-       ConfigRowLk = 'Not Found'; break;
-      case 'Master TCG Booster League Card DB' :
-       ConfigRowID = StartRowConfigId + 1; 
-       ConfigRowLk = 'Not Found'; break;
-      case 'Master TCG Booster League Card Pool EN' :
-       ConfigRowID = StartRowConfigId + 2; 
-       ConfigRowLk = StartRowConfigLink + 1; break;
-      case 'Master TCG Booster League Card Pool FR' :
-       ConfigRowID = StartRowConfigId + 3; 
-       ConfigRowLk = StartRowConfigLink + 4; break;
-      case 'Master TCG Booster League Standings EN' :
-       ConfigRowID = StartRowConfigId + 4; 
-       ConfigRowLk = StartRowConfigLink + 0; break;
-      case 'Master TCG Booster League Standings FR' :
-       ConfigRowID = StartRowConfigId + 5; 
-       ConfigRowLk = StartRowConfigLink + 3; break;
-	  case 'Master TCG Booster League Match Reporter EN' :
-       ConfigRowID = 'Not Found';
-       ConfigRowLk = 'Not Found'; break;
-      case 'Master TCG Booster League Match Reporter FR' :
-       ConfigRowID = 'Not Found';
-       ConfigRowLk = 'Not Found'; break;	
-      default : 
-       ConfigRowID = 'Not Found'; 
-       ConfigRowLk = 'Not Found'; break;
-    }
-   
-    // Set tthe Appropriate Sheet ID Value in the Config File
-    if (ConfigRowID != 'Not Found') {
-      shtConfig.getRange(ConfigRowID, 2).setValue(CopyLogVal[row][2]);
-    }
-    // Set tthe Appropriate Sheet ID Value in the Config File
-    if (ConfigRowLk != 'Not Found') {
-      // Opens Spreadsheet by ID
-      Link = SpreadsheetApp.openById(CopyLogVal[row][2]).getUrl();
-      Logger.log(Link); 
-
-      shtConfig.getRange(ConfigRowLk, 2).setValue(Link);
-    }
+    var CopyLogVal = shtCopyLog.getRange(StartRowCopyLog, 2, CopyLogNbFiles, 3).getValues();
     
+    var FileName;
+    var Link;
+    var Formula;
+    var ConfigRowID = 'Not Found';
+    var ConfigRowLk = 'Not Found';
+    
+    // Loop through all Copied Sheets and get their Link and ID
+    for (var row = 0; row < CopyLogNbFiles; row++){
+      // Get File Name
+      FileName = CopyLogVal[row][0];
+      
+      switch(FileName){
+        case 'Master TCG Booster League' :
+          ConfigRowID = StartRowConfigId + 0;
+          ConfigRowLk = 'Not Found'; break;
+        case 'Master TCG Booster League Card DB' :
+          ConfigRowID = StartRowConfigId + 1; 
+          ConfigRowLk = 'Not Found'; break;
+        case 'Master TCG Booster League Card Pool EN' :
+          ConfigRowID = StartRowConfigId + 2; 
+          ConfigRowLk = StartRowConfigLink + 1; break;
+        case 'Master TCG Booster League Card Pool FR' :
+          ConfigRowID = StartRowConfigId + 3; 
+          ConfigRowLk = StartRowConfigLink + 4; break;
+        case 'Master TCG Booster League Standings EN' :
+          ConfigRowID = StartRowConfigId + 4; 
+          ConfigRowLk = StartRowConfigLink + 0; break;
+        case 'Master TCG Booster League Standings FR' :
+          ConfigRowID = StartRowConfigId + 5; 
+          ConfigRowLk = StartRowConfigLink + 3; break;
+        case 'Master TCG Booster League Match Reporter EN' :
+          ConfigRowID = 'Not Found';
+          ConfigRowLk = 'Not Found'; break;
+        case 'Master TCG Booster League Match Reporter FR' :
+          ConfigRowID = 'Not Found';
+          ConfigRowLk = 'Not Found'; break;	
+        default : 
+          ConfigRowID = 'Not Found'; 
+          ConfigRowLk = 'Not Found'; break;
+      }
+      
+      // Set tthe Appropriate Sheet ID Value in the Config File
+      if (ConfigRowID != 'Not Found') {
+        shtConfig.getRange(ConfigRowID, 2).setValue(CopyLogVal[row][2]);
+      }
+      // Set tthe Appropriate Sheet ID Value in the Config File
+      if (ConfigRowLk != 'Not Found') {
+        // Opens Spreadsheet by ID
+        Link = SpreadsheetApp.openById(CopyLogVal[row][2]).getUrl();
+        Logger.log(Link); 
+        
+        shtConfig.getRange(ConfigRowLk, 2).setValue(Link);
+      }
+    }
   }
-  
 }
 
 

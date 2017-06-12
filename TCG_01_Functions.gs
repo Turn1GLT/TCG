@@ -345,7 +345,9 @@ function fcnPostResultWeek(ss, ConfigData, ResultData, shtTest) {
   var shtWeekRsltRng;
   var shtWeekPlyr;
   var shtWeekWinrRec;
+  var shtWeekWinrLoc
   var shtWeekLosrRec;
+  var shtWeekLosrLoc
   var shtWeekPackData
   var shtWeekMaxCol;
   var shtWeekPlyr
@@ -359,6 +361,7 @@ function fcnPostResultWeek(ss, ConfigData, ResultData, shtTest) {
   var WeekWinrRow = 0;
   var WeekLosrRow = 0;
   
+  var MatchLoc = ResultData[0][2];
   var MatchWeek = ResultData[0][3];
   var MatchDataWinr = ResultData[0][4];
   var MatchDataLosr = ResultData[0][5];
@@ -381,7 +384,9 @@ function fcnPostResultWeek(ss, ConfigData, ResultData, shtTest) {
     if (WeekWinrRow != '' && WeekLosrRow != '') {
       // Get Winner and Loser Match Record 
       shtWeekWinrRec = shtWeekRslt.getRange(WeekWinrRow,5,1,2).getValues();
+      shtWeekWinrLoc = shtWeekRslt.getRange(WeekWinrRow,9).getValue();
       shtWeekLosrRec = shtWeekRslt.getRange(WeekLosrRow,5,1,2).getValues();
+      shtWeekLosrLoc = shtWeekRslt.getRange(WeekLosrRow,9).getValue();
       
       // If Game Type is TCG
       if (OptTCGBooster == 'Enabled'){
@@ -394,15 +399,22 @@ function fcnPostResultWeek(ss, ConfigData, ResultData, shtTest) {
   
   // Update Winning Player Results
   shtWeekWinrRec[0][0] = shtWeekWinrRec[0][0] + 1;
-  if (shtWeekWinrRec[0][1] == '') shtWeekWinrRec[0][1] = 0;  
+  if (shtWeekWinrRec[0][1] == '') shtWeekWinrRec[0][1] = 0; 
   
-  // Update Losing Player Results
+  // Update Losing Player Results and Location Matches
   shtWeekLosrRec[0][1] = shtWeekLosrRec[0][1] + 1;
-  if (shtWeekLosrRec[0][0] == '') shtWeekLosrRec[0][0] = 0;  
+  if (shtWeekLosrRec[0][0] == '') shtWeekLosrRec[0][0] = 0;
+  
+  if (MatchLoc == 'Yes' || MatchLoc == 'Oui') {
+    shtWeekWinrLoc = shtWeekWinrLoc + 1;
+    shtWeekLosrLoc = shtWeekLosrLoc + 1;
+  }
   
   // Update the Week Results Sheet
   shtWeekRslt.getRange(WeekWinrRow,5,1,2).setValues(shtWeekWinrRec);
+  shtWeekRslt.getRange(WeekWinrRow,9).setValue(shtWeekWinrLoc);
   shtWeekRslt.getRange(WeekLosrRow,5,1,2).setValues(shtWeekLosrRec);
+  shtWeekRslt.getRange(WeekLosrRow,9).setValue(shtWeekLosrLoc);
   
   // If Game Type is TCG and Punishment Pack has been opened, update Punishment Pack Info
   if (OptTCGBooster == 'Enabled' && ResultData[0][9] != ''){

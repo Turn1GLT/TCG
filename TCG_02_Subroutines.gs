@@ -41,7 +41,7 @@ function subPlayerMatchValidation(ss, PlayerName, MatchValidation, shtTest) {
     
   // Get Data from Cumulative Results
   var CumulMaxMatch = shtCumul.getRange(4,3).getValue();
-  var CumulPlyrData = shtCumul.getRange(5, 1, 32, 9).getValues(); // Data[i][j] i = Player List 1-32, j = ID(0), Name(1), Initials(2), MP(3), W(4), L(5), %(6), Packs(7), Status(8)
+  var CumulPlyrData = shtCumul.getRange(5, 1, 32, 11).getValues(); // Data[i][j] i = Player List 1-32, j = ID(0), Name(1), Initials(2), MP(3), W(4), L(5), %(6), Penalty(7), Matches in Store(8) Packs(9), Status(10)
   
   var PlayerStatus;
   var PlayerMatchPlayed;
@@ -51,7 +51,7 @@ function subPlayerMatchValidation(ss, PlayerName, MatchValidation, shtTest) {
     // Player Found, Number of Match Played and Status memorized
     if (PlayerName == CumulPlyrData[i][1]){
       PlayerMatchPlayed = CumulPlyrData[i][3];
-      PlayerStatus = CumulPlyrData[i][8];
+      PlayerStatus = CumulPlyrData[i][10];
       MatchValidation[1] = PlayerMatchPlayed;
       i = 32; // Exit Loop
     }
