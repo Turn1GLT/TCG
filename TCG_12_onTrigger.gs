@@ -15,7 +15,7 @@ function onOpen() {
   ss.setActiveSheet(shtFirst);
   
   var AnalyzeDataMenu  = [{name: 'Analyze New Match Entry', functionName: 'fcnMain'}];
-  var StartLeagueMenu = [{name: 'Update Config ID & Links', functionName:'fcnUpdateLinksIDs'}, {name: 'Clear League Data', functionName:'fcnClearLeagueData'}, {name: 'Generate Players Card DB', functionName:'fcnGenPlayerCardDB'}, {name:'Generate Players Card Pool', functionName:'fcnGenPlayerCardPoolSht'}, {name:'Delete Players Card DB', functionName:'fcnDelPlayerCardDB'}, {name:'Delete Players Card Pool', functionName:'fcnDelPlayerCardPoolSht'}];
+  var StartLeagueMenu = [{name:'Initialize League', functionName:'fcnInitLeague'}, {name: 'Clear League Data', functionName:'fcnClearLeagueData'}, {name: 'Update Config ID & Links', functionName:'fcnUpdateLinksIDs'}];
   
   ss.addMenu("League Start", StartLeagueMenu);
   ss.addMenu("Process Data", AnalyzeDataMenu);
