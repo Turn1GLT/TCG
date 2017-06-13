@@ -1,4 +1,68 @@
 // **********************************************
+// function fcnClearLeagueData()
+//
+// This function clears all data from sheets  
+// to start a new league
+//
+// **********************************************
+
+function fcnClearLeagueData(){
+
+  // Main Spreadsheet
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  
+  // Open Spreadsheets
+  var shtConfig = ss.getSheetByName('Config');
+  var shtStandings   = ss.getSheetByName('Standings');
+  var shtMatchRslt   = ss.getSheetByName('Match Results');
+  var shtWeek;
+  var shtResponses   = ss.getSheetByName('Responses');
+  var shtResponsesEN = ss.getSheetByName('Responses EN');
+  var shtResponsesFR = ss.getSheetByName('Responses FR');
+  
+  var MaxRowRslt = shtMatchRslt.getMaxRows();
+  var MaxRowRspn = shtResponses.getMaxRows();
+  var MaxColRspn = shtResponses.getMaxColumns();
+  var MaxRowRspnEN = shtResponsesEN.getMaxRows();
+  var MaxColRspnEN = shtResponsesEN.getMaxColumns();
+  var MaxRowRspnFR = shtResponsesFR.getMaxRows();
+  var MaxColRspnFR = shtResponsesFR.getMaxColumns();
+  
+  // Clear Data
+  shtStandings.getRange(6,2,32,6).clearContent();
+  shtMatchRslt.getRange(6,2,MaxRowRslt-5,24).clearContent();
+  shtResponses.getRange(2,1,MaxRowRspn-1,MaxColRspn).clearContent();
+  shtResponses.getRange(1,30).setValue(0);
+  shtResponsesEN.getRange(2,25,MaxRowRspnEN-1,7).clearContent();
+  shtResponsesFR.getRange(2,25,MaxRowRspnFR-1,7).clearContent()
+  
+  // Week Results
+  for (var WeekNum = 1; WeekNum <= 8; WeekNum++){
+    shtWeek = ss.getSheetByName('Week'+WeekNum);
+    shtWeek.getRange(5,5,32,2).clearContent();
+    shtWeek.getRange(5,8,32,106-8).clearContent();
+  }
+
+  Logger.log('League Data Cleared');
+  
+  // Update Standings Copies
+  fcnCopyStandingsResults(ss, shtConfig)
+  Logger.log('Standings Updated');
+  
+  // Clear Players DB and Card Pools
+  fcnDelPlayerCardDB();
+  fcnDelPlayerCardPoolSht();
+  Logger.log('Card DB and Card Pool Cleared');
+  
+  // Generate Players DB and Card Pools
+  fcnGenPlayerCardDB();
+  fcnGenPlayerCardPoolSht();
+  Logger.log('Card DB and Card Pool Generated');
+}
+
+
+
+// **********************************************
 // function fcnUpdateLinksIDs()
 //
 // This function updates all sheets Links and IDs  
@@ -68,7 +132,7 @@ function fcnUpdateLinksIDs(){
           ConfigRowLk = 'Not Found'; break;
       }
       
-      // Set tthe Appropriate Sheet ID Value in the Config File
+      // Set the Appropriate Sheet ID Value in the Config File
       if (ConfigRowID != 'Not Found') {
         shtConfig.getRange(ConfigRowID, 2).setValue(CopyLogVal[row][2]);
       }
