@@ -57,7 +57,7 @@ function fcnSendConfirmEmailEN(shtConfig, Address, MatchData) {
   var MatchReporterUrl = UrlValues[2][0];
   
   // Open Email Templates
-  var ssEmailID = shtConfig.getRange(36,2).getValue();
+  var ssEmailID = shtConfig.getRange(25,2).getValue();
   var ssEmail = SpreadsheetApp.openById(ssEmailID);
   var shtEmailTemplates = ssEmail.getSheetByName('Templates');
   var Headers = shtEmailTemplates.getRange(3,2,29,1).getValues();
@@ -132,7 +132,7 @@ function fcnSendErrorEmailEN(shtConfig, Address, MatchData, MatchID, Status) {
   var MatchReporterUrl = UrlValues[2][0];
   
   // Open Email Templates
-  var ssEmailID = shtConfig.getRange(36,2).getValue();
+  var ssEmailID = shtConfig.getRange(25,2).getValue();
   var ssEmail = SpreadsheetApp.openById(ssEmailID);
   var shtEmailTemplates = ssEmail.getSheetByName('Templates');
   var Headers = shtEmailTemplates.getRange(3,2,29,1).getValues();
@@ -254,7 +254,7 @@ function fcnSendConfirmEmailFR(shtConfig, Address, MatchData) {
   var MatchReporterUrl = UrlValues[2][0];
   
   // Open Email Templates
-  var ssEmailID = shtConfig.getRange(36,2).getValue();
+  var ssEmailID = shtConfig.getRange(25,2).getValue();
   var ssEmail = SpreadsheetApp.openById(ssEmailID);
   var shtEmailTemplates = ssEmail.getSheetByName('Templates');
   var Headers = shtEmailTemplates.getRange(3,3,29,1).getValues();
@@ -329,7 +329,7 @@ function fcnSendErrorEmailFR(shtConfig, Address, MatchData, MatchID, Status) {
   var MatchReporterUrl = UrlValues[2][0];
   
   // Open Email Templates
-  var ssEmailID = shtConfig.getRange(36,2).getValue();
+  var ssEmailID = shtConfig.getRange(25,2).getValue();
   var ssEmail = SpreadsheetApp.openById(ssEmailID);
   var shtEmailTemplates = ssEmail.getSheetByName('Templates');
   var Headers = shtEmailTemplates.getRange(3,3,29,1).getValues();

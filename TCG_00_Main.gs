@@ -60,8 +60,15 @@ function fcnMain() {
       shtRspnEN.getRange(RspnRow, ColDataCopied).setValue(DataCopied);
       shtRspnEN.getRange(RspnRow, ColNextEmptyRow).setValue('=IF(INDIRECT("R[0]C[-30]",FALSE)<>"",1,"")');
     }
-    // If Data is copied or TimeStamp is null, Exit loop Responses EN
-    if (DataCopied == 1 || TimeStamp == '') RspnRow = RspnMaxRowsEN + 1;
+    // If TimeStamp is null, Delete Row and start over
+    if (TimeStamp == '' && RspnRow < RspnMaxRowsEN) {
+      shtRspnEN.deleteRow(RspnRow);
+      RspnRow = RspnNextRowEN - 1;
+      }
+    // If Data is copied, Exit loop Responses EN
+    if (DataCopied == 1 || (TimeStamp == '' && RspnRow >= RspnMaxRowsEN)) {
+      RspnRow = RspnMaxRowsEN + 1;
+    }
   }
   
   // Executes Responses FR loop only if Responses EN did not find anything
@@ -81,8 +88,15 @@ function fcnMain() {
         shtRspnFR.getRange(RspnRow, ColDataCopied).setValue(DataCopied);
         shtRspnFR.getRange(RspnRow, ColNextEmptyRow).setValue('=IF(INDIRECT("R[0]C[-30]",FALSE)<>"",1,"")');
       }
-      // If Data is copied or TimeStamp is null, Exit loop Responses EN
-      if (DataCopied == 1 || TimeStamp == '') RspnRow = RspnMaxRowsFR + 1;
+      // If TimeStamp is null, Delete Row and start over
+      if (TimeStamp == '' && RspnRow < RspnMaxRowsFR) {
+        shtRspnFR.deleteRow(RspnRow);
+        RspnRow = RspnNextRowFR - 1;
+      }
+      // If Data is copied, Exit loop Responses EN
+      if (DataCopied == 1 || (TimeStamp == '' && RspnRow >= RspnMaxRowsFR)) {
+        RspnRow = RspnMaxRowsFR + 1;
+      }
     }
   }
   

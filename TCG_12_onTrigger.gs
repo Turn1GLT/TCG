@@ -10,9 +10,9 @@
 
 function onOpen() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var shtFirst =  ss.getSheets()[0];
-  
-  ss.setActiveSheet(shtFirst);
+//  var shtFirst =  ss.getSheets()[0];
+//  
+//  ss.setActiveSheet(shtFirst);
   
   var AnalyzeDataMenu  = [{name: 'Analyze New Match Entry', functionName: 'fcnMain'}];
   var StartLeagueMenu = [{name:'Initialize League', functionName:'fcnInitLeague'}, {name: 'Clear League Data', functionName:'fcnClearLeagueData'}, {name: 'Update Config ID & Links', functionName:'fcnUpdateLinksIDs'}];
