@@ -135,7 +135,7 @@ function fcnGameResults(ss, shtConfig, ConfigData, shtRspn) {
   var ColPrcsd = ConfigData[15][0];
   var ColDataConflict = ConfigData[16][0];
   var ColStatus = ConfigData[17][0];
-  var ColErrorMsg = ConfigData[18][0];
+  var ColStatusMsg = ConfigData[18][0];
   var ColMatchIDLastVal = ConfigData[19][0];
   var RspnStartRow = ConfigData[20][0];
   var RspnDataInputs = ConfigData[21][0]; // from Time Stamp to Data Processed
@@ -192,8 +192,8 @@ function fcnGameResults(ss, shtConfig, ConfigData, shtRspn) {
 
   // Data Processing Flags
   var Status = new Array(2); // Status[0] = Status Value, Status[1] = Status Message
-  Status[0] = 1;
-  Status[1] = '';
+  Status[0] = 1; // 1 = Processing, 2 = Processed, -X = Process Error (value is Status Message
+  Status[1] = 'Processing';
   
   var DuplicateRspn = -99;
   var MatchingRspn = -98;
@@ -229,6 +229,10 @@ function fcnGameResults(ss, shtConfig, ConfigData, shtRspn) {
         
         // Generates the Match ID in advance if data analysis is successful
         MatchID = shtRspn.getRange(1, ColMatchIDLastVal).getValue() + 1;
+        
+        // Updates the Status while processing
+        shtRspn.getRange(RspnRow, ColStatus).setValue(Status[0]);
+        shtRspn.getRange(RspnRow, ColStatusMsg).setValue(Status[1]);
         
         Logger.log('New Data Found at Row: %s',RspnRow);
         
@@ -421,11 +425,15 @@ function fcnGameResults(ss, shtConfig, ConfigData, shtRspn) {
         shtRspn.getRange(RspnRow, ColMatchID).setValue(MatchID);
         shtRspn.getRange(1, ColMatchIDLastVal).setValue(MatchID);
       }
+      
       // Set the Processed Flag and Status Message for the response
+      Status[0] = 2; // Processed
+      Status[1] = 'Processed';
+      
       shtRspn.getRange(RspnRow, ColPrcsd).setValue(RspnDataPrcssd);
       shtRspn.getRange(RspnRow, ColNextEmptyRow).setValue('=IF(INDIRECT("R[0]C[-30]",FALSE)<>"",1,"")');
       shtRspn.getRange(RspnRow, ColStatus).setValue(Status[0]);
-      shtRspn.getRange(RspnRow, ColErrorMsg).setValue(Status[1]);
+      shtRspn.getRange(RspnRow, ColStatusMsg).setValue(Status[1]);
       
       // Set the Matching Response Match ID if Matching Response found
       if (MatchingRspn > 0) shtRspn.getRange(MatchingRspn, ColMatchID).setValue(MatchID);	  

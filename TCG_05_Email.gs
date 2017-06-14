@@ -63,7 +63,7 @@ function fcnSendConfirmEmailEN(shtConfig, Address, MatchData) {
   var Headers = shtEmailTemplates.getRange(3,2,29,1).getValues();
   
   // League Name
-  var Location = shtConfig.getRange(11,2).getValue();
+  var Location = shtConfig.getRange(10,2).getValue();
   var LeagueTypeEN = shtConfig.getRange(12,2).getValue();
   var LeagueNameEN = shtConfig.getRange(3,2).getValue() + ' ' + LeagueTypeEN;
   
@@ -138,7 +138,7 @@ function fcnSendErrorEmailEN(shtConfig, Address, MatchData, MatchID, Status) {
   var Headers = shtEmailTemplates.getRange(3,2,29,1).getValues();
   
   // League Name
-  var Location = shtConfig.getRange(11,2).getValue();
+  var Location = shtConfig.getRange(10,2).getValue();
   var LeagueTypeEN = shtConfig.getRange(12,2).getValue();
   var LeagueNameEN = shtConfig.getRange(3,2).getValue() + ' ' + LeagueTypeEN;
   
@@ -260,7 +260,7 @@ function fcnSendConfirmEmailFR(shtConfig, Address, MatchData) {
   var Headers = shtEmailTemplates.getRange(3,3,29,1).getValues();
   
   // League Name
-  var Location = shtConfig.getRange(11,2).getValue();
+  var Location = shtConfig.getRange(10,2).getValue();
   var LeagueTypeFR = shtConfig.getRange(13,2).getValue();
   var LeagueNameFR = LeagueTypeFR + ' ' + shtConfig.getRange(3,2).getValue();
 
@@ -335,7 +335,7 @@ function fcnSendErrorEmailFR(shtConfig, Address, MatchData, MatchID, Status) {
   var Headers = shtEmailTemplates.getRange(3,3,29,1).getValues();
     
   // League Name
-  var Location = shtConfig.getRange(11,2).getValue();
+  var Location = shtConfig.getRange(10,2).getValue();
   var LeagueTypeFR = shtConfig.getRange(13,2).getValue();
   var LeagueNameFR = LeagueTypeFR + ' ' + shtConfig.getRange(3,2).getValue();
 
