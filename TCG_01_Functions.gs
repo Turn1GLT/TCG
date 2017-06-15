@@ -488,6 +488,8 @@ function fcnCopyStandingsResults(ss, shtConfig){
   var ssMstrShtMaxRows;
   var ssMstrShtMaxCols;
   var ssMstrShtData;
+  var NumValues;
+  var ColValues;
   
   var ssLgShtEn;
   var ssLgShtFr;
@@ -505,10 +507,14 @@ function fcnCopyStandingsResults(ss, shtConfig){
     if (sht == 0) ssMstrShtStartRow = 6;
     if (sht >= 1 && sht <= 9) ssMstrShtStartRow = 5;
     
+    // Set the number of values to fetch
+    NumValues = ssMstrShtMaxRows - ssMstrShtStartRow + 1;
+    Logger.log('Num Values %s',NumValues);
+    
     // Get Range and Data from Master and copy to Standings
-    ssMstrShtData = ssMstrSht.getRange(ssMstrShtStartRow,1,ssMstrShtMaxRows-ssMstrShtStartRow-1,ssMstrShtMaxCols).getValues();
-    ssLgShtEn.getRange(ssMstrShtStartRow,1,ssMstrShtMaxRows-ssMstrShtStartRow-1,ssMstrShtMaxCols).setValues(ssMstrShtData);
-    ssLgShtFr.getRange(ssMstrShtStartRow,1,ssMstrShtMaxRows-ssMstrShtStartRow-1,ssMstrShtMaxCols).setValues(ssMstrShtData);
+    ssMstrShtData = ssMstrSht.getRange(ssMstrShtStartRow,1,NumValues,ssMstrShtMaxCols).getValues();
+    ssLgShtEn.getRange(ssMstrShtStartRow,1,NumValues,ssMstrShtMaxCols).setValues(ssMstrShtData);
+    ssLgShtFr.getRange(ssMstrShtStartRow,1,NumValues,ssMstrShtMaxCols).setValues(ssMstrShtData);
     
     if (sht == 0){
       // Update Form Link
@@ -520,6 +526,25 @@ function fcnCopyStandingsResults(ss, shtConfig){
       WeekGame = ssMstrSht.getRange(2,3,3,1).getValues();
       ssLgShtEn.getRange(2,3,3,1).setValues(WeekGame);
       ssLgShtFr.getRange(2,3,3,1).setValues(WeekGame);
+      
+      // Loop through Values in columns K and M to translate each value
+      // Column K (11)
+      ColValues = ssLgShtFr.getRange(ssMstrShtStartRow, 11, NumValues, 1).getValues();
+      for (var row = 0 ; row < NumValues; row++){
+        Logger.log('Row %s Value %s',row, ColValues[row][0]);
+        if (ColValues[row][0] == 'Active') ColValues[row][0] = 'Actif';
+        if (ColValues[row][0] == 'Eliminated') ColValues[row][0] = 'Éliminé';
+      }
+      ssLgShtFr.getRange(ssMstrShtStartRow, 11, NumValues, 1).setValues(ColValues);
+      
+      // Loop through Values in columns K and M to translate each value
+      // Column M (13)
+      ColValues = ssLgShtFr.getRange(ssMstrShtStartRow, 13, NumValues, 1).getValues();
+      for (var row = 0 ; row < NumValues; row++){
+        if (ColValues[row][0] == 'Yes') ColValues[row][0] = 'Oui';
+        if (ColValues[row][0] == 'No')  ColValues[row][0] = 'Non';
+      }
+      ssLgShtFr.getRange(ssMstrShtStartRow, 13, NumValues, 1).setValues(ColValues);
     }
         
   }

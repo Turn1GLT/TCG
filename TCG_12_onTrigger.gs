@@ -38,13 +38,10 @@ function onWeekChange(){
   var shtConfig = ss.getSheetByName('Config');
   
   // League Name EN
-  var Location = shtConfig.getRange(11,2).getValue();
-  var LeagueTypeEN = shtConfig.getRange(12,2).getValue();
+  var Location = shtConfig.getRange(12,2).getValue();
+  var LeagueTypeEN = shtConfig.getRange(13,2).getValue();
+  var LeagueTypeFR = shtConfig.getRange(14,2).getValue();
   var LeagueNameEN = shtConfig.getRange(3,2).getValue() + ' ' + LeagueTypeEN;
-  
-  // League Name FR
-  var Location = shtConfig.getRange(11,2).getValue();
-  var LeagueTypeFR = shtConfig.getRange(13,2).getValue();
   var LeagueNameFR = LeagueTypeFR + ' ' + shtConfig.getRange(3,2).getValue();
   
   // Open Cumulative Spreadsheet

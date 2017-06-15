@@ -382,7 +382,7 @@ function fcnGameResults(ss, shtConfig, ConfigData, shtRspn) {
       }
       
       // Call the Email Function, sends Match Data if Send Email Option is Enabled
-      if(Status[0] == 1 && Status[1] == '' && OptSendEmail == 'Enabled') {
+      if(Status[0] == 1 && Status[1] == 'Processing' && OptSendEmail == 'Enabled') {
         // Get Email addresses from Config File
         EmailAddresses = subGetEmailAddress(ss, EmailAddresses, RspnDataWinr, RspnDataLosr);
         // Send email to players. Each function analyzes language preferences
@@ -391,7 +391,7 @@ function fcnGameResults(ss, shtConfig, ConfigData, shtRspn) {
       }
       
       // If an Error has been detected that prevented to process the Match Data, send available data and Error Message
-      if(Status[0] != 1 && Status[1] != 'Waiting for Other Response Submission') {
+      if(Status[0] != 1 && Status[1] == 'Processing' && Status[1] != 'Waiting for Other Response Submission') {
         
         // Populates Match Data
         MatchData[0][0] = ResponseData[0][0]; // TimeStamp
