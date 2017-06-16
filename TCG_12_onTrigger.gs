@@ -14,10 +14,10 @@ function onOpen() {
 //  
 //  ss.setActiveSheet(shtFirst);
   
-  var AnalyzeDataMenu  = [{name: 'Analyze New Match Entry', functionName: 'fcnMain'}];
-  var StartLeagueMenu = [{name:'Initialize League', functionName:'fcnInitLeague'}, {name: 'Clear League Data', functionName:'fcnClearLeagueData'}, {name: 'Update Config ID & Links', functionName:'fcnUpdateLinksIDs'}];
+  var AnalyzeDataMenu  = [{name: 'Analyze New Match Entry', functionName: 'fcnMain'}, {name: 'Reset Match Entries', functionName:'fcnResetLeagueMatch'}];
+  var LeagueMenu = [{name:'Initialize League', functionName:'fcnInitLeague'}, {name:'Setup Response Sheets',functionName:'fcnSetupResponseSht'}, {name:'Update Config ID & Links', functionName:'fcnUpdateLinksIDs'}];
   
-  ss.addMenu("League Start", StartLeagueMenu);
+  ss.addMenu("Manage League", LeagueMenu);
   ss.addMenu("Process Data", AnalyzeDataMenu);
 }
 

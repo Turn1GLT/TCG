@@ -61,14 +61,14 @@ function fcnInitLeague(){
 }
 
 // **********************************************
-// function fcnClearLeagueData()
+// function fcnResetLeagueMatch()
 //
 // This function clears all data from sheets  
 // to start a new league
 //
 // **********************************************
 
-function fcnClearLeagueData(){
+function fcnResetLeagueMatch(){
 
   // Main Spreadsheet
   var ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -149,6 +149,10 @@ function fcnUpdateLinksIDs(){
     var Formula;
     var ConfigRowID = 'Not Found';
     var ConfigRowLk = 'Not Found';
+    
+    // Clear Configuration File
+    shtConfig.getRange(17,2,6,1).clearContent();
+    shtConfig.getRange(30,2,7,1).clearContent();
     
     // Loop through all Copied Sheets and get their Link and ID
     for (var row = 0; row < CopyLogNbFiles; row++){
@@ -454,4 +458,56 @@ function fcnDelPlayerCardPoolSht(){
     shtCurrNameFr = shtCurrFr.getName();
     if( shtCurrNameFr != 'Template') ssCardPoolFr.deleteSheet(shtCurrFr);
   }
+}
+
+// **********************************************
+// function fcnSetupResponseSht()
+//
+// This function sets up the new Responses sheets 
+// and deletes the old ones
+//
+// **********************************************
+
+function fcnSetupResponseSht(){
+
+  // Main Spreadsheet
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+
+  // Open Responses Sheets
+  var shtOldRespEN = ss.getSheetByName('Responses EN');
+  var shtOldRespFR = ss.getSheetByName('Responses FR');
+  var shtNewRespEN = ss.getSheetByName('Form Responses 21');
+  var shtNewRespFR = ss.getSheetByName('Form Responses 22');
+    
+  var OldRespMaxCol = shtOldRespEN.getMaxColumns();
+  var NewRespMaxRow = shtNewRespEN.getMaxRows();
+  
+  // Copy Header from Old to New sheet - Loop to Copy Value and Format from cell to cell, copy formula (or set) in last cell
+  for (var col = 1; col <= OldRespMaxCol; col++){
+    // Insert Column if it doesn't exist (col >=24)
+    if (col >= 24 && col < OldRespMaxCol){
+      shtNewRespEN.insertColumnAfter(col);
+      shtNewRespFR.insertColumnAfter(col);
+    }
+    shtOldRespEN.getRange(1, col).copyTo(shtNewRespEN.getRange(1, col));
+    shtOldRespFR.getRange(1, col).copyTo(shtNewRespFR.getRange(1, col));
+  }
+  // Hides Columns 25, 27-30
+  shtNewRespEN.hideColumns(25);
+  shtNewRespEN.hideColumns(27,4);
+  shtNewRespFR.hideColumns(25);
+  shtNewRespFR.hideColumns(27,4);
+  
+  // Deletes all Rows but 1-2
+  shtNewRespEN.deleteRows(3, NewRespMaxRow - 2);
+  shtNewRespFR.deleteRows(3, NewRespMaxRow - 2);
+    
+  // Delete Old Sheets
+  ss.deleteSheet(shtOldRespEN);
+  ss.deleteSheet(shtOldRespFR);
+  
+  // Rename New Sheets
+  shtNewRespEN.setName('Responses EN');
+  shtNewRespFR.setName('Responses FR');
+
 }
