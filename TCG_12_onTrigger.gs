@@ -8,14 +8,18 @@
 //
 // **********************************************
 
-function onOpen() {
+function onOpenTCGMaster() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
-//  var shtFirst =  ss.getSheets()[0];
-//  
-//  ss.setActiveSheet(shtFirst);
   
-  var AnalyzeDataMenu  = [{name: 'Analyze New Match Entry', functionName: 'fcnMain'}, {name: 'Reset Match Entries', functionName:'fcnResetLeagueMatch'}];
-  var LeagueMenu = [{name:'Initialize League', functionName:'fcnInitLeague'}, {name:'Setup Response Sheets',functionName:'fcnSetupResponseSht'}, {name:'Update Config ID & Links', functionName:'fcnUpdateLinksIDs'}];
+  var AnalyzeDataMenu  = [];
+  AnalyzeDataMenu.push({name: 'Analyze New Match Entry', functionName: 'fcnMain'});
+  AnalyzeDataMenu.push({name: 'Reset Match Entries', functionName:'fcnResetLeagueMatch'});
+  
+  var LeagueMenu = [];
+  LeagueMenu.push({name:'Initialize League', functionName:'fcnInitLeague'});
+  LeagueMenu.push(null);
+  LeagueMenu.push({name:'Setup Response Sheets',functionName:'fcnSetupResponseSht'});
+  LeagueMenu.push({name:'Update Config ID & Links', functionName:'fcnUpdateLinksIDs'});
   
   ss.addMenu("Manage League", LeagueMenu);
   ss.addMenu("Process Data", AnalyzeDataMenu);
@@ -29,7 +33,7 @@ function onOpen() {
 //
 // **********************************************
 
-function onWeekChange(){
+function onWeekChangeTCGMaster(){
 
   // Main Spreadsheet
   var ss = SpreadsheetApp.getActiveSpreadsheet();
