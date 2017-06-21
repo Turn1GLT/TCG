@@ -509,7 +509,6 @@ function fcnCopyStandingsResults(ss, shtConfig){
     
     // Set the number of values to fetch
     NumValues = ssMstrShtMaxRows - ssMstrShtStartRow + 1;
-    Logger.log('Num Values %s',NumValues);
     
     // Get Range and Data from Master and copy to Standings
     ssMstrShtData = ssMstrSht.getRange(ssMstrShtStartRow,1,NumValues,ssMstrShtMaxCols).getValues();
@@ -531,7 +530,6 @@ function fcnCopyStandingsResults(ss, shtConfig){
       // Column K (11)
       ColValues = ssLgShtFr.getRange(ssMstrShtStartRow, 11, NumValues, 1).getValues();
       for (var row = 0 ; row < NumValues; row++){
-        Logger.log('Row %s Value %s',row, ColValues[row][0]);
         if (ColValues[row][0] == 'Active') ColValues[row][0] = 'Actif';
         if (ColValues[row][0] == 'Eliminated') ColValues[row][0] = 'Éliminé';
       }

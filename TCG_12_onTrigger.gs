@@ -6,17 +6,17 @@
 //
 // **********************************************
 
-function onOpenMinisMaster() {
+function onOpenTCGMaster() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   
   var AnalyzeDataMenu  = [];
-  AnalyzeDataMenu.push({name: 'Analyze New Match Entry', functionName: 'fcnMain'});
+  AnalyzeDataMenu.push({name: 'Analyze New Match Entry', functionName: 'fcnMainTCGMaster'});
   AnalyzeDataMenu.push({name: 'Reset Match Entries', functionName:'fcnResetLeagueMatch'});
   
   var LeagueMenu = [];
-  LeagueMenu.push({name:'Initialize League', functionName:'fcnInitLeague'});
-  LeagueMenu.push({name:'Setup Response Sheets',functionName:'fcnSetupResponseSht'});
   LeagueMenu.push({name:'Update Config ID & Links', functionName:'fcnUpdateLinksIDs'});
+  LeagueMenu.push({name:'Setup Response Sheets',functionName:'fcnSetupResponseSht'});
+  LeagueMenu.push({name:'Initialize League', functionName:'fcnInitLeague'});
   LeagueMenu.push(null);
   LeagueMenu.push({name:'Delete Players DB',functionName:'fcnDelPlayerCardDB'});
   LeagueMenu.push({name:'Delete Players Pools', functionName:'fcnDelPlayerCardPoolSht'});
@@ -34,7 +34,7 @@ function onOpenMinisMaster() {
 //
 // **********************************************
 
-function onWeekChangeMinisMaster(){
+function onWeekChangeTCGMaster(){
 
   // Main Spreadsheet
   var ss = SpreadsheetApp.getActiveSpreadsheet();

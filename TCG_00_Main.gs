@@ -6,7 +6,7 @@
 //
 // **********************************************
 
-function fcnMainMinisMaster() {
+function fcnMainTCGMaster() {
   
   // Opens Spreadsheet
   var ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -25,6 +25,7 @@ function fcnMainMinisMaster() {
   // Columns Values and Parameters
   var ColDataCopied = ConfigData[15][0];
   var ColNextEmptyRow = ConfigData[24][0];
+  var ColNbUnprcsdEntries = ConfigData[25][0];
   var RspnDataInputs = ConfigData[21][0]; // from Time Stamp to Data Processed
 
   // Open Responses sheets
@@ -43,9 +44,13 @@ function fcnMainMinisMaster() {
   
   // Function Polled Values
   var RspnNextRow = shtRspn.getRange(1, ColNextEmptyRow).getValue();
+  var EntriesProcessing;
   var RspnNextRowEN = shtRspnEN.getRange(1, ColNextEmptyRow).getValue();
   var RspnNextRowFR = shtRspnFR.getRange(1, ColNextEmptyRow).getValue();
-
+    
+  EntriesProcessing = shtRspn.getRange(1, ColNbUnprcsdEntries).getValue();
+  Logger.log('Nb of Entries Before Copying: %s',EntriesProcessing)
+  
   // Look for Unprocessed Data in Responses EN
   for (RspnRow = RspnNextRowEN; RspnRow <= RspnMaxRowsEN; RspnRow++){
 
@@ -65,7 +70,7 @@ function fcnMainMinisMaster() {
       shtRspnEN.deleteRow(RspnRow);
       RspnRow = RspnNextRowEN - 1;
       }
-    // If Data is copied, Exit loop Responses EN
+    // If Data is copied, Exit loop Responses EN to process data
     if (DataCopied == 1 || (TimeStamp == '' && RspnRow >= RspnMaxRowsEN)) {
       RspnRow = RspnMaxRowsEN + 1;
     }
@@ -93,22 +98,43 @@ function fcnMainMinisMaster() {
         shtRspnFR.deleteRow(RspnRow);
         RspnRow = RspnNextRowFR - 1;
       }
-      // If Data is copied, Exit loop Responses EN
+      // If Data is copied, Exit loop Responses FR to process data
       if (DataCopied == 1 || (TimeStamp == '' && RspnRow >= RspnMaxRowsFR)) {
         RspnRow = RspnMaxRowsFR + 1;
       }
     }
   }
-  
+
   // If Data is copied, put it in Responses Sheet
   if (DataCopied == 1){
     
-    shtRspn.getRange(RspnNextRow, 1, 1, RspnDataInputs).setValues(ResponseData);
+    // Copy New Entry Data to Main Responses Sheet
+    shtRspn.getRange(RspnNextRow + EntriesProcessing, 1, 1, RspnDataInputs).setValues(ResponseData);
     
-    // Execute Game Results Analysis
-    fcnGameResults(ss, shtConfig, ConfigData, shtRspn);
+    // Copy Formula to detect if an entry is currently processing
+    shtRspn.getRange(RspnNextRow + EntriesProcessing, ColNbUnprcsdEntries).setValue('=IF(AND(INDIRECT("R[0]C[-31]",FALSE)<>"",INDIRECT("R[0]C[-4]",FALSE)<>2),1,"")');
+    
+    // Troubleshoot
+    EntriesProcessing = shtRspn.getRange(1, ColNbUnprcsdEntries).getValue();
+    Logger.log('Nb of Entries After Copying: %s',EntriesProcessing)
+    
+    // Make sure that we only execute this loop on the first instance call
+    if (EntriesProcessing == 1){
+      // Execute Game Results Analysis for as long as there are unprocessed entries
+      while (EntriesProcessing >= 1) {
+        Logger.log('Entered While Loop');
+        fcnGameResults(ss, shtConfig, ConfigData, shtRspn);
+        EntriesProcessing = shtRspn.getRange(1, ColNbUnprcsdEntries).getValue();
+        Logger.log('Nb of Entries After Processing: %s',EntriesProcessing)
+      }
+    }
+    Logger.log('Exit Main Function');
   }
-  
+//  // Send Log by email
+//  var recipient = Session.getActiveUser().getEmail();
+//  var subject = 'TCG Booster League Log';
+//  var body = Logger.getLog();
+//  MailApp.sendEmail(recipient, subject, body);
 }
 
 
@@ -186,7 +212,7 @@ function fcnGameResults(ss, shtConfig, ConfigData, shtRspn) {
   EmailAddresses[2] = new Array(2);  // 0= Language Preference, 1= email address
   
   EmailAddresses[0][0] = 'English';
-  EmailAddresses[0][1] = 'triadgaminglt@gmail.com';
+  EmailAddresses[0][1] = 'turn1glt@gmail.com';
   EmailAddresses[1][1] = '';
   EmailAddresses[2][1] = '';
 
