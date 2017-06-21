@@ -6,7 +6,7 @@
 //
 // **********************************************
 
-function fcnMainTCGMaster() {
+function fcnMainMinisMaster() {
   
   // Opens Spreadsheet
   var ss = SpreadsheetApp.getActiveSpreadsheet();

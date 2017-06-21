@@ -481,6 +481,7 @@ function fcnSetupResponseSht(){
     
   var OldRespMaxCol = shtOldRespEN.getMaxColumns();
   var NewRespMaxRow = shtNewRespEN.getMaxRows();
+  var ColWidth;
   
   // Copy Header from Old to New sheet - Loop to Copy Value and Format from cell to cell, copy formula (or set) in last cell
   for (var col = 1; col <= OldRespMaxCol; col++){
@@ -489,8 +490,12 @@ function fcnSetupResponseSht(){
       shtNewRespEN.insertColumnAfter(col);
       shtNewRespFR.insertColumnAfter(col);
     }
-    shtOldRespEN.getRange(1, col).copyTo(shtNewRespEN.getRange(1, col));
-    shtOldRespFR.getRange(1, col).copyTo(shtNewRespFR.getRange(1, col));
+    // Set New Response Sheet Values 
+    shtOldRespEN.getRange(1,col).copyTo(shtNewRespEN.getRange(1,col));
+    shtOldRespFR.getRange(1,col).copyTo(shtNewRespFR.getRange(1,col));
+    ColWidth = shtOldRespEN.getColumnWidth(col);
+    shtNewRespEN.setColumnWidth(col,ColWidth);
+    shtNewRespFR.setColumnWidth(col,ColWidth);
   }
   // Hides Columns 25, 27-30
   shtNewRespEN.hideColumns(25);

@@ -1,5 +1,3 @@
-// F2FLeagueOnOpen
-
 // **********************************************
 // function OnOpen()
 //
@@ -8,7 +6,7 @@
 //
 // **********************************************
 
-function onOpenTCGMaster() {
+function onOpenMinisMaster() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   
   var AnalyzeDataMenu  = [];
@@ -17,9 +15,12 @@ function onOpenTCGMaster() {
   
   var LeagueMenu = [];
   LeagueMenu.push({name:'Initialize League', functionName:'fcnInitLeague'});
-  LeagueMenu.push(null);
   LeagueMenu.push({name:'Setup Response Sheets',functionName:'fcnSetupResponseSht'});
   LeagueMenu.push({name:'Update Config ID & Links', functionName:'fcnUpdateLinksIDs'});
+  LeagueMenu.push(null);
+  LeagueMenu.push({name:'Delete Players DB',functionName:'fcnDelPlayerCardDB'});
+  LeagueMenu.push({name:'Delete Players Pools', functionName:'fcnDelPlayerCardPoolSht'});
+
   
   ss.addMenu("Manage League", LeagueMenu);
   ss.addMenu("Process Data", AnalyzeDataMenu);
@@ -33,7 +34,7 @@ function onOpenTCGMaster() {
 //
 // **********************************************
 
-function onWeekChangeTCGMaster(){
+function onWeekChangeMinisMaster(){
 
   // Main Spreadsheet
   var ss = SpreadsheetApp.getActiveSpreadsheet();
