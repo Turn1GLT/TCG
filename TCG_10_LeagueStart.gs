@@ -476,8 +476,8 @@ function fcnSetupResponseSht(){
   // Open Responses Sheets
   var shtOldRespEN = ss.getSheetByName('Responses EN');
   var shtOldRespFR = ss.getSheetByName('Responses FR');
-  var shtNewRespEN = ss.getSheetByName('Form Responses 21');
-  var shtNewRespFR = ss.getSheetByName('Form Responses 22');
+  var shtNewRespEN = ss.getSheetByName('Form Responses 23');
+  var shtNewRespFR = ss.getSheetByName('Form Responses 24');
     
   var OldRespMaxCol = shtOldRespEN.getMaxColumns();
   var NewRespMaxRow = shtNewRespEN.getMaxRows();

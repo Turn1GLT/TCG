@@ -18,6 +18,8 @@ function onOpenTCGMaster() {
   LeagueMenu.push({name:'Setup Response Sheets',functionName:'fcnSetupResponseSht'});
   LeagueMenu.push({name:'Initialize League', functionName:'fcnInitLeague'});
   LeagueMenu.push(null);
+  LeagueMenu.push({name:'Generate Players DB',functionName:'fcnGenPlayerCardDB'});
+  LeagueMenu.push({name:'Generate Players Pools', functionName:'fcnGenPlayerCardPoolSht'});
   LeagueMenu.push({name:'Delete Players DB',functionName:'fcnDelPlayerCardDB'});
   LeagueMenu.push({name:'Delete Players Pools', functionName:'fcnDelPlayerCardPoolSht'});
 

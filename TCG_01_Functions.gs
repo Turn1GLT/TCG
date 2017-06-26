@@ -480,6 +480,7 @@ function fcnCopyStandingsResults(ss, shtConfig){
   var ssLgEn = SpreadsheetApp.openById(ssLgStdIDEn);
   var ssLgFr = SpreadsheetApp.openById(ssLgStdIDFr);
   
+  // Match Report Form URL
   var FormUrlEN = shtConfig.getRange(19,2).getValue();
   var FormUrlFR = shtConfig.getRange(22,2).getValue();
   
@@ -487,6 +488,10 @@ function fcnCopyStandingsResults(ss, shtConfig){
   var Location = shtConfig.getRange(11,2).getValue();
   var LeagueName = shtConfig.getRange(3,2).getValue();
   
+  // Number of Players
+  var NbPlayers = ss.getSheetByName('Players').getRange(2,6).getValue();
+  
+  // Function Variables
   var ssMstrSht;
   var ssMstrShtStartRow;
   var ssMstrShtMaxRows;
@@ -500,7 +505,7 @@ function fcnCopyStandingsResults(ss, shtConfig){
   var WeekGame;
   
   // Loops through tabs 0-8 (Standings, Cumulative Results, Week 1-7)
-  for (var sht = 0; sht <=8; sht++){
+  for (var sht = 0; sht <=9; sht++){
     ssMstrSht = ss.getSheets()[sht];
     ssMstrShtMaxRows = ssMstrSht.getMaxRows();
     ssMstrShtMaxCols = ssMstrSht.getMaxColumns();
@@ -551,6 +556,11 @@ function fcnCopyStandingsResults(ss, shtConfig){
       }
       ssLgShtFr.getRange(ssMstrShtStartRow, 13, NumValues, 1).setValues(ColValues);
     }
+    // Hide Unused Rows
+    ssLgShtEn.hideRows(ssMstrShtStartRow, ssMstrShtMaxRows - ssMstrShtStartRow + 1);
+    ssLgShtEn.showRows(ssMstrShtStartRow, NbPlayers);
+    ssLgShtFr.hideRows(ssMstrShtStartRow, ssMstrShtMaxRows - ssMstrShtStartRow + 1);
+    ssLgShtFr.showRows(ssMstrShtStartRow, NbPlayers);
   }
 }
 
