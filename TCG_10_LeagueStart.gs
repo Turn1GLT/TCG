@@ -225,13 +225,17 @@ function fcnGenPlayerCardDB(){
   // Card DB Spreadsheet
   var CardDBShtID = shtConfig.getRange(31, 2).getValue();
   var ssCardDB = SpreadsheetApp.openById(CardDBShtID);
+  var NumSheet = ssCardDB.getNumSheets();
+  var SheetsCardDB = ssCardDB.getSheets();
   var shtCardDB = ssCardDB.getSheetByName('Template');
   var shtCardDBNum;
+  var SheetName;
   var CardDBHeader = shtCardDB.getRange(4,1,4,48).getValues();
 
   // Players 
   var shtPlayers = ss.getSheetByName('Players'); 
   var NbPlayers = shtPlayers.getRange(2,6).getValue();
+  var PlayerFound = 0;
     
   var NbSheets = ssCardDB.getNumSheets();
   
@@ -289,20 +293,30 @@ function fcnGenPlayerCardDB(){
   // Set Card Set Names and Codes
   shtCardDB.getRange(4,1,4,48).setValues(CardDBHeader);
   
-  // Loops through each player starting from the first
+  // Loops through each player starting from the last
   for (var plyr = NbPlayers; plyr > 0; plyr--){
     
     // Update the Player Row and Get Player Name from Config File
     PlyrRow = plyr + 2; // 2 is the row where the player list starts
     shtPlyrName = shtPlayers.getRange(PlyrRow, 2).getValue();
-  
-    // INSERTS TAB BEFORE "Card DB" TAB
-    ssCardDB.insertSheet(shtPlyrName, 0, {template: shtCardDB});
-    shtPlyrCardDB = ssCardDB.getSheets()[0];
-        
-    // Opens the new sheet and modify appropriate data (Player Name, Header)
-    shtPlyrCardDB.getRange(3,3).setValue(shtPlyrName);
-    shtPlyrCardDB.getRange(4,1,4,48).setValues(CardDBHeader);
+    
+    // Look if player exists, if yes, skip, if not, create player
+    for(var sheet = NumSheet - 1; sheet >= 0; sheet --){
+      SheetName = SheetsCardDB[sheet].getSheetName();
+      Logger.log(SheetName);
+      if (SheetName == shtPlyrName) PlayerFound = 1;
+    }
+    
+
+    if (PlayerFound == 0){
+      // INSERTS TAB BEFORE "Card DB" TAB
+      ssCardDB.insertSheet(shtPlyrName, 0, {template: shtCardDB});
+      shtPlyrCardDB = ssCardDB.getSheets()[0];
+      
+      // Opens the new sheet and modify appropriate data (Player Name, Header)
+      shtPlyrCardDB.getRange(3,3).setValue(shtPlyrName);
+      shtPlyrCardDB.getRange(4,1,4,48).setValues(CardDBHeader);
+    }
   }
   shtPlyrCardDB = ssCardDB.getSheets()[0];
   ssCardDB.setActiveSheet(shtPlyrCardDB);

@@ -177,7 +177,6 @@ function fcnMainTCGMaster() {
     var body = Logger.getLog();
     MailApp.sendEmail(recipient, subject, body);  
   }
-
 }
 
 
