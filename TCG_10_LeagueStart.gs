@@ -236,8 +236,6 @@ function fcnGenPlayerCardDB(){
   var shtPlayers = ss.getSheetByName('Players'); 
   var NbPlayers = shtPlayers.getRange(2,6).getValue();
   var PlayerFound = 0;
-    
-  var NbSheets = ssCardDB.getNumSheets();
   
   var shtPlyrCardDB;
   var shtPlyrName;
@@ -300,6 +298,9 @@ function fcnGenPlayerCardDB(){
     PlyrRow = plyr + 2; // 2 is the row where the player list starts
     shtPlyrName = shtPlayers.getRange(PlyrRow, 2).getValue();
     
+    // Resets the Player Found flag before searching
+    PlayerFound = 0;
+        
     // Look if player exists, if yes, skip, if not, create player
     for(var sheet = NumSheet - 1; sheet >= 0; sheet --){
       SheetName = SheetsCardDB[sheet].getSheetName();
@@ -307,7 +308,7 @@ function fcnGenPlayerCardDB(){
       if (SheetName == shtPlyrName) PlayerFound = 1;
     }
     
-
+    // If Player is not found, add a tab
     if (PlayerFound == 0){
       // INSERTS TAB BEFORE "Card DB" TAB
       ssCardDB.insertSheet(shtPlyrName, 0, {template: shtCardDB});
@@ -347,6 +348,10 @@ function fcnGenPlayerCardPoolSht(){
   var shtCardPoolEn = ssCardPoolEn.getSheetByName('Template');
   var shtCardPoolFr = ssCardPoolFr.getSheetByName('Template');
   var shtCardPoolNum;
+  var NumSheet = ssCardPoolEn.getNumSheets();
+  var SheetsCardPool = ssCardPoolEn.getSheets();
+  var SheetName;
+  var PlayerFound = 0;
   
   // Players 
   var shtPlayers = ss.getSheetByName('Players'); 
@@ -363,22 +368,35 @@ function fcnGenPlayerCardPoolSht(){
     // Update the Player Row and Get Player Name from Config File
     PlyrRow = plyr + 2; // 2 is the row where the player list starts
     shtPlyrName = shtPlayers.getRange(PlyrRow, 2).getValue();
-  
-    // INSERTS TAB BEFORE "Card DB" TAB
-    // English Version
-    ssCardPoolEn.insertSheet(shtPlyrName, 0, {template: shtCardPoolEn});
-    shtPlyrCardPoolEn = ssCardPoolEn.getSheets()[0];
-       
-    // Opens the new sheet and modify appropriate data (Player Name, Header)
-    shtPlyrCardPoolEn.getRange(2,1).setValue(shtPlyrName);
     
-    // French Version
-    ssCardPoolFr.insertSheet(shtPlyrName, 0, {template: shtCardPoolFr});
-    shtPlyrCardPoolFr = ssCardPoolFr.getSheets()[0];
+    // Resets the Player Found flag before searching
+    PlayerFound = 0;
     
-    // Opens the new sheet and modify appropriate data (Player Name, Header)
-    shtPlyrCardPoolFr.getRange(2,1).setValue(shtPlyrName);    
+    // Look if player exists, if yes, skip, if not, create player
+    for(var sheet = NumSheet - 1; sheet >= 0; sheet --){
+      SheetName = SheetsCardPool[sheet].getSheetName();
+      Logger.log(SheetName);
+      if (SheetName == shtPlyrName) PlayerFound = 1;
+    }
+    
+    if (PlayerFound == 0){
+      // INSERTS TAB BEFORE "Card DB" TAB
+      // English Version
+      ssCardPoolEn.insertSheet(shtPlyrName, 0, {template: shtCardPoolEn});
+      shtPlyrCardPoolEn = ssCardPoolEn.getSheets()[0];
+      
+      // Opens the new sheet and modify appropriate data (Player Name, Header)
+      shtPlyrCardPoolEn.getRange(2,1).setValue(shtPlyrName);
+      
+      // French Version
+      ssCardPoolFr.insertSheet(shtPlyrName, 0, {template: shtCardPoolFr});
+      shtPlyrCardPoolFr = ssCardPoolFr.getSheets()[0];
+      
+      // Opens the new sheet and modify appropriate data (Player Name, Header)
+      shtPlyrCardPoolFr.getRange(2,1).setValue(shtPlyrName);    
+    }
   }
+  
   // English Version
   shtPlyrCardPoolEn = ssCardPoolEn.getSheets()[0];
   ssCardPoolEn.setActiveSheet(shtPlyrCardPoolEn);
