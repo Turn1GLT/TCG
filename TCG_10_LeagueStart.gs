@@ -21,6 +21,7 @@ function fcnInitLeague(){
   var shtResponsesFR = ss.getSheetByName('Responses FR');
   
   var MaxRowRslt = shtMatchRslt.getMaxRows();
+  var MaxColRslt = shtMatchRslt.getMaxColumns();
   var MaxRowRspn = shtResponses.getMaxRows();
   var MaxColRspn = shtResponses.getMaxColumns();
   var MaxRowRspnEN = shtResponsesEN.getMaxRows();
@@ -30,7 +31,7 @@ function fcnInitLeague(){
   
   // Clear Data
   shtStandings.getRange(6,2,32,6).clearContent();
-  shtMatchRslt.getRange(6,2,MaxRowRslt-5,24).clearContent();
+  shtMatchRslt.getRange(6,2,MaxRowRslt-5,MaxColRslt-2).clearContent();
   shtResponses.getRange(2,1,MaxRowRspn-1,MaxColRspn).clearContent();
   shtResponses.getRange(1,30).setValue(0);
   shtResponsesEN.getRange(2,1,MaxRowRspnEN-1,MaxColRspnEN).clearContent();
@@ -83,6 +84,7 @@ function fcnResetLeagueMatch(){
   var shtResponsesFR = ss.getSheetByName('Responses FR');
   
   var MaxRowRslt = shtMatchRslt.getMaxRows();
+  var MaxColRslt = shtMatchRslt.getMaxColumns();
   var MaxRowRspn = shtResponses.getMaxRows();
   var MaxColRspn = shtResponses.getMaxColumns();
   var MaxRowRspnEN = shtResponsesEN.getMaxRows();
@@ -92,7 +94,7 @@ function fcnResetLeagueMatch(){
   
   // Clear Data
   shtStandings.getRange(6,2,32,6).clearContent();
-  shtMatchRslt.getRange(6,2,MaxRowRslt-5,24).clearContent();
+  shtMatchRslt.getRange(6,2,MaxRowRslt-5,MaxColRslt-2).clearContent();
   shtResponses.getRange(2,1,MaxRowRspn-1,MaxColRspn).clearContent();
   shtResponses.getRange(1,30).setValue(0);
   shtResponsesEN.getRange(2,25,MaxRowRspnEN-1,7).clearContent();
@@ -321,6 +323,9 @@ function fcnGenPlayerCardDB(){
   }
   shtPlyrCardDB = ssCardDB.getSheets()[0];
   ssCardDB.setActiveSheet(shtPlyrCardDB);
+  
+  // Hide Template Tab
+  ssCardDB.getSheetByName('Template').hideSheet();
 }
 
 
@@ -400,10 +405,13 @@ function fcnGenPlayerCardPoolSht(){
   // English Version
   shtPlyrCardPoolEn = ssCardPoolEn.getSheets()[0];
   ssCardPoolEn.setActiveSheet(shtPlyrCardPoolEn);
+  ssCardPoolEn.getSheetByName('Template').hideSheet();
+  
   
   // French Version
   shtPlyrCardPoolFr = ssCardPoolFr.getSheets()[0];
   ssCardPoolFr.setActiveSheet(shtPlyrCardPoolFr);
+  ssCardPoolFr.getSheetByName('Template').hideSheet();
 }
 
 
@@ -432,6 +440,9 @@ function fcnDelPlayerCardDB(){
   // Routine Variables
   var shtCurr;
   var shtCurrName;
+  
+  // Show Template sheet
+  shtTemplate.showSheet();
   
   // Activates Template Sheet
   ssCardDB.setActiveSheet(shtTemplate);
@@ -473,6 +484,10 @@ function fcnDelPlayerCardPoolSht(){
   var shtCurrNameEn;
   var shtCurrFr;
   var shtCurrNameFr;
+  
+  // Show Template sheet
+  shtTemplateEn.showSheet();
+  shtTemplateFr.showSheet();
   
   // Activates Template Sheet
   ssCardPoolEn.setActiveSheet(shtTemplateEn);
