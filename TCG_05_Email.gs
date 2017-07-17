@@ -10,7 +10,7 @@ function subGetEmailAddress(ss, Addresses, WinPlyr, LosPlyr){
   
   // Players Sheets for Email addresses
   var shtPlayers = ss.getSheetByName('Players');
-  var colEmail = 5;
+  var colEmail = 3;
   var NbPlayers = shtPlayers.getRange(2,6).getValue();
   var rowWinr = 0;
   var rowLosr = 0;

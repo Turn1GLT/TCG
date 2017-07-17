@@ -31,7 +31,7 @@ function fcnMainTCGMaster() {
   // Get Number of Players and Players Email
   var shtPlayers = ss.getSheetByName('Players');
   var NbPlayers = shtPlayers.getRange('F2').getValue();
-  var PlayersEmail = shtPlayers.getRange(3,5,NbPlayers,1).getValues();
+  var PlayersEmail = shtPlayers.getRange(3,3,NbPlayers,1).getValues();
   
   // Open Responses sheets
   var shtRspn = ss.getSheetByName('Responses');
