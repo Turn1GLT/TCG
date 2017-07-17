@@ -445,10 +445,12 @@ function fcnPostResultWeekTCG(ss, ConfigData, ResultData, shtTest) {
 //
 // **********************************************
 
-function fcnUpdateStandings(ss){
+function fcnUpdateStandings(ss, shtConfig){
 
   var shtCumul = ss.getSheetByName('Cumulative Results');
   var shtStand = ss.getSheetByName('Standings');
+  
+  var SortVal = shtConfig.getRange(10,9).getValue();
   
   // Get Player Record Range
   var RngCumul = shtCumul.getRange(5,2,32,6);
@@ -458,9 +460,15 @@ function fcnUpdateStandings(ss){
   var ValCumul = RngCumul.getValues();
   RngStand.setValues(ValCumul);
 
-  // Sorts the Standings Values by Win % (column 7) and Matches Played (column 4)
-  RngStand.sort([{column: 7, ascending: false},{column: 4, ascending: false}]);
-
+  if(SortVal == 'WinNb'){
+    // Sorts the Standings Values by Number of Wins (column 5) and Matches Played (column 4)
+    RngStand.sort([{column: 5, ascending: false},{column: 4, ascending: false}]);
+  }
+  
+  if(SortVal == 'Win%'){
+    // Sorts the Standings Values by Win % (column 7) and Matches Played (column 4)
+    RngStand.sort([{column: 7, ascending: false},{column: 4, ascending: false}]);
+  }
 }
 
 // **********************************************
