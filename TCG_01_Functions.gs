@@ -11,7 +11,7 @@
 //
 // **********************************************
 
-function fcnFindDuplicateData(ss, ConfigData, shtRspn, ResponseData, RspnRow, RspnStartRow, RspnMaxRows, RspnDataInputs, shtTest) {
+function fcnFindDuplicateData(ss, ConfigData, shtRspn, ResponseData, RspnRow, RspnMaxRows, shtTest) {
 
   // Columns Values and Parameters
   var ColMatchID = ConfigData[14][0];
@@ -89,7 +89,7 @@ function fcnFindDuplicateData(ss, ConfigData, shtRspn, ResponseData, RspnRow, Rs
 //
 // **********************************************
 
-function fcnFindMatchingData(ss, ConfigData, shtRspn, ResponseData, RspnRow, RspnStartRow, RspnMaxRows, RspnDataInputs, shtTest) {
+function fcnFindMatchingData(ss, ConfigData, shtRspn, ResponseData, RspnRow, RspnMaxRows, shtTest) {
 
   // Code Execution Options
   var OptDualSubmission = ConfigData[0][0]; // If Dual Submission is disabled, look for duplicate instead
@@ -460,13 +460,13 @@ function fcnUpdateStandings(ss, shtConfig){
   var ValCumul = RngCumul.getValues();
   RngStand.setValues(ValCumul);
 
+  // Sorts the Standings Values by Number of Wins (column 5) and Win% (column 7)
   if(SortVal == 'WinNb'){
-    // Sorts the Standings Values by Number of Wins (column 5) and Matches Played (column 4)
-    RngStand.sort([{column: 5, ascending: false},{column: 4, ascending: false}]);
+    RngStand.sort([{column: 5, ascending: false},{column: 7, ascending: false}]);
   }
   
+  // Sorts the Standings Values by Win % (column 7) and Matches Played (column 4)
   if(SortVal == 'Win%'){
-    // Sorts the Standings Values by Win % (column 7) and Matches Played (column 4)
     RngStand.sort([{column: 7, ascending: false},{column: 4, ascending: false}]);
   }
 }

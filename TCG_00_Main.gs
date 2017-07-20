@@ -306,7 +306,7 @@ function fcnGameResults(ss, shtConfig, ConfigData, shtRspn) {
         
         // Look for Duplicate Entry (looks in all entries with MatchID and combination of Week Number, Winner and Loser) 
         // Real code will look at Player Posting Data as well
-        DuplicateRspn = fcnFindDuplicateData(ss, ConfigData, shtRspn, ResponseData, RspnRow, RspnStartRow, RspnMaxRows, RspnDataInputs, shtTest);  
+        DuplicateRspn = fcnFindDuplicateData(ss, ConfigData, shtRspn, ResponseData, RspnRow, RspnMaxRows, shtTest);  
         
         Logger.log('Duplicate Result: %s', DuplicateRspn);
         
@@ -316,7 +316,7 @@ function fcnGameResults(ss, shtConfig, ConfigData, shtRspn) {
           // If Dual Submission is enabled, Search if the other Entry matching this response has been submitted (must be enabled)
           if (OptDualSubmission == 'Enabled'){
             // function returns row where the matching data was found
-            MatchingRspn = fcnFindMatchingData(ss, ConfigData, shtRspn, ResponseData, RspnRow, RspnStartRow, RspnMaxRows, RspnDataInputs, shtTest);
+            MatchingRspn = fcnFindMatchingData(ss, ConfigData, shtRspn, ResponseData, RspnRow, RspnMaxRows, shtTest);
             if (MatchingRspn < 0) DuplicateRspn = 0 - MatchingRspn;
           }
           
@@ -511,7 +511,7 @@ function fcnGameResults(ss, shtConfig, ConfigData, shtRspn) {
     }
   }
   // Execute Ranking function in Standing tab
-  fcnUpdateStandings(ss);
+  fcnUpdateStandings(ss, shtConfig);
   
   // Copy all data to League Spreadsheet
   fcnCopyStandingsResults(ss, shtConfig);

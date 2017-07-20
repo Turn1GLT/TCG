@@ -323,9 +323,6 @@ function fcnGenPlayerCardDB(){
   }
   shtPlyrCardDB = ssCardDB.getSheets()[0];
   ssCardDB.setActiveSheet(shtPlyrCardDB);
-  
-  // Hide Template Tab
-  ssCardDB.getSheetByName('Template').hideSheet();
 }
 
 
@@ -440,9 +437,6 @@ function fcnDelPlayerCardDB(){
   // Routine Variables
   var shtCurr;
   var shtCurrName;
-  
-  // Show Template sheet
-  shtTemplate.showSheet();
   
   // Activates Template Sheet
   ssCardDB.setActiveSheet(shtTemplate);
