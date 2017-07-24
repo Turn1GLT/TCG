@@ -27,9 +27,9 @@ function subGetEmailAddress(ss, Addresses, WinPlyr, LosPlyr){
   }
   
   // Get Email addresses using the players rows
-  Addresses[1][0] = shtPlayers.getRange(rowWinr,colEmail-1).getValue();
+  Addresses[1][0] = shtPlayers.getRange(rowWinr,colEmail+1).getValue();
   Addresses[1][1] = shtPlayers.getRange(rowWinr,colEmail).getValue();
-  Addresses[2][0] = shtPlayers.getRange(rowLosr,colEmail-1).getValue();
+  Addresses[2][0] = shtPlayers.getRange(rowLosr,colEmail+1).getValue();
   Addresses[2][1] = shtPlayers.getRange(rowLosr,colEmail).getValue();
     
   return Addresses;
@@ -494,7 +494,11 @@ function subMatchReportTable(EmailMessage, Headers, MatchData, Param){
     
   for(var row=0; row<24; ++row){
 
-    if(row == 1) ++row;
+    // Translate MatchData if necessary
+    if (Param == 'EN' && MatchData[row][0] == 'Oui') MatchData[row][0] = 'Yes';
+    if (Param == 'EN' && MatchData[row][0] == 'Non') MatchData[row][0] = 'No' ;
+    if (Param == 'FR' && MatchData[row][0] == 'Yes') MatchData[row][0] = 'Oui';
+    if (Param == 'FR' && MatchData[row][0] == 'No' ) MatchData[row][0] = 'Non';
     
     // Start of Match Table
     if(row == 0) {

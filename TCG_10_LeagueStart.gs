@@ -243,6 +243,7 @@ function fcnGenPlayerCardDB(){
   var shtPlyrName;
   var SetNum;
   var PlyrRow;
+  var CardDBNumSht;
   
   // Gets the Card Set Data from Config File to Populate the Header
   for (var col = 0; col < 48; col++){
@@ -293,8 +294,8 @@ function fcnGenPlayerCardDB(){
   // Set Card Set Names and Codes
   shtCardDB.getRange(4,1,4,48).setValues(CardDBHeader);
   
-  // Loops through each player starting from the last
-  for (var plyr = NbPlayers; plyr > 0; plyr--){
+  // Loops through each player starting from the First
+  for (var plyr = 1; plyr <= NbPlayers; plyr++){
     
     // Update the Player Row and Get Player Name from Config File
     PlyrRow = plyr + 2; // 2 is the row where the player list starts
@@ -306,15 +307,16 @@ function fcnGenPlayerCardDB(){
     // Look if player exists, if yes, skip, if not, create player
     for(var sheet = NumSheet - 1; sheet >= 0; sheet --){
       SheetName = SheetsCardDB[sheet].getSheetName();
-      Logger.log(SheetName);
       if (SheetName == shtPlyrName) PlayerFound = 1;
     }
     
     // If Player is not found, add a tab
     if (PlayerFound == 0){
+      // Get the Template sheet index
+      CardDBNumSht = ssCardDB.getNumSheets();
       // INSERTS TAB BEFORE "Card DB" TAB
-      ssCardDB.insertSheet(shtPlyrName, 0, {template: shtCardDB});
-      shtPlyrCardDB = ssCardDB.getSheets()[0];
+      ssCardDB.insertSheet(shtPlyrName, CardDBNumSht-2, {template: shtCardDB});
+      shtPlyrCardDB = ssCardDB.getSheetByName(shtPlyrName);
       
       // Opens the new sheet and modify appropriate data (Player Name, Header)
       shtPlyrCardDB.getRange(3,3).setValue(shtPlyrName);
@@ -362,10 +364,11 @@ function fcnGenPlayerCardPoolSht(){
   var shtPlyrCardPoolEn;
   var shtPlyrCardPoolFr;
   var shtPlyrName;
-  var PlyrRow
+  var PlyrRow;
+  var CardPoolNumSht;
   
   // Loops through each player starting from the first
-  for (var plyr = NbPlayers; plyr > 0; plyr--){
+  for (var plyr = 1; plyr <= NbPlayers; plyr++){
     
     // Update the Player Row and Get Player Name from Config File
     PlyrRow = plyr + 2; // 2 is the row where the player list starts
@@ -377,22 +380,23 @@ function fcnGenPlayerCardPoolSht(){
     // Look if player exists, if yes, skip, if not, create player
     for(var sheet = NumSheet - 1; sheet >= 0; sheet --){
       SheetName = SheetsCardPool[sheet].getSheetName();
-      Logger.log(SheetName);
       if (SheetName == shtPlyrName) PlayerFound = 1;
     }
     
     if (PlayerFound == 0){
+      // Get the Template sheet index
+      CardPoolNumSht = ssCardPoolEn.getNumSheets();
       // INSERTS TAB BEFORE "Card DB" TAB
       // English Version
-      ssCardPoolEn.insertSheet(shtPlyrName, 0, {template: shtCardPoolEn});
-      shtPlyrCardPoolEn = ssCardPoolEn.getSheets()[0];
+      ssCardPoolEn.insertSheet(shtPlyrName, CardPoolNumSht-1, {template: shtCardPoolEn});
+      shtPlyrCardPoolEn = ssCardPoolEn.getSheetByName(shtPlyrName);
       
       // Opens the new sheet and modify appropriate data (Player Name, Header)
       shtPlyrCardPoolEn.getRange(2,1).setValue(shtPlyrName);
       
       // French Version
-      ssCardPoolFr.insertSheet(shtPlyrName, 0, {template: shtCardPoolFr});
-      shtPlyrCardPoolFr = ssCardPoolFr.getSheets()[0];
+      ssCardPoolFr.insertSheet(shtPlyrName, CardPoolNumSht-1, {template: shtCardPoolFr});
+      shtPlyrCardPoolFr = ssCardPoolFr.getSheetByName(shtPlyrName);
       
       // Opens the new sheet and modify appropriate data (Player Name, Header)
       shtPlyrCardPoolFr.getRange(2,1).setValue(shtPlyrName);    

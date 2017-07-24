@@ -6,7 +6,7 @@
 //
 // **********************************************
 
-function fcnMainTCGMaster() {
+function fcnMainTCG_Master() {
   
   // Opens Spreadsheet
   var ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -14,6 +14,7 @@ function fcnMainTCGMaster() {
   // Config Sheet to get options
   var shtConfig = ss.getSheetByName('Config');
   var ConfigData = shtConfig.getRange(3,9,26,1).getValues();
+  var cfgSendLog = ConfigData[8][0];
   
   // Code Execution Options
   var OptDualSubmission = ConfigData[0][0]; // If Dual Submission is disabled, look for duplicate instead
@@ -160,7 +161,7 @@ function fcnMainTCGMaster() {
       // Execute Game Results Analysis for as long as there are unprocessed entries
       while (EntriesProcessing >= 1) {
         Logger.log('Entered While Loop');
-        fcnGameResults(ss, shtConfig, ConfigData, shtRspn);
+        fcnGameResultsTCG(ss, shtConfig, ConfigData, shtRspn);
         EntriesProcessing = shtRspn.getRange(1, ColNbUnprcsdEntries).getValue();
         Logger.log('Nb of Entries After Processing: %s',EntriesProcessing)
       }
@@ -168,8 +169,8 @@ function fcnMainTCGMaster() {
     Logger.log('Exit Main Function');
   }
   
-  if (EmailValid == 0 && Email != ''){
-    // Set Data Copied cell to 1
+  // Send Log if necessary
+  if (cfgSendLog == 'Enabled' || (EmailValid == 0 && Email != '')){
     Logger.log('Submission Email Not Valid : %s',Email)
     // Send Log by email
     var recipient = Session.getActiveUser().getEmail();
@@ -188,7 +189,7 @@ function fcnMainTCGMaster() {
 //
 // **********************************************
 
-function fcnGameResults(ss, shtConfig, ConfigData, shtRspn) {
+function fcnGameResultsTCG(ss, shtConfig, ConfigData, shtRspn) {
   
   // Data from Configuration File
   // Code Execution Options
@@ -209,6 +210,7 @@ function fcnGameResults(ss, shtConfig, ConfigData, shtRspn) {
   var RspnDataInputs = ConfigData[21][0]; // from Time Stamp to Data Processed
   var NbCards = ConfigData[22][0];
   var ColNextEmptyRow = ConfigData[24][0];
+  var ColNbUnprcsdEntries = ConfigData[25][0];
   
   // Test Sheet (for Debug)
   var shtTest = ss.getSheetByName('Test') ; 
@@ -491,14 +493,17 @@ function fcnGameResults(ss, shtConfig, ConfigData, shtRspn) {
         shtRspn.getRange(1, ColMatchIDLastVal).setValue(MatchID);
       }
       
-      // Set the Processed Flag and Status Message for the response
-      Status[0] = 2; // Processed
-      Status[1] = 'Processed';
+      // Set the Processed Flag and Status Message for the response if there are no errors
+      if (Status[0] >= 1 ){
+        Status[0] = 2; // Processed
+        Status[1] = 'Processed';
+      }
       
       shtRspn.getRange(RspnRow, ColPrcsd).setValue(RspnDataPrcssd);
       shtRspn.getRange(RspnRow, ColNextEmptyRow).setValue('=IF(INDIRECT("R[0]C[-30]",FALSE)<>"",1,"")');
       shtRspn.getRange(RspnRow, ColStatus).setValue(Status[0]);
       shtRspn.getRange(RspnRow, ColStatusMsg).setValue(Status[1]);
+      shtRspn.getRange(RspnRow, ColNbUnprcsdEntries).setValue(0);
       
       // Set the Matching Response Match ID if Matching Response found
       if (MatchingRspn > 0) shtRspn.getRange(MatchingRspn, ColMatchID).setValue(MatchID);	  
