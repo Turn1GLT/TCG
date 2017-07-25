@@ -49,6 +49,11 @@ function fcnSendConfirmEmailEN(shtConfig, Address, MatchData) {
   // Variables
   var EmailSubject;
   var EmailMessage;
+  var Address1;
+  var Language1;
+  var Address2;
+  var Language2;
+  var AddressBCC;
   
   // Get Document URLs
   var UrlValues = shtConfig.getRange(17,2,3,1).getValues();
@@ -104,8 +109,24 @@ function fcnSendConfirmEmailEN(shtConfig, Address, MatchData) {
   EmailMessage += '</body></html>';
   
   // Sends email to both players with the Match Data
-  if (Address[1][0] == 'English' && Address[1][1] != '') MailApp.sendEmail(Address[1][1], EmailSubject, EmailMessage,{name:'Turn 1 Gaming League Manager',htmlBody:EmailMessage});
-  if (Address[2][0] == 'English' && Address[2][1] != '') MailApp.sendEmail(Address[2][1], EmailSubject, EmailMessage,{name:'Turn 1 Gaming League Manager',htmlBody:EmailMessage});
+  Address1  = Address[1][1];
+  Language1 = Address[1][0];
+  Address2  = Address[2][1];
+  Language2 = Address[2][0];
+  
+  // If both players share the same language
+  if(Language1 == 'English' && Language2 == 'English'){
+    AddressBCC = Address1 + ', ' + Address2;
+    MailApp.sendEmail("", EmailSubject, "",{bcc:AddressBCC, name:'Turn 1 Gaming League Manager',htmlBody:EmailMessage});
+  }
+  
+  if(Language1 == 'English' && Language2 != 'English'){
+    MailApp.sendEmail(Address1, EmailSubject, EmailMessage,{name:'Turn 1 Gaming League Manager',htmlBody:EmailMessage});
+  }
+  
+  if(Language2 == 'English' && Language1 != 'English'){
+    MailApp.sendEmail(Address2, EmailSubject, EmailMessage,{name:'Turn 1 Gaming League Manager',htmlBody:EmailMessage});
+  }
 }
 
 
@@ -121,9 +142,12 @@ function fcnSendErrorEmailEN(shtConfig, Address, MatchData, MatchID, Status) {
   
   // Variables
   var EmailSubject;
-  var EmailMessage;
-  var EmailName1 = '';
-  var EmailName2 = '';
+  var EmailMessage;  
+  var Address1;
+  var Language1;
+  var Address2;
+  var Language2;
+  var AddressBCC;
   
   // Get Document URLs
   var UrlValues = shtConfig.getRange(17,2,3,1).getValues();
@@ -245,7 +269,12 @@ function fcnSendConfirmEmailFR(shtConfig, Address, MatchData) {
   
   // Variables
   var EmailSubject;
-  var EmailMessage;
+  var EmailMessage;  
+  var Address1;
+  var Language1;
+  var Address2;
+  var Language2;
+  var AddressBCC;
   
   // Get Document URLs
   var UrlValues = shtConfig.getRange(20,2,3,1).getValues();
@@ -301,8 +330,24 @@ function fcnSendConfirmEmailFR(shtConfig, Address, MatchData) {
   EmailMessage += "</body></html>";
   
   // Sends email to both players with the Match Data
-  if (Address[1][0] == 'Français' && Address[1][1] != '') MailApp.sendEmail(Address[1][1], EmailSubject, EmailMessage,{name:'Turn 1 Gaming League Manager',htmlBody:EmailMessage});
-  if (Address[2][0] == 'Français' && Address[2][1] != '') MailApp.sendEmail(Address[2][1], EmailSubject, EmailMessage,{name:'Turn 1 Gaming League Manager',htmlBody:EmailMessage});
+  Address1  = Address[1][1];
+  Language1 = Address[1][0];
+  Address2  = Address[2][1];
+  Language2 = Address[2][0];
+  
+  // If both players share the same language
+  if(Language1 == 'Français' && Language2 == 'Français'){
+    AddressBCC = Address1 + ', ' + Address2;
+    MailApp.sendEmail("", EmailSubject, "",{bcc:AddressBCC, name:'Turn 1 Gaming League Manager',htmlBody:EmailMessage});
+  }
+  
+  if(Language1 == 'Français' && Language2 != 'Français'){
+    MailApp.sendEmail(Address1, EmailSubject, EmailMessage,{name:'Turn 1 Gaming League Manager',htmlBody:EmailMessage});
+  }
+  
+  if(Language2 == 'Français' && Language1 != 'Français'){
+    MailApp.sendEmail(Address2, EmailSubject, EmailMessage,{name:'Turn 1 Gaming League Manager',htmlBody:EmailMessage});
+  }
 }
 
 
@@ -318,9 +363,12 @@ function fcnSendErrorEmailFR(shtConfig, Address, MatchData, MatchID, Status) {
   
   // Variables
   var EmailSubject;
-  var EmailMessage;
-  var EmailName1 = '';
-  var EmailName2 = '';
+  var EmailMessage;  
+  var Address1;
+  var Language1;
+  var Address2;
+  var Language2;
+  var AddressBCC;
   
   // Get Document URLs
   var UrlValues = shtConfig.getRange(20,2,3,1).getValues();

@@ -10,7 +10,7 @@ function onOpenTCG_Master() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   
   var AnalyzeDataMenu  = [];
-  AnalyzeDataMenu.push({name: 'Analyze New Match Entry', functionName: 'fcnMainTCGMaster'});
+  AnalyzeDataMenu.push({name: 'Analyze New Match Entry', functionName: 'fcnMainTCG_Master'});
   AnalyzeDataMenu.push({name: 'Reset Match Entries', functionName:'fcnResetLeagueMatch'});
   
   var LeagueMenu = [];
