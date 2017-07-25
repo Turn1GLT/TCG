@@ -429,53 +429,6 @@ function fcnSendErrorEmailFR(shtConfig, Address, MatchData, MatchID, Status) {
   }
 }
 
-// **********************************************
-// function fcnSendFeedbackEmail()
-//
-// This function generates the feedback email 
-//
-// **********************************************
-
-function fcnSendFeedbackEmail(shtConfig, Address, MatchData, Feedback) {
-  
-  // Variables
-  var EmailSubject;
-  var EmailMessage;
-  
-  // League Name
-  var Location = shtConfig.getRange(11,2).getValue();
-  var LeagueTypeEN = shtConfig.getRange(13,2).getValue();
-  var LeagueNameEN = shtConfig.getRange(3,2).getValue() + ' ' + LeagueTypeEN;
-    
-  // Match Data Assignation
-  var MatchID = MatchData[2][0];
-  var Week    = MatchData[3][0];
-  var Winr    = MatchData[4][0];
-  var Losr    = MatchData[5][0];
-  
-  // Set Email Subject
-  EmailSubject = Location + ' ' + LeagueNameEN + ' - Week ' + Week + ' - Player Feedback' ;
-  
-  // Start of Email Message
-  EmailMessage = '<html><body>';
-  
-  EmailMessage += 'Match ID: ' + MatchID + '<br>' +
-    'Week: ' + Week + '<br>' +
-      'Winning Player: ' + Winr + '<br>' +
-        'Losing Player: ' + Losr + '<br><br>';
-  EmailMessage += 'Here is the feedback received by:<br><br>'+
-    Address[1][1]+'<br>'+
-      Address[2][1]+'<br><br>'+
-        Feedback;
-  
-  // End of Email Message
-  EmailMessage += '</body></html>';
-  
-  // Send email to Administrator
-  MailApp.sendEmail(Address[0][1], EmailSubject, EmailMessage,{name:'Turn 1 Gaming League Manager',htmlBody:EmailMessage});
-}
-
-
 
 // **********************************************
 // function subMatchReportTable()
@@ -533,8 +486,57 @@ function subMatchReportTable(EmailMessage, Headers, MatchData, Param){
   return EmailMessage +'</table>';
 }
 
+
 // **********************************************
-// function subMatchReportTable()
+// function fcnSendFeedbackEmail()
+//
+// This function generates the feedback email 
+//
+// **********************************************
+
+function fcnSendFeedbackEmail(shtConfig, Address, MatchData, Feedback) {
+  
+  // Variables
+  var EmailSubject;
+  var EmailMessage;
+  
+  // League Name
+  var Location = shtConfig.getRange(11,2).getValue();
+  var LeagueTypeEN = shtConfig.getRange(13,2).getValue();
+  var LeagueNameEN = shtConfig.getRange(3,2).getValue() + ' ' + LeagueTypeEN;
+    
+  // Match Data Assignation
+  var MatchID = MatchData[2][0];
+  var Week    = MatchData[3][0];
+  var Winr    = MatchData[4][0];
+  var Losr    = MatchData[5][0];
+  
+  // Set Email Subject
+  EmailSubject = Location + ' ' + LeagueNameEN + ' - Week ' + Week + ' - Player Feedback' ;
+  
+  // Start of Email Message
+  EmailMessage = '<html><body>';
+  
+  EmailMessage += 'Match ID: ' + MatchID + '<br>' +
+    'Week: ' + Week + '<br>' +
+      'Winning Player: ' + Winr + '<br>' +
+        'Losing Player: ' + Losr + '<br><br>';
+  EmailMessage += 'Here is the feedback received by:<br><br>'+
+    Address[1][1]+'<br>'+
+      Address[2][1]+'<br><br>'+
+        Feedback;
+  
+  // End of Email Message
+  EmailMessage += '</body></html>';
+  
+  // Send email to Administrator
+  MailApp.sendEmail(Address[0][1], EmailSubject, EmailMessage,{name:'Turn 1 Gaming League Manager',htmlBody:EmailMessage});
+}
+
+
+
+// **********************************************
+// function subEmailPlayerPenaltyTable()
 //
 // This function generates the HTML table that displays 
 // the Match Data and Booster Pack Data

@@ -92,7 +92,7 @@ function onWeekChangeTCG_Master(){
   EmailSubject = LeagueNameEN +' - Week ' + LastWeek + ' Report';
   EmailMessage = 'Week ' + LastWeek + ' is now complete and Week '+ Week +' has started. <br><br>Here is the week report for Week ' + LastWeek + '.<br><br>' +
     MatchesPlayed +' matches were played this week.<br><br>'+
-      MatchesPlayedStore +' matches were played at the store this week.<br>'+
+      MatchesPlayedStore +' matches were played at the store this week.<br><br>'+
         'etc etc etc...<br><br>';
 
   // If there is a minimum games to play per week, generate the Penalty Losses

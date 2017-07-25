@@ -369,7 +369,7 @@ function fcnGenPlayerCardPoolSht(){
   
   // Loops through each player starting from the first
   for (var plyr = 1; plyr <= NbPlayers; plyr++){
-    
+  
     // Update the Player Row and Get Player Name from Config File
     PlyrRow = plyr + 2; // 2 is the row where the player list starts
     shtPlyrName = shtPlayers.getRange(PlyrRow, 2).getValue();
@@ -380,23 +380,26 @@ function fcnGenPlayerCardPoolSht(){
     // Look if player exists, if yes, skip, if not, create player
     for(var sheet = NumSheet - 1; sheet >= 0; sheet --){
       SheetName = SheetsCardPool[sheet].getSheetName();
+      
+      Logger.log('Player: %s',SheetName);
       if (SheetName == shtPlyrName) PlayerFound = 1;
     }
     
     if (PlayerFound == 0){
+      Logger.log('Player: %s',shtPlyrName);
       // Get the Template sheet index
       CardPoolNumSht = ssCardPoolEn.getNumSheets();
       // INSERTS TAB BEFORE "Card DB" TAB
       // English Version
       ssCardPoolEn.insertSheet(shtPlyrName, CardPoolNumSht-1, {template: shtCardPoolEn});
-      shtPlyrCardPoolEn = ssCardPoolEn.getSheetByName(shtPlyrName);
+      shtPlyrCardPoolEn = ssCardPoolEn.getSheetByName(shtPlyrName).showSheet();
       
       // Opens the new sheet and modify appropriate data (Player Name, Header)
       shtPlyrCardPoolEn.getRange(2,1).setValue(shtPlyrName);
       
       // French Version
       ssCardPoolFr.insertSheet(shtPlyrName, CardPoolNumSht-1, {template: shtCardPoolFr});
-      shtPlyrCardPoolFr = ssCardPoolFr.getSheetByName(shtPlyrName);
+      shtPlyrCardPoolFr = ssCardPoolFr.getSheetByName(shtPlyrName).showSheet();
       
       // Opens the new sheet and modify appropriate data (Player Name, Header)
       shtPlyrCardPoolFr.getRange(2,1).setValue(shtPlyrName);    
@@ -407,8 +410,7 @@ function fcnGenPlayerCardPoolSht(){
   shtPlyrCardPoolEn = ssCardPoolEn.getSheets()[0];
   ssCardPoolEn.setActiveSheet(shtPlyrCardPoolEn);
   ssCardPoolEn.getSheetByName('Template').hideSheet();
-  
-  
+    
   // French Version
   shtPlyrCardPoolFr = ssCardPoolFr.getSheets()[0];
   ssCardPoolFr.setActiveSheet(shtPlyrCardPoolFr);
