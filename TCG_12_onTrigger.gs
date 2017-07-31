@@ -118,6 +118,6 @@ function onWeekChangeTCG_Master(){
   fcnUpdateStandings(ss, shtConfig);
   
   // Copy all data to League Spreadsheet
-  fcnCopyStandingsResults(ss, shtConfig);
+  fcnCopyStandingsResults(ss, shtConfig, LastWeek, 0);
   
 }

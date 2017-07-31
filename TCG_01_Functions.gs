@@ -479,7 +479,7 @@ function fcnUpdateStandings(ss, shtConfig){
 //
 // **********************************************
 
-function fcnCopyStandingsResults(ss, shtConfig){
+function fcnCopyStandingsResults(ss, shtConfig, RspnWeekNum, AllSheets){
 
   var ssLgStdIDEn = shtConfig.getRange(34,2).getValue();
   var ssLgStdIDFr = shtConfig.getRange(35,2).getValue();
@@ -499,6 +499,8 @@ function fcnCopyStandingsResults(ss, shtConfig){
   // Number of Players
   var NbPlayers = ss.getSheetByName('Players').getRange(2,6).getValue();
   
+  var WeekSheet = RspnWeekNum + 1;
+  
   // Function Variables
   var ssMstrSht;
   var ssMstrShtStartRow;
@@ -509,32 +511,39 @@ function fcnCopyStandingsResults(ss, shtConfig){
   var ssMstrEndDate;
   var NumValues;
   var ColValues;
+  var SheetName;
   
   var ssLgShtEn;
   var ssLgShtFr;
   var WeekGame;
   
-  // Loops through tabs 0-8 (Standings, Cumulative Results, Week 1-7)
-  for (var sht = 0; sht <=9; sht++){
+  // Loops through tabs 0-9 (Standings, Cumulative Results, Week 1-8)
+  for (var sht = 0; sht <= 9; sht++){
     ssMstrSht = ss.getSheets()[sht];
-    ssMstrShtMaxRows = ssMstrSht.getMaxRows();
-    ssMstrShtMaxCols = ssMstrSht.getMaxColumns();
+    SheetName = ssMstrSht.getSheetName();
     
-    ssLgShtEn = ssLgEn.getSheets()[sht];
-    ssLgShtFr = ssLgFr.getSheets()[sht];
+    if(sht == 0 || sht == 1 || sht == WeekSheet || AllSheets == 1){
+      ssMstrShtMaxRows = ssMstrSht.getMaxRows();
+      ssMstrShtMaxCols = ssMstrSht.getMaxColumns();
+      
+      ssLgShtEn = ssLgEn.getSheets()[sht];
+      ssLgShtFr = ssLgFr.getSheets()[sht];
+      
+      if (sht == 0) ssMstrShtStartRow = 6;
+      if (sht >= 1 && sht <= 9) ssMstrShtStartRow = 5;
+      
+      // Set the number of values to fetch
+      NumValues = ssMstrShtMaxRows - ssMstrShtStartRow + 1;
+      
+      // Get Range and Data from Master and copy to Standings
+      ssMstrShtData = ssMstrSht.getRange(ssMstrShtStartRow,1,NumValues,ssMstrShtMaxCols).getValues();
+      ssLgShtEn.getRange(ssMstrShtStartRow,1,NumValues,ssMstrShtMaxCols).setValues(ssMstrShtData);
+      ssLgShtFr.getRange(ssMstrShtStartRow,1,NumValues,ssMstrShtMaxCols).setValues(ssMstrShtData);
+    }
     
-    if (sht == 0) ssMstrShtStartRow = 6;
-    if (sht >= 1 && sht <= 9) ssMstrShtStartRow = 5;
-    
-    // Set the number of values to fetch
-    NumValues = ssMstrShtMaxRows - ssMstrShtStartRow + 1;
-    
-    // Get Range and Data from Master and copy to Standings
-    ssMstrShtData = ssMstrSht.getRange(ssMstrShtStartRow,1,NumValues,ssMstrShtMaxCols).getValues();
-    ssLgShtEn.getRange(ssMstrShtStartRow,1,NumValues,ssMstrShtMaxCols).setValues(ssMstrShtData);
-    ssLgShtFr.getRange(ssMstrShtStartRow,1,NumValues,ssMstrShtMaxCols).setValues(ssMstrShtData);
-    
+    // Standings Sheet
     if (sht == 0){
+      Logger.log('Updating Sheet %s',SheetName);
       // Update League Name
       ssLgShtEn.getRange(4,2).setValue(LeagueName + ' League Standings')
       ssLgShtFr.getRange(4,2).setValue('Classement Ligue ' + LeagueName)
@@ -543,7 +552,9 @@ function fcnCopyStandingsResults(ss, shtConfig){
       ssLgShtFr.getRange(2,5).setValue('=HYPERLINK("' + FormUrlFR + '","Envoyer Résultats de Match")'); 
     }
     
+    // Cumulative Results Sheet
     if (sht == 1){
+      Logger.log('Updating Sheet %s',SheetName);
       WeekGame = ssMstrSht.getRange(2,3,3,1).getValues();
       ssLgShtEn.getRange(2,3,3,1).setValues(WeekGame);
       ssLgShtFr.getRange(2,3,3,1).setValues(WeekGame);
@@ -567,8 +578,9 @@ function fcnCopyStandingsResults(ss, shtConfig){
       ssLgShtFr.getRange(ssMstrShtStartRow, 13, NumValues, 1).setValues(ColValues);
     }
     
-    // Copy Week Dates for Week Results and Add 
-    if (sht >=2){
+    // Week Sheet 
+    if (sht == WeekSheet || AllSheets == 1){
+      Logger.log('Updating Sheet %s',SheetName);
       ssMstrStartDate = ssMstrSht.getRange(3,2).getValue();
       ssMstrEndDate   = ssMstrSht.getRange(4,2).getValue();
       ssLgShtEn.getRange(3,2).setValue('Start: ' + ssMstrStartDate);

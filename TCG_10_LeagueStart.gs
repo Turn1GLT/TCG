@@ -47,7 +47,7 @@ function fcnInitLeague(){
   Logger.log('League Data Cleared');
   
   // Update Standings Copies
-  fcnCopyStandingsResults(ss, shtConfig)
+  fcnCopyStandingsResults(ss, shtConfig, 0, 1);
   Logger.log('Standings Updated');
   
   // Clear Players DB and Card Pools
@@ -110,7 +110,7 @@ function fcnResetLeagueMatch(){
   Logger.log('League Data Cleared');
   
   // Update Standings Copies
-  fcnCopyStandingsResults(ss, shtConfig)
+  fcnCopyStandingsResults(ss, shtConfig, 0, 1);
   Logger.log('Standings Updated');
  
 }

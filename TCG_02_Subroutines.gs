@@ -106,3 +106,37 @@ function subGenErrorMsg(Status, ErrorVal,Param) {
 return Status;
 }
 
+
+// **********************************************
+// function subUpdateStatus()
+//
+// This function updates the status of 
+// the entry currently processing
+//
+// **********************************************
+
+function subUpdateStatus(shtRspn, RspnRow, ColStatus, ColStatusMsg, StatusNum) {
+  
+  var StatusMsg
+  
+  switch(StatusNum){
+    case  0: StatusMsg = 'Not Processed'; break;
+    case  1: StatusMsg = 'Process Starting'; break;
+    case  2: StatusMsg = 'Finding Duplicate'; break;
+    case  3: StatusMsg = 'Finding Dual Response'; break;
+    case  4: StatusMsg = 'Post Results in Week Tab'; break;
+    case  5: StatusMsg = 'Update Card DB and Card List'; break;
+    case  6: StatusMsg = 'Data Processed'; break;
+    case  7: StatusMsg = 'Sending Email Confirmation'; break;
+    case  8: StatusMsg = 'Sending Email Error'; break;
+    case  9: StatusMsg = 'Updating Match ID'; break;
+    case 10: StatusMsg = 'Match Processed'; break;
+	
+  }
+   
+  // Updating Status Data
+  shtRspn.getRange(RspnRow, ColStatus).setValue(StatusNum);
+  shtRspn.getRange(RspnRow, ColStatusMsg).setValue(StatusMsg);
+
+  return StatusMsg;
+}
