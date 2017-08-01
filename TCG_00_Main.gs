@@ -44,6 +44,9 @@ function fcnMainTCG_Master() {
   var EmailValid = 0;
   var RspnRow;
   
+  // Data Processing Flags
+  var Status = new Array(2); // Status[0] = Status Value, Status[1] = Status Message
+  
   // Function Polled Values
   var RspnNextRow = shtRspn.getRange(1, ColNextEmptyRow).getValue();
   var EntriesProcessing;
@@ -145,12 +148,13 @@ function fcnMainTCG_Master() {
     if (DataCopied == 1){
       
       // Copy New Entry Data to Main Responses Sheet
-      shtRspn.getRange(RspnNextRow + EntriesProcessing, 1, 1, RspnDataInputs).setValues(ResponseData);
+      shtRspn.getRange(RspnNextRow, 1, 1, RspnDataInputs).setValues(ResponseData);
       
       Logger.log('Match Data Copied for Players: %s, %s',ResponseData[0][4],ResponseData[0][5]);
       
       // Copy Formula to detect if an entry is currently processing
-      shtRspn.getRange(RspnNextRow + EntriesProcessing, ColNbUnprcsdEntries).setValue('=IF(AND(INDIRECT("R[0]C[-31]",FALSE)<>"",INDIRECT("R[0]C[-4]",FALSE)<>2),1,"")');
+      shtRspn.getRange(RspnNextRow, ColNextEmptyRow).setValue('=IF(INDIRECT("R[0]C[-30]",FALSE)<>"",1,"")');
+      shtRspn.getRange(RspnNextRow, ColNbUnprcsdEntries).setValue('=IF(AND(INDIRECT("R[0]C[-31]",FALSE)<>"",INDIRECT("R[0]C[-4]",FALSE)<>2),1,"")');
       
       // Troubleshoot
       EntriesProcessing = shtRspn.getRange(1, ColNbUnprcsdEntries).getValue();
@@ -160,12 +164,24 @@ function fcnMainTCG_Master() {
       if (EntriesProcessing == 1){
         // Execute Game Results Analysis for as long as there are unprocessed entries
         while (EntriesProcessing >= 1) {
-          fcnGameResultsTCG(ss, shtConfig, ConfigData, shtRspn);
+          Status = fcnGameResultsTCG(ss, shtConfig, ConfigData, shtRspn);
           EntriesProcessing = shtRspn.getRange(1, ColNbUnprcsdEntries).getValue();
           Logger.log('Nb of Entries Pending After Processing: %s',EntriesProcessing)
         }
       }
-      Logger.log('Exit Main Function');
+      // If the Match was successfully Posted, Update League Standings
+      if (Status[0] == 10){
+        Logger.log('--------- Updating Standings ---------');
+        Logger.log('Update Standings');
+        // Execute Ranking function in Standing tab
+        fcnUpdateStandings(ss, shtConfig);
+        
+        Logger.log('Copy to League Spreadsheets');
+        // Copy all data to League Spreadsheet
+        fcnCopyStandingsResults(ss, shtConfig);
+        Logger.log('------------ Standings Updated ------------');
+      }
+      
     }
   }
   
@@ -174,7 +190,7 @@ function fcnMainTCG_Master() {
     if(EmailValid == 0) Logger.log('Submission Email Not Valid : %s',Email)
     // Send Log by email
     var recipient = Session.getActiveUser().getEmail();
-    var subject = shtConfig.getRange(11,2).getValue() + ' ' + shtConfig.getRange(13,2).getValue()
+    var subject = 'TCG Process Log - ' + shtConfig.getRange(11,2).getValue() + ' ' + shtConfig.getRange(13,2).getValue()
     var body = Logger.getLog();
     MailApp.sendEmail(recipient, subject, body);  
   }
@@ -262,17 +278,15 @@ function fcnGameResultsTCG(ss, shtConfig, ConfigData, shtRspn) {
 
   // Data Processing Flags
   var Status = new Array(2); // Status[0] = Status Value, Status[1] = Status Message
-  
-  // Updates the Status while processing
-  Status[0] = 1;
-  Status[1] = subUpdateStatus(shtRspn, RspnRow, ColStatus, ColStatusMsg, Status[0]);
+  Status[0] = 0;
   
   var DuplicateRspn = -99;
   var MatchingRspn = -98;
   var MatchPostStatus = -97;
   var CardDBUpdated = -96;
   
-  Logger.log('Start of Main Function Executed');
+  Logger.log('--------- Posting Match ---------');  
+  Logger.log('--------- Options ---------');
   Logger.log('Dual Submission Option: %s',OptDualSubmission);
   Logger.log('Post Results Option: %s',OptPostResult);
   Logger.log('Player Match Validation Option: %s',OptPlyrMatchValidation);
@@ -301,20 +315,29 @@ function fcnGameResultsTCG(ss, shtConfig, ConfigData, shtRspn) {
       // If both Players in the response are different, continue
       if (RspnDataWinr != RspnDataLosr){
         
+        // Updates the Status while processing
+        if(Status[0] >= 0){
+          Status[0] = 1;
+          Status[1] = subUpdateStatus(shtRspn, RspnRow, ColStatus, ColStatusMsg, Status[0]);
+        }
+        
         // Generates the Match ID in advance if data analysis is successful
         MatchID = shtRspn.getRange(1, ColMatchIDLastVal).getValue() + 1;
         
         Logger.log('New Data Found at Row: %s',RspnRow);
 
         // Updates the Status while processing
-        Status[0] = 2;
-        Status[1] = subUpdateStatus(shtRspn, RspnRow, ColStatus, ColStatusMsg, Status[0]);
-
+        if(Status[0] >= 0){
+          Status[0] = 2;
+          Status[1] = subUpdateStatus(shtRspn, RspnRow, ColStatus, ColStatusMsg, Status[0]);
+        }
+        
         // Look for Duplicate Entry (looks in all entries with MatchID and combination of Week Number, Winner and Loser) 
         // Real code will look at Player Posting Data as well
         DuplicateRspn = fcnFindDuplicateData(ss, ConfigData, shtRspn, ResponseData, RspnRow, RspnMaxRows, shtTest);  
         
-        Logger.log('Duplicate Result: %s', DuplicateRspn);
+        if(DuplicateRspn == 0) Logger.log('No Duplicate Found');
+        if(DuplicateRspn > 0 ) Logger.log('Duplicate Found at Row: %s', DuplicateRspn);
         
         // FindDuplicateEntry function was executed properly and didn't find any Duplicate entry, continue analyzing the response data
         if (DuplicateRspn == 0){
@@ -323,9 +346,10 @@ function fcnGameResultsTCG(ss, shtConfig, ConfigData, shtRspn) {
           if (OptDualSubmission == 'Enabled'){
             
             // Updates the Status while processing
-            Status[0] = 3; 
-            Status[1] = subUpdateStatus(shtRspn, RspnRow, ColStatus, ColStatusMsg, Status[0]);
-            
+            if(Status[0] >= 0){
+              Status[0] = 3; 
+              Status[1] = subUpdateStatus(shtRspn, RspnRow, ColStatus, ColStatusMsg, Status[0]);
+            }
             // function returns row where the matching data was found
             MatchingRspn = fcnFindMatchingData(ss, ConfigData, shtRspn, ResponseData, RspnRow, RspnMaxRows, shtTest);
             if (MatchingRspn < 0) DuplicateRspn = 0 - MatchingRspn;
@@ -347,9 +371,10 @@ function fcnGameResultsTCG(ss, shtConfig, ConfigData, shtRspn) {
               MatchingRspnData = shtRspn.getRange(MatchingRspn, 1, 1, RspnDataInputs).getValues();
               
               // Updates the Status while processing
-              Status[0] = 4; 
-              Status[1] = subUpdateStatus(shtRspn, RspnRow, ColStatus, ColStatusMsg, Status[0]);
-              
+              if(Status[0] >= 0){
+                Status[0] = 4; 
+                Status[1] = subUpdateStatus(shtRspn, RspnRow, ColStatus, ColStatusMsg, Status[0]);
+              }
               // Execute function to populate Match Result Sheet from processed data
               MatchData = fcnPostMatchResultsTCG(ss, ConfigData, shtRspn, ResponseData, MatchingRspnData, MatchID, MatchData, shtTest);
               MatchPostStatus = MatchData[25][0];
@@ -370,9 +395,10 @@ function fcnGameResultsTCG(ss, shtConfig, ConfigData, shtRspn) {
                   if (CardList[0] != 'No Pack Opened') {
                     
                     // Updates the Status while processing
-                    Status[0] = 5; 
-                    Status[1] = subUpdateStatus(shtRspn, RspnRow, ColStatus, ColStatusMsg, Status[0]);
-                    
+                    if(Status[0] >= 0){
+                      Status[0] = 5; 
+                      Status[1] = subUpdateStatus(shtRspn, RspnRow, ColStatus, ColStatusMsg, Status[0]);
+                    }
                     // Update the Card DB and Card List
                     PackData = fcnUpdateCardDB(shtConfig, RspnDataLosr, CardList, PackData, shtTest);
                     // Copy all card names to Match Data [7-22]
@@ -405,17 +431,21 @@ function fcnGameResultsTCG(ss, shtConfig, ConfigData, shtRspn) {
               
             }
             // Updates the Status while processing
-            Status[0] = 6; 
-            Status[1] = subUpdateStatus(shtRspn, RspnRow, ColStatus, ColStatusMsg, Status[0]);
+            if(Status[0] >= 0){
+              Status[0] = 6; 
+              Status[1] = subUpdateStatus(shtRspn, RspnRow, ColStatus, ColStatusMsg, Status[0]);
+            }
             // Set the Data Processed Flag
             RspnDataPrcssd = 1;
           }
           
           // If MatchingEntry = 0, fcnFindMatchingEntry did not find a matching entry, it might be the first response entry
           if (OptDualSubmission == 'Enabled' && MatchingRspn == 0){
-            // Generate the Status Message
-            Status[0] = 0;
-            Status[1] = 'Waiting for Other Response Submission';
+            // Updates the Status while processing
+            if(Status[0] >= 0){
+              Status[0] = 0;
+              Status[1] = 'Waiting for Other Response Submission';
+            }
             // Set the Data Processed Flag
             RspnDataPrcssd = 1;
             
@@ -474,9 +504,10 @@ function fcnGameResultsTCG(ss, shtConfig, ConfigData, shtRspn) {
       if(Status[0] >= 0 && OptSendEmail == 'Enabled') {
         
         // Updates the Status while processing
-        Status[0] = 7; 
-        Status[1] = subUpdateStatus(shtRspn, RspnRow, ColStatus, ColStatusMsg, Status[0]);
-        
+        if(Status[0] >= 0){
+          Status[0] = 7; 
+          Status[1] = subUpdateStatus(shtRspn, RspnRow, ColStatus, ColStatusMsg, Status[0]);
+        }
         // Get Email addresses from Config File
         EmailAddresses = subGetEmailAddress(ss, EmailAddresses, RspnDataWinr, RspnDataLosr);
         
@@ -488,11 +519,7 @@ function fcnGameResultsTCG(ss, shtConfig, ConfigData, shtRspn) {
       
       // If an Error has been detected that prevented to process the Match Data, send available data and Error Message
       if(Status[0] < 0 && OptSendEmail == 'Enabled') {
-        
-        // Updates the Status while processing
-        Status[0] = 8; 
-        Status[1] = subUpdateStatus(shtRspn, RspnRow, ColStatus, ColStatusMsg, Status[0]);
-        
+     
         // Populates Match Data
         MatchData[0][0] = ResponseData[0][0]; // TimeStamp
         MatchData[0][0] = Utilities.formatDate (MatchData[0][0], Session.getScriptTimeZone(), 'YYYY-MM-dd HH:mm:ss');
@@ -520,9 +547,10 @@ function fcnGameResultsTCG(ss, shtConfig, ConfigData, shtRspn) {
       }
       
       // Updates the Status while processing
-      Status[0] = 9; 
-      Status[1] = subUpdateStatus(shtRspn, RspnRow, ColStatus, ColStatusMsg, Status[0]);
-      
+      if(Status[0] >= 0){
+        Status[0] = 9; 
+        Status[1] = subUpdateStatus(shtRspn, RspnRow, ColStatus, ColStatusMsg, Status[0]);
+      }
       // Set the Match ID (for both Response and Matching Entry), and Updates the Last Match ID generated, 
       if (MatchPostStatus == 1 || OptPostResult == 'Disabled'){
         shtRspn.getRange(RspnRow, ColMatchID).setValue(MatchID);
@@ -530,12 +558,12 @@ function fcnGameResultsTCG(ss, shtConfig, ConfigData, shtRspn) {
       }
       
       // Updates the Status while processing
-      Status[0] = 10; 
-      Status[1] = subUpdateStatus(shtRspn, RspnRow, ColStatus, ColStatusMsg, Status[0]);
-      
+      if(Status[0] >= 0){
+        Status[0] = 10; 
+        Status[1] = subUpdateStatus(shtRspn, RspnRow, ColStatus, ColStatusMsg, Status[0]);
+      }
       // Updating Match Process Data
       shtRspn.getRange(RspnRow, ColPrcsd).setValue(RspnDataPrcssd);
-      shtRspn.getRange(RspnRow, ColNextEmptyRow).setValue('=IF(INDIRECT("R[0]C[-30]",FALSE)<>"",1,"")');
       shtRspn.getRange(RspnRow, ColNbUnprcsdEntries).setValue(0);
       
       // Set the Matching Response Match ID if Matching Response found
@@ -548,15 +576,7 @@ function fcnGameResultsTCG(ss, shtConfig, ConfigData, shtRspn) {
       RspnRow = RspnMaxRows + 1;
     }
   }
-  Logger.log('Update Standings');
-  // Execute Ranking function in Standing tab
-  fcnUpdateStandings(ss, shtConfig);
-  
-  Logger.log('Copy to League Spreadsheets');
-  // Copy all data to League Spreadsheet
-  fcnCopyStandingsResults(ss, shtConfig, RspnWeekNum, 0);
-  
-    Logger.log('------------ Game Posted and Standings Updated ------------');
+  return Status;
 }
 
 

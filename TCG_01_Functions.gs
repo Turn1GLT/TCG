@@ -494,7 +494,10 @@ function fcnCopyStandingsResults(ss, shtConfig, RspnWeekNum, AllSheets){
   
   // League Name
   var Location = shtConfig.getRange(11,2).getValue();
-  var LeagueName = shtConfig.getRange(3,2).getValue();
+  var LeagueTypeEN = shtConfig.getRange(13,2).getValue();
+  var LeagueNameEN = Location + ' ' + LeagueTypeEN;
+  var LeagueTypeFR = shtConfig.getRange(14,2).getValue();
+  var LeagueNameFR = LeagueTypeFR + ' ' + Location;
   
   // Number of Players
   var NbPlayers = ss.getSheetByName('Players').getRange(2,6).getValue();
@@ -545,8 +548,8 @@ function fcnCopyStandingsResults(ss, shtConfig, RspnWeekNum, AllSheets){
     if (sht == 0){
       Logger.log('Updating Sheet %s',SheetName);
       // Update League Name
-      ssLgShtEn.getRange(4,2).setValue(LeagueName + ' League Standings')
-      ssLgShtFr.getRange(4,2).setValue('Classement Ligue ' + LeagueName)
+      ssLgShtEn.getRange(4,2).setValue(LeagueNameEN + ' Standings')
+      ssLgShtFr.getRange(4,2).setValue('Classement ' + LeagueNameFR)
       // Update Form Link
       ssLgShtEn.getRange(2,5).setValue('=HYPERLINK("' + FormUrlEN + '","Send Match Results")');      
       ssLgShtFr.getRange(2,5).setValue('=HYPERLINK("' + FormUrlFR + '","Envoyer Résultats de Match")'); 
