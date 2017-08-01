@@ -70,7 +70,7 @@ function fcnSendConfirmEmailEN(shtConfig, Address, MatchData) {
   // League Name
   var Location = shtConfig.getRange(11,2).getValue();
   var LeagueTypeEN = shtConfig.getRange(13,2).getValue();
-  var LeagueNameEN = shtConfig.getRange(3,2).getValue() + ' ' + LeagueTypeEN;
+  var LeagueNameEN = Location + ' ' + LeagueTypeEN;
   
   // Match Data Assignation
   var MatchID = MatchData[2][0];
@@ -85,7 +85,7 @@ function fcnSendConfirmEmailEN(shtConfig, Address, MatchData) {
   }
 
   // Set Email Subject
-  EmailSubject = Location + ' ' + LeagueNameEN + " - Week " + Week + " - Match Result" ;
+  EmailSubject = LeagueNameEN + " - Week " + Week + " - Match Result" ;
     
   // Start of Email Message
   EmailMessage = '<html><body>';
@@ -164,7 +164,7 @@ function fcnSendErrorEmailEN(shtConfig, Address, MatchData, MatchID, Status) {
   // League Name
   var Location = shtConfig.getRange(11,2).getValue();
   var LeagueTypeEN = shtConfig.getRange(13,2).getValue();
-  var LeagueNameEN = shtConfig.getRange(3,2).getValue() + ' ' + LeagueTypeEN;
+  var LeagueNameEN = Location + ' ' + LeagueTypeEN;
   
   // Match Data Assignation
   var MatchID = MatchData[2][0];
@@ -194,7 +194,7 @@ function fcnSendErrorEmailEN(shtConfig, Address, MatchData, MatchID, Status) {
   }
   
   // Set Email Subject
-  EmailSubject = Location + ' ' + LeagueNameEN + ' - Week ' + Week + ' - Match Report Error' ;
+  EmailSubject = LeagueNameEN + ' - Week ' + Week + ' - Match Report Error' ;
   
   // Start of Email Message
   EmailMessage = '<html><body>';
@@ -291,7 +291,7 @@ function fcnSendConfirmEmailFR(shtConfig, Address, MatchData) {
   // League Name
   var Location = shtConfig.getRange(11,2).getValue();
   var LeagueTypeFR = shtConfig.getRange(14,2).getValue();
-  var LeagueNameFR = LeagueTypeFR + ' ' + shtConfig.getRange(3,2).getValue();
+  var LeagueNameFR = LeagueTypeFR + ' ' + Location;
 
   // Match Data Assignation
   var MatchID = MatchData[2][0];
@@ -306,7 +306,7 @@ function fcnSendConfirmEmailFR(shtConfig, Address, MatchData) {
   }
 
   // Set Email Subject
-  EmailSubject = Location + ' ' + LeagueNameFR + " - Week " + Week + " - Rapport de Match" ;
+  EmailSubject = LeagueNameFR + " - Week " + Week + " - Rapport de Match" ;
     
   // Start of Email Message
   EmailMessage = "<html><body>";
@@ -385,7 +385,7 @@ function fcnSendErrorEmailFR(shtConfig, Address, MatchData, MatchID, Status) {
   // League Name
   var Location = shtConfig.getRange(11,2).getValue();
   var LeagueTypeFR = shtConfig.getRange(14,2).getValue();
-  var LeagueNameFR = LeagueTypeFR + ' ' + shtConfig.getRange(3,2).getValue();
+  var LeagueNameFR = LeagueTypeFR + ' ' + Location;
 
   // Match Data Assignation
   var MatchID = MatchData[2][0];
@@ -415,7 +415,7 @@ function fcnSendErrorEmailFR(shtConfig, Address, MatchData, MatchID, Status) {
   }
   
   // Set Email Subject
-  EmailSubject = Location + ' ' + LeagueNameFR + ' - Week ' + Week + ' - Erreur Rapport de Match' ;
+  EmailSubject = LeagueNameFR + ' - Week ' + Week + ' - Erreur Rapport de Match' ;
   
   // Start of Email Message
   EmailMessage = "<html><body>";

@@ -14,15 +14,8 @@ function fcnMainTCG_Master() {
   // Config Sheet to get options
   var shtConfig = ss.getSheetByName('Config');
   var ConfigData = shtConfig.getRange(3,9,26,1).getValues();
-  
-  // Code Execution Options
-  var OptDualSubmission = ConfigData[0][0]; // If Dual Submission is disabled, look for duplicate instead
-  var OptPostResult = ConfigData[1][0];
-  var OptPlyrMatchValidation = ConfigData[2][0];
-  var OptTCGBooster = ConfigData[3][0];
-  var OptSendEmail = ConfigData[6][0];
   var cfgSendLog = ConfigData[8][0];
-  var OptTrigReport = ConfigData[9][0];
+  var cfgTrigReport = ConfigData[9][0];
   
   // Columns Values and Parameters
   var ColDataCopied = ConfigData[15][0];
@@ -32,7 +25,7 @@ function fcnMainTCG_Master() {
 
   // Get Number of Players and Players Email
   var shtPlayers = ss.getSheetByName('Players');
-  var NbPlayers = shtPlayers.getRange('F2').getValue();
+  var NbPlayers = shtPlayers.getRange('F2').getValue();s
   var PlayersEmail = shtPlayers.getRange(3,3,NbPlayers,1).getValues();
   
   // Open Responses sheets
@@ -58,7 +51,7 @@ function fcnMainTCG_Master() {
   var RspnNextRowFR = shtRspnFR.getRange(1, ColNextEmptyRow).getValue();
     
   // Execute if Trigger is Enabled
-  if(OptTrigReport == 'Enabled'){
+  if(cfgTrigReport == 'Enabled'){
     EntriesProcessing = shtRspn.getRange(1, ColNbUnprcsdEntries).getValue();
     Logger.log('Nb of Entries Before Copying: %s',EntriesProcessing)
     
@@ -78,6 +71,7 @@ function fcnMainTCG_Master() {
           EmailValid = 1; 
           i = NbPlayers}
       }
+        Logger.log('EmailValid EN: %s',EmailValid);
       
       // Check if DataCopied Field is null and Email is Valid, we found new data to copy
       if (DataCopied == '' && EmailValid == 1){
@@ -121,6 +115,7 @@ function fcnMainTCG_Master() {
             EmailValid = 1; 
             j = NbPlayers}
         }
+        Logger.log('EmailValid FR: %s',EmailValid);
         
         // Check if DataCopied Field is null and Email is Valid, we found new data to copy
         if (DataCopied == '' && EmailValid == 1){
@@ -152,21 +147,22 @@ function fcnMainTCG_Master() {
       // Copy New Entry Data to Main Responses Sheet
       shtRspn.getRange(RspnNextRow + EntriesProcessing, 1, 1, RspnDataInputs).setValues(ResponseData);
       
+      Logger.log('Match Data Copied for Players: %s, %s',ResponseData[0][4],ResponseData[0][5]);
+      
       // Copy Formula to detect if an entry is currently processing
       shtRspn.getRange(RspnNextRow + EntriesProcessing, ColNbUnprcsdEntries).setValue('=IF(AND(INDIRECT("R[0]C[-31]",FALSE)<>"",INDIRECT("R[0]C[-4]",FALSE)<>2),1,"")');
       
       // Troubleshoot
       EntriesProcessing = shtRspn.getRange(1, ColNbUnprcsdEntries).getValue();
-      Logger.log('Nb of Entries After Copying: %s',EntriesProcessing)
+      Logger.log('Nb of Entries Pending After Copying: %s',EntriesProcessing)
       
       // Make sure that we only execute this loop on the first instance call
       if (EntriesProcessing == 1){
         // Execute Game Results Analysis for as long as there are unprocessed entries
         while (EntriesProcessing >= 1) {
-          Logger.log('Entered While Loop');
           fcnGameResultsTCG(ss, shtConfig, ConfigData, shtRspn);
           EntriesProcessing = shtRspn.getRange(1, ColNbUnprcsdEntries).getValue();
-          Logger.log('Nb of Entries After Processing: %s',EntriesProcessing)
+          Logger.log('Nb of Entries Pending After Processing: %s',EntriesProcessing)
         }
       }
       Logger.log('Exit Main Function');
@@ -178,7 +174,7 @@ function fcnMainTCG_Master() {
     if(EmailValid == 0) Logger.log('Submission Email Not Valid : %s',Email)
     // Send Log by email
     var recipient = Session.getActiveUser().getEmail();
-    var subject = 'TCG Booster League Log';
+    var subject = shtConfig.getRange(11,2).getValue() + ' ' + shtConfig.getRange(13,2).getValue()
     var body = Logger.getLog();
     MailApp.sendEmail(recipient, subject, body);  
   }
@@ -266,8 +262,10 @@ function fcnGameResultsTCG(ss, shtConfig, ConfigData, shtRspn) {
 
   // Data Processing Flags
   var Status = new Array(2); // Status[0] = Status Value, Status[1] = Status Message
-  Status[0] = 1; // 1 = Processing, 2 = Processed, -X = Process Error (value is Status Message
-  Status[1] = 'Processing';
+  
+  // Updates the Status while processing
+  Status[0] = 1;
+  Status[1] = subUpdateStatus(shtRspn, RspnRow, ColStatus, ColStatusMsg, Status[0]);
   
   var DuplicateRspn = -99;
   var MatchingRspn = -98;
@@ -295,7 +293,9 @@ function fcnGameResultsTCG(ss, shtConfig, ConfigData, shtRspn) {
     RspnDataWinr   = ResponseData[0][4]; // Winning Player
     RspnDataLosr   = ResponseData[0][5]; // Losing Player
     
-    // If week number is not empty and Processed is empty and both players are different, Response Data needs to be processed
+    Logger.log('Players: %s, %s',ResponseData[0][4],ResponseData[0][5]);
+    
+    // If week number is not empty and Processed is empty, Response Data needs to be processed
     if (RspnWeekNum != '' && RspnDataPrcssd == ''){
       
       // If both Players in the response are different, continue
@@ -351,7 +351,7 @@ function fcnGameResultsTCG(ss, shtConfig, ConfigData, shtRspn) {
               Status[1] = subUpdateStatus(shtRspn, RspnRow, ColStatus, ColStatusMsg, Status[0]);
               
               // Execute function to populate Match Result Sheet from processed data
-              MatchData = fcnPostMatchResults(ss, ConfigData, shtRspn, ResponseData, MatchingRspnData, MatchID, MatchData, shtTest);
+              MatchData = fcnPostMatchResultsTCG(ss, ConfigData, shtRspn, ResponseData, MatchingRspnData, MatchID, MatchData, shtTest);
               MatchPostStatus = MatchData[25][0];
               
               Logger.log('Match Post Status: %s',MatchPostStatus);
@@ -368,9 +368,11 @@ function fcnGameResultsTCG(ss, shtConfig, ConfigData, shtRspn) {
                   }
                   // If Pack was opened, Update Card Database and Card Pool for Appropriate player
                   if (CardList[0] != 'No Pack Opened') {
+                    
                     // Updates the Status while processing
                     Status[0] = 5; 
                     Status[1] = subUpdateStatus(shtRspn, RspnRow, ColStatus, ColStatusMsg, Status[0]);
+                    
                     // Update the Card DB and Card List
                     PackData = fcnUpdateCardDB(shtConfig, RspnDataLosr, CardList, PackData, shtTest);
                     // Copy all card names to Match Data [7-22]
@@ -386,8 +388,6 @@ function fcnGameResultsTCG(ss, shtConfig, ConfigData, shtRspn) {
                       }
                     }
                   }
-                  // for debug
-                  //shtTest.getRange(20,1,26,4).setValues(MatchData);
                 }
               }
               
@@ -467,16 +467,23 @@ function fcnGameResultsTCG(ss, shtConfig, ConfigData, shtRspn) {
         // Set the Status Message
         Status = subGenErrorMsg(Status, -50,0);
       }
+      
+      Logger.log('Match Post Status: %s - %s',Status[0], Status[1])
+      
       // Call the Email Function, sends Match Data if Send Email Option is Enabled
       if(Status[0] >= 0 && OptSendEmail == 'Enabled') {
+        
         // Updates the Status while processing
         Status[0] = 7; 
         Status[1] = subUpdateStatus(shtRspn, RspnRow, ColStatus, ColStatusMsg, Status[0]);
+        
         // Get Email addresses from Config File
         EmailAddresses = subGetEmailAddress(ss, EmailAddresses, RspnDataWinr, RspnDataLosr);
+        
         // Send email to players. Each function analyzes language preferences
         fcnSendConfirmEmailEN(shtConfig, EmailAddresses, MatchData);
         fcnSendConfirmEmailFR(shtConfig, EmailAddresses, MatchData);
+        Logger.log('Confirmation Emails Sent');
       }
       
       // If an Error has been detected that prevented to process the Match Data, send available data and Error Message
@@ -497,20 +504,19 @@ function fcnGameResultsTCG(ss, shtConfig, ConfigData, shtRspn) {
         MatchData[5][0] = ResponseData[0][5];  // Losing Player
         MatchData[6][0] = ResponseData[0][6];  // Score
         
-        // Get Player Email Addresses if Send Email Option is Enabled
-        if (OptSendEmail == 'Enabled') {
-          // Get Email addresses from Config File
-          EmailAddresses = subGetEmailAddress(ss, EmailAddresses, RspnDataWinr, RspnDataLosr);
-        }
+        // Get Email addresses from Config File
+        EmailAddresses = subGetEmailAddress(ss, EmailAddresses, RspnDataWinr, RspnDataLosr);
+        
         // Send Error Message, each function analyzes language preferences
         fcnSendErrorEmailEN(shtConfig, EmailAddresses, MatchData, MatchID, Status);
         fcnSendErrorEmailFR(shtConfig, EmailAddresses, MatchData, MatchID, Status);
+        Logger.log('Error Emails Sent');
       }
       
       // If Player Submitted Feedback, send Feedback to Administrator
       if (ResponseData[0][23] != '') {
         if (EmailAddresses[1] == '' && EmailAddresses[2] == '') EmailAddresses = subGetEmailAddress(ss, EmailAddresses, RspnDataWinr, RspnDataLosr);
-        //fcnSendFeedbackEmail(shtConfig, EmailAddresses, MatchData, ResponseData[0][23]);
+        fcnSendFeedbackEmail(shtConfig, EmailAddresses, MatchData, ResponseData[0][23]);
       }
       
       // Updates the Status while processing
@@ -549,7 +555,8 @@ function fcnGameResultsTCG(ss, shtConfig, ConfigData, shtRspn) {
   Logger.log('Copy to League Spreadsheets');
   // Copy all data to League Spreadsheet
   fcnCopyStandingsResults(ss, shtConfig, RspnWeekNum, 0);
-
+  
+    Logger.log('------------ Game Posted and Standings Updated ------------');
 }
 
 

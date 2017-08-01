@@ -41,7 +41,10 @@ function subPlayerMatchValidation(ss, PlayerName, MatchValidation, shtTest) {
     
   // Get Data from Cumulative Results
   var CumulMaxMatch = shtCumul.getRange(4,3).getValue();
-  var CumulPlyrData = shtCumul.getRange(5, 1, 32, 11).getValues(); // Data[i][j] i = Player List 1-32, j = ID(0), Name(1), Initials(2), MP(3), W(4), L(5), %(6), Penalty(7), Matches in Store(8) Packs(9), Status(10)
+  var CumulPlyrData = shtCumul.getRange(5,1,32,11).getValues();
+  var WeekNum = shtCumul.getRange(2,3).getValue();
+  var shtWeek = ss.getSheetByName('Week' + WeekNum);
+  var WeekPlyrData = shtWeek.getRange(5,1,32,11).getValues(); // Data[i][j] i = Player List 1-32, j = ID(0), Name(1), Initials(2), MP(3), W(4), L(5), %(6), Penalty(7), Matches in Store(8) Packs(9), Status(10)
   
   var PlayerStatus;
   var PlayerMatchPlayed;
@@ -49,8 +52,8 @@ function subPlayerMatchValidation(ss, PlayerName, MatchValidation, shtTest) {
   // Look for Player Row and if Player is still Active or Eliminated
   for (var i = 0; i < 32; i++) {
     // Player Found, Number of Match Played and Status memorized
-    if (PlayerName == CumulPlyrData[i][1]){
-      PlayerMatchPlayed = CumulPlyrData[i][3];
+    if (PlayerName == WeekPlyrData[i][1]){
+      PlayerMatchPlayed = WeekPlyrData[i][3];
       PlayerStatus = CumulPlyrData[i][10];
       MatchValidation[1] = PlayerMatchPlayed;
       i = 32; // Exit Loop
@@ -127,8 +130,8 @@ function subUpdateStatus(shtRspn, RspnRow, ColStatus, ColStatusMsg, StatusNum) {
     case  4: StatusMsg = 'Post Results in Week Tab'; break;
     case  5: StatusMsg = 'Update Card DB and Card List'; break;
     case  6: StatusMsg = 'Data Processed'; break;
-    case  7: StatusMsg = 'Sending Email Confirmation'; break;
-    case  8: StatusMsg = 'Sending Email Error'; break;
+    case  7: StatusMsg = 'Sending Confirmation Email'; break;
+    case  8: StatusMsg = 'Sending Process Error Email'; break;
     case  9: StatusMsg = 'Updating Match ID'; break;
     case 10: StatusMsg = 'Match Processed'; break;
 	
