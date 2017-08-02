@@ -338,7 +338,11 @@ function fcnPostResultWeekTCG(ss, ConfigData, ResultData, shtTest) {
 
   // Code Execution Options
   var OptTCGBooster = ConfigData[3][0];
+  var cfgWeekRound = ConfigData[10][0];
   var ColPackWeekRslt = ConfigData[23][0];
+  var ColPlyr = 2;
+  var ColWin = 5;
+  var ColLos = 6;  
   
   // function variables
   var shtWeekRslt;
@@ -352,9 +356,6 @@ function fcnPostResultWeekTCG(ss, ConfigData, ResultData, shtTest) {
   var shtWeekMaxCol;
   var shtWeekPlyr;
   
-  var ColPlyr = 2;
-  var ColWin = 5;
-  var ColLos = 6;
   var PackLength = 16;
   var NextPackID = 0;
   
@@ -366,10 +367,15 @@ function fcnPostResultWeekTCG(ss, ConfigData, ResultData, shtTest) {
   var MatchDataWinr = ResultData[0][4];
   var MatchDataLosr = ResultData[0][5];
   
-  // Selects the appropriate Week
-  var Week = 'Week'+MatchWeek;
-  shtWeekRslt = ss.getSheetByName(Week);
-
+  // Selects the appropriate Week/Round
+  if(cfgWeekRound == 'Week'){
+    var Week = 'Week'+MatchWeek;
+    shtWeekRslt = ss.getSheetByName(Week);
+  }
+  if(cfgWeekRound == 'Round'){
+    var Round = 'Round'+MatchWeek;
+    shtWeekRslt = ss.getSheetByName(Round);
+  }
   shtWeekMaxCol = shtWeekRslt.getMaxColumns();
 
   // Gets All Players Names
