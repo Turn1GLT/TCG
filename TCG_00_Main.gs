@@ -6,8 +6,29 @@
 //
 // **********************************************
 
-function fcnMainTCG_Master() {
+function fcnSubmitTCG_Master(e) {
   
+  var rngResponse = e.range;
+  var rowResponse = e.range.getRow();
+  Logger.log('Row: %s',rowResponse);
+  var ShtName = SpreadsheetApp.getActiveSheet().getSheetName();
+  Logger.log('Sheet: %s',ShtName);
+  
+  if(ShtName == 'Responses EN' || ShtName == 'Responses FR') fcnMainTCG_Master();
+  //if(ShtName == 'NewSubscription') fcnAddPlayer(ss);
+}  
+
+
+// **********************************************
+// function fcnMain()
+//
+// This function populates the Game Results tab 
+// once a player submitted his Form
+//
+// **********************************************
+
+function fcnMainTCG_Master() {
+    
   // Opens Spreadsheet
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   
@@ -25,7 +46,7 @@ function fcnMainTCG_Master() {
 
   // Get Number of Players and Players Email
   var shtPlayers = ss.getSheetByName('Players');
-  var NbPlayers = shtPlayers.getRange('F2').getValue();s
+  var NbPlayers = shtPlayers.getRange(2,6).getValue();
   var PlayersEmail = shtPlayers.getRange(3,3,NbPlayers,1).getValues();
   
   // Open Responses sheets
@@ -45,7 +66,7 @@ function fcnMainTCG_Master() {
   var RspnRow;
   
   // Data Processing Flags
-  var Status = new Array(2); // Status[0] = Status Value, Status[1] = Status Message
+  var Status = new Array(3); // Status[0] = Status Value, Status[1] = Status Message, Status[2] = Week Processed
   
   // Function Polled Values
   var RspnNextRow = shtRspn.getRange(1, ColNextEmptyRow).getValue();
@@ -178,7 +199,7 @@ function fcnMainTCG_Master() {
         
         Logger.log('Copy to League Spreadsheets');
         // Copy all data to League Spreadsheet
-        fcnCopyStandingsResults(ss, shtConfig);
+        fcnCopyStandingsResults(ss, shtConfig, Status[2], 0);
         Logger.log('------------ Standings Updated ------------');
       }
       
@@ -234,7 +255,7 @@ function fcnGameResultsTCG(ss, shtConfig, ConfigData, shtRspn) {
   // Form Responses Sheet Variables
   var RspnMaxRows = shtRspn.getMaxRows();
   var RspnMaxCols = shtRspn.getMaxColumns();
-  var RspnNextRowPrcss = shtRspn.getRange(1, ColNextEmptyRow).getValue();
+  var RspnNextRowPrcss = shtRspn.getRange(1, ColNextEmptyRow).getValue() - shtRspn.getRange(1, ColNbUnprcsdEntries).getValue();
   var RspnPlyrSubmit;
   var RspnLocation;
   var RspnWeekNum;
@@ -277,7 +298,7 @@ function fcnGameResultsTCG(ss, shtConfig, ConfigData, shtRspn) {
   EmailAddresses[2][1] = '';
 
   // Data Processing Flags
-  var Status = new Array(2); // Status[0] = Status Value, Status[1] = Status Message
+  var Status = new Array(3); // Status[0] = Status Value, Status[1] = Status Message, Status[2] = Week Processed
   Status[0] = 0;
   
   var DuplicateRspn = -99;
@@ -559,12 +580,19 @@ function fcnGameResultsTCG(ss, shtConfig, ConfigData, shtRspn) {
       
       // Updates the Status while processing
       if(Status[0] >= 0){
-        Status[0] = 10; 
-        Status[1] = subUpdateStatus(shtRspn, RspnRow, ColStatus, ColStatusMsg, Status[0]);
+        Status[0] = 10; // Status Number
+        Status[1] = subUpdateStatus(shtRspn, RspnRow, ColStatus, ColStatusMsg, Status[0]); // Status Message
+        Status[2] = MatchData[3][0]; // Week Processed
       }
       // Updating Match Process Data
       shtRspn.getRange(RspnRow, ColPrcsd).setValue(RspnDataPrcssd);
       shtRspn.getRange(RspnRow, ColNbUnprcsdEntries).setValue(0);
+      
+      // If Process Error is detected, update Status Columns in Response Sheet
+      if(Status[0]<0){
+        shtRspn.getRange(RspnRow, ColStatus).setValue(Status[0]);
+        shtRspn.getRange(RspnRow, ColStatusMsg).setValue(Status[1]);
+      }
       
       // Set the Matching Response Match ID if Matching Response found
       if (MatchingRspn > 0) shtRspn.getRange(MatchingRspn, ColMatchID).setValue(MatchID);	  
