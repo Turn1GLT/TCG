@@ -19,6 +19,7 @@ function fcnInitLeague(){
   var shtResponses   = ss.getSheetByName('Responses');
   var shtResponsesEN = ss.getSheetByName('Responses EN');
   var shtResponsesFR = ss.getSheetByName('Responses FR');
+  var ssWeekBstrID = shtConfig.getRange(40, 2).getValue();
   
   var MaxRowRslt = shtMatchRslt.getMaxRows();
   var MaxColRslt = shtMatchRslt.getMaxColumns();
@@ -49,8 +50,24 @@ function fcnInitLeague(){
     shtWeek.getRange(5,5,32,2).clearContent();
     shtWeek.getRange(5,8,32,106-8).clearContent();
   }
-
+  
   Logger.log('League Data Cleared');
+  
+  // Clear Weekly Booster Sheet
+  if(ssWeekBstrID != ''){
+    var ssWeekBstr = SpreadsheetApp.openById(ssWeekBstrID);
+    var WeekBstrSheets = ssWeekBstr.getSheets();
+    var WeekBstrNumSheets = ssWeekBstr.getNumSheets();
+    var shtWeekBstr = WeekBstrSheets[0];
+    var MaxCols;
+    
+    for(var sheet = 0; sheet < WeekBstrNumSheets; sheet++){
+      shtWeekBstr = WeekBstrSheets[sheet];
+      MaxCols = shtWeekBstr.getMaxColumns();
+      shtWeekBstr.getRange(4,2,18,MaxCols-1).clearContent();
+    }
+  }
+  
   
   // Update Standings Copies
   fcnCopyStandingsResults(ss, shtConfig, 0, 1);
@@ -341,14 +358,14 @@ function fcnGenPlayerCardDB(){
 
 
 // **********************************************
-// function fcnGenPlayerCardPoolSht()
+// function fcnGenPlayerCardPool()
 //
 // This function generates all Card DB for all 
 // players from the Config File
 //
 // **********************************************
 
-function fcnGenPlayerCardPoolSht(){
+function fcnGenPlayerCardPool(){
     
   // Main Spreadsheet
   var ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -392,13 +409,10 @@ function fcnGenPlayerCardPoolSht(){
     // Look if player exists, if yes, skip, if not, create player
     for(var sheet = NumSheet - 1; sheet >= 0; sheet --){
       SheetName = SheetsCardPool[sheet].getSheetName();
-      
-      Logger.log('Player: %s',SheetName);
       if (SheetName == shtPlyrName) PlayerFound = 1;
     }
     
     if (PlayerFound == 0){
-      Logger.log('Player: %s',shtPlyrName);
       // Get the Template sheet index
       CardPoolNumSht = ssCardPoolEn.getNumSheets();
       // INSERTS TAB BEFORE "Card DB" TAB
@@ -467,14 +481,14 @@ function fcnDelPlayerCardDB(){
 }
 
 // **********************************************
-// function fcnDelPlayerCardPoolSht()
+// function fcnDelPlayerCardPool()
 //
 // This function deletes all Card DB for all 
 // players from the Config File
 //
 // **********************************************
 
-function fcnDelPlayerCardPoolSht(){
+function fcnDelPlayerCardPool(){
 
   // Main Spreadsheet
   var ss = SpreadsheetApp.getActiveSpreadsheet();

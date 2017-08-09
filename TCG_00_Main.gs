@@ -1,33 +1,46 @@
 // **********************************************
-// function fcnMain()
+// function fcnSubmitTCG_Master()
 //
-// This function populates the Game Results tab 
-// once a player submitted his Form
+// This function analyzes the form submitted
+// and executes the appropriate functions
 //
 // **********************************************
 
 function fcnSubmitTCG_Master(e) {
   
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+   
+  // Get Row from New Response
   var rngResponse = e.range;
-  var rowResponse = e.range.getRow();
-  Logger.log('Row: %s',rowResponse);
-  var ShtName = SpreadsheetApp.getActiveSheet().getSheetName();
+  var RowResponse = e.range.getRow();
+  Logger.log('Response Row: %s',RowResponse);
+  
+  // Get Sheet from New Response
+  var shtResponse = SpreadsheetApp.getActiveSheet();
+  var ShtName = shtResponse.getSheetName();
   Logger.log('Sheet: %s',ShtName);
   
-  if(ShtName == 'Responses EN' || ShtName == 'Responses FR') fcnMainTCG_Master();
-  //if(ShtName == 'NewSubscription') fcnAddPlayer(ss);
+  // If Form Submitted is a Match Report, process results
+  if(ShtName == 'Responses EN' || ShtName == 'Responses FR') {
+    fcnProcessMatchTCG();
+  }
+  
+  // If Form Submitted is a Player Subscription
+  if(ShtName == 'Registration EN' || ShtName == 'Registration FR'){
+    fcnRegistrationTCG(ss, shtResponse, RowResponse);
+  }
 }  
 
 
 // **********************************************
-// function fcnMain()
+// function fcnProcessMatchTCG_Master()
 //
 // This function populates the Game Results tab 
 // once a player submitted his Form
 //
 // **********************************************
 
-function fcnMainTCG_Master() {
+function fcnProcessMatchTCG() {
     
   // Opens Spreadsheet
   var ss = SpreadsheetApp.getActiveSpreadsheet();

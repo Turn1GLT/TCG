@@ -10,7 +10,7 @@ function onOpenTCG_Master() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   
   var AnalyzeDataMenu  = [];
-  AnalyzeDataMenu.push({name: 'Analyze New Match Entry', functionName: 'fcnMainTCG_Master'});
+  AnalyzeDataMenu.push({name: 'Process New Match Entry', functionName: 'fcnProcessMatchTCG'});
   AnalyzeDataMenu.push({name: 'Reset Match Entries', functionName:'fcnResetLeagueMatch'});
   
   var LeagueMenu = [];
@@ -19,9 +19,9 @@ function onOpenTCG_Master() {
   LeagueMenu.push({name:'Initialize League', functionName:'fcnInitLeague'});
   LeagueMenu.push(null);
   LeagueMenu.push({name:'Generate Players DB',functionName:'fcnGenPlayerCardDB'});
-  LeagueMenu.push({name:'Generate Players Pools', functionName:'fcnGenPlayerCardPoolSht'});
+  LeagueMenu.push({name:'Generate Players Pools', functionName:'fcnGenPlayerCardPool'});
   LeagueMenu.push({name:'Delete Players DB',functionName:'fcnDelPlayerCardDB'});
-  LeagueMenu.push({name:'Delete Players Pools', functionName:'fcnDelPlayerCardPoolSht'});
+  LeagueMenu.push({name:'Delete Players Pools', functionName:'fcnDelPlayerCardPool'});
 
   
   ss.addMenu("Manage League", LeagueMenu);

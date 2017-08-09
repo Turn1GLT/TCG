@@ -121,11 +121,11 @@ function fcnSendConfirmEmailEN(shtConfig, Address, MatchData) {
   }
   
   if(Language1 == 'English' && Language2 != 'English'){
-    MailApp.sendEmail(Address1, EmailSubject, EmailMessage,{name:'Turn 1 Gaming League Manager',htmlBody:EmailMessage});
+    MailApp.sendEmail(Address1, EmailSubject, "",{name:'Turn 1 Gaming League Manager',htmlBody:EmailMessage});
   }
   
   if(Language2 == 'English' && Language1 != 'English'){
-    MailApp.sendEmail(Address2, EmailSubject, EmailMessage,{name:'Turn 1 Gaming League Manager',htmlBody:EmailMessage});
+    MailApp.sendEmail(Address2, EmailSubject, "",{name:'Turn 1 Gaming League Manager',htmlBody:EmailMessage});
   }
 }
 
@@ -242,16 +242,16 @@ function fcnSendErrorEmailEN(shtConfig, Address, MatchData, MatchID, Status) {
   EmailMessage += '</body></html>';
    
   // Send email to Administrator
-  MailApp.sendEmail(Address[0][1], EmailSubject, EmailMessage,{name:'Turn 1 Gaming League Manager',htmlBody:EmailMessage});
+  MailApp.sendEmail(Address[0][1], EmailSubject, "",{name:'Turn 1 Gaming League Manager',htmlBody:EmailMessage});
   
   // If Error is between 0 and -60, send email to players. If not, only send to Administrator
   if (Status[0] >= -60){
     // Sends email to both players with the Match Data
     if (Address[1][0] == 'English' && Address[1][1] != '') {
-      MailApp.sendEmail(Address[1][1], EmailSubject, EmailMessage,{name:'Turn 1 Gaming League Manager',htmlBody:EmailMessage});
+      MailApp.sendEmail(Address[1][1], EmailSubject, "",{name:'Turn 1 Gaming League Manager',htmlBody:EmailMessage});
     }
     if (Address[2][0] == 'English' && Address[2][1] != ''&& Address[1][1] != Address[2][1]) {
-      MailApp.sendEmail(Address[2][1], EmailSubject, EmailMessage,{name:'Turn 1 Gaming League Manager',htmlBody:EmailMessage});
+      MailApp.sendEmail(Address[2][1], EmailSubject, "",{name:'Turn 1 Gaming League Manager',htmlBody:EmailMessage});
     }
   }
 }
@@ -342,11 +342,11 @@ function fcnSendConfirmEmailFR(shtConfig, Address, MatchData) {
   }
   
   if(Language1 == 'Français' && Language2 != 'Français'){
-    MailApp.sendEmail(Address1, EmailSubject, EmailMessage,{name:'Turn 1 Gaming League Manager',htmlBody:EmailMessage});
+    MailApp.sendEmail(Address1, EmailSubject, "",{name:'Turn 1 Gaming League Manager',htmlBody:EmailMessage});
   }
   
   if(Language2 == 'Français' && Language1 != 'Français'){
-    MailApp.sendEmail(Address2, EmailSubject, EmailMessage,{name:'Turn 1 Gaming League Manager',htmlBody:EmailMessage});
+    MailApp.sendEmail(Address2, EmailSubject, "",{name:'Turn 1 Gaming League Manager',htmlBody:EmailMessage});
   }
 }
 
@@ -469,10 +469,10 @@ function fcnSendErrorEmailFR(shtConfig, Address, MatchData, MatchID, Status) {
   if (Status[0] >= -60){
     // Sends email to both players with the Match Data
     if (Address[1][0] == 'Français' && Address[1][1] != '') {
-      MailApp.sendEmail(Address[1][1], EmailSubject, EmailMessage,{name:'Turn 1 Gaming League Manager',htmlBody:EmailMessage});
+      MailApp.sendEmail(Address[1][1], EmailSubject, "",{name:'Turn 1 Gaming League Manager',htmlBody:EmailMessage});
     }
     if (Address[2][0] == 'Français' && Address[2][1] != ''&& Address[1][1] != Address[2][1]) {
-      MailApp.sendEmail(Address[2][1], EmailSubject, EmailMessage,{name:'Turn 1 Gaming League Manager',htmlBody:EmailMessage});
+      MailApp.sendEmail(Address[2][1], EmailSubject, "",{name:'Turn 1 Gaming League Manager',htmlBody:EmailMessage});
     }
   }
 }
@@ -536,6 +536,99 @@ function subMatchReportTable(EmailMessage, Headers, MatchData, Param){
 
 
 // **********************************************
+// function fcnSendNewPlayerConf()
+//
+// This function sends a confirmation to the
+// New Player with Appropriate Links
+//
+// **********************************************
+
+function fcnSendNewPlayerConf(shtConfig, PlayerData){
+
+  // Variables
+  var EmailSubject;
+  var EmailMessage;
+  
+  var PlayerName  = PlayerData[3]; 
+  var PlayerEmail = PlayerData[4]; 
+  var PlayerLang  = PlayerData[5]; 
+  
+  // League Name
+  var Location = shtConfig.getRange(11,2).getValue();
+  
+  if(PlayerLang == 'English' ){
+    
+    var LeagueTypeEN = shtConfig.getRange(13,2).getValue();
+    var LeagueNameEN = Location + ' ' + LeagueTypeEN;
+    
+    // Get Document URLs
+    var UrlValues = shtConfig.getRange(17,2,3,1).getValues();
+    var StandingsUrl = UrlValues[0][0];
+    var CardPoolUrl = UrlValues[1][0];
+    var MatchReporterUrl = UrlValues[2][0];
+    
+    // Set Email Subject
+    EmailSubject = 'Subscription Confirmation - ' + LeagueNameEN;
+    
+    // Start of Email Message
+    EmailMessage = '<html><body>';
+    
+    EmailMessage += 'Hi ' +PlayerName+ ','+
+      '<br><br>This message is to confirm your registration to the : '+LeagueNameEN+
+        '<br><br>From now on, you can submit your match results by clicking on the following link:'+
+          '<br><br>'+MatchReporterUrl+
+            '<br><br>You can look at the league results and standings at the following link:'+
+              '<br><br>'+StandingsUrl+
+                '<br><br>Finally, You can check your card pool as well as all other players in the league at the following link '+
+                  '(I will send you a confirmation when all card pools will be completed):'+
+                    '<br><br>'+CardPoolUrl+
+                      '<br><br>If you have any question or comment, please do not hesitate to contact me, it will be my pleasure to answer you as soon as I can.'+
+                        '<br><br>Thank you and Good Luck'+
+                          '<br><br>---------------<br><br>Eric Bouchard<br>Turn 1 Gaming Leagues and Tournament Applications';
+    
+        // End of Email Message
+    EmailMessage += '</body></html>';
+  }
+  
+  if(PlayerLang == 'Français'){
+
+    var LeagueTypeFR = shtConfig.getRange(14,2).getValue();
+    var LeagueNameFR = LeagueTypeFR + ' ' + Location;
+    
+    // Get Document URLs
+    var UrlValues = shtConfig.getRange(20,2,3,1).getValues();
+    var StandingsUrl = UrlValues[0][0];
+    var CardPoolUrl = UrlValues[1][0];
+    var MatchReporterUrl = UrlValues[2][0];
+    
+    // Set Email Subject
+    EmailSubject = 'Confirmation Inscription - ' + LeagueNameFR;
+    
+    // Start of Email Message
+    EmailMessage = '<html><body>';
+    
+    EmailMessage += 'Bonjour ' +PlayerName+ ','+
+      '<br><br>Ceci est pour confirmer ton inscription à la ligue: '+LeagueNameFR+
+        '<br><br>À partir de maintenant, tu peux soumettre tes rapports de matches en cliquant sur le lien suivant:'+
+          '<br><br>'+MatchReporterUrl+
+            '<br><br>Tu peux consulter le classement et statistiques de la ligue au lien suivant:'+
+              '<br><br>'+StandingsUrl+
+                '<br><br>Finalement, tu peux consulter ton pool de cartes ainsi que celui de tous les autres joueurs de la ligue au lien suivant '+
+                  '(je vous enverrai une confirmation lorsque les pool de cartes seront complétés):'+
+                    '<br><br>'+CardPoolUrl+
+                      '<br><br>Si tu as des questions ou commentaires, svp n’hésite pas à me contacter, il me fera plaisir de te répondre dans les plus brefs délais.'+
+                        '<br><br>Merci et bonne chance'+
+                          '<br><br>---------------<br><br>Eric Bouchard<br>Turn 1 Gaming Leagues and Tournament Applications';
+    
+    // End of Email Message
+    EmailMessage += '</body></html>';
+  }
+  
+  // Send Email Confirmation
+  MailApp.sendEmail(PlayerEmail, EmailSubject,'',{name:'Turn 1 Gaming League Manager',htmlBody:EmailMessage});
+}
+
+// **********************************************
 // function fcnSendFeedbackEmail()
 //
 // This function generates the feedback email 
@@ -578,9 +671,8 @@ function fcnSendFeedbackEmail(shtConfig, Address, MatchData, Feedback) {
   EmailMessage += '</body></html>';
   
   // Send email to Administrator
-  MailApp.sendEmail(Address[0][1], EmailSubject, EmailMessage,{name:'Turn 1 Gaming League Manager',htmlBody:EmailMessage});
+  MailApp.sendEmail(Address[0][1], EmailSubject, "",{name:'Turn 1 Gaming League Manager',htmlBody:EmailMessage});
 }
-
 
 
 // **********************************************
