@@ -376,6 +376,7 @@ function fcnPostResultWeekTCG(ss, ConfigData, ResultData, shtTest) {
     var Round = 'Round'+MatchWeek;
     shtWeekRslt = ss.getSheetByName(Round);
   }
+  
   shtWeekMaxCol = shtWeekRslt.getMaxColumns();
 
   // Gets All Players Names
@@ -657,4 +658,15 @@ function fcnAnalyzeLossPenalty(ss, Week, PlayerData){
   return PlayerData;
 }
 
+// **********************************************
+// function fcnModifyWeekMatchReport()
+//
+// This function modifies the Week Number in 
+// the Match Report Form
+//
+// **********************************************
 
+function fcnModifyWeekMatchReport(ss, shtConfig){
+
+  
+}

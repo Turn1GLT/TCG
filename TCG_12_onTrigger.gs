@@ -84,9 +84,12 @@ function onWeekChangeTCG_Master(){
   // Get Amount of matches played at the store this week.
   MatchPlydStore = shtWeek.getRange(5, 9, 32, 1).getValues();
   for(plyr=0; plyr<32; plyr++){
-    if(MatchPlyd[plyr][0] > 0) MatchesPlayedStore += MatchPlydStore[plyr][0];
+    if(MatchPlydStore[plyr][0] > 0 ) MatchesPlayedStore += MatchPlydStore[plyr][0];
   }
   MatchesPlayedStore = MatchesPlayedStore/2;
+  
+  // Modify the Week Number in the Match Report Sheet
+  //fcnModifyWeekMatchReport(ss, shtConfig);
 
   // Send Weekly Report Email
   EmailSubject = LeagueNameEN +' - Week ' + LastWeek + ' Report';
