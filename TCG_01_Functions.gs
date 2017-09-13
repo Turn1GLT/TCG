@@ -607,7 +607,6 @@ function fcnCopyStandingsResults(ss, shtConfig, RspnWeekNum, AllSheets){
   }
 }
 
-
 // **********************************************
 // function fcnAnalyzeLossPenalty()
 //
@@ -657,6 +656,7 @@ function fcnAnalyzeLossPenalty(ss, Week, PlayerData){
   }
   return PlayerData;
 }
+
 
 // **********************************************
 // function fcnModifyWeekMatchReport()

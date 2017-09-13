@@ -14,9 +14,11 @@ function fcnUpdateCardPool(shtConfig, shtCardDB, Player, shtTest){
   
   // Card Pool Spreadsheet
   var shtCardPoolEn = SpreadsheetApp.openById(ssCardPoolEnID).getSheetByName(Player);
+  var CardPoolEnMaxRows = shtCardPoolEn.getMaxRows();
   var shtCardPoolFr = SpreadsheetApp.openById(ssCardPoolFrID).getSheetByName(Player);
-  var rngCardPoolEn = shtCardPoolEn.getRange(6, 1, 224, 5); // 0 = Card Qty, 1 = Card Number, 2 = Card Name, 3 = Rarity, 4 = Set Name 
-  var rngCardPoolFr = shtCardPoolFr.getRange(6, 1, 224, 5); // 0 = Card Qty, 1 = Card Number, 2 = Card Name, 3 = Rarity, 4 = Set Name 
+  var CardPoolFrMaxRows = shtCardPoolFr.getMaxRows();
+  var rngCardPoolEn = shtCardPoolEn.getRange(6, 1, CardPoolEnMaxRows-6, 5); // 0 = Card Qty, 1 = Card Number, 2 = Card Name, 3 = Rarity, 4 = Set Name 
+  var rngCardPoolFr = shtCardPoolFr.getRange(6, 1, CardPoolFrMaxRows-6, 5); // 0 = Card Qty, 1 = Card Number, 2 = Card Name, 3 = Rarity, 4 = Set Name 
   var CardPool; // Where Card Data will be populated
   
   var CardDBSetTotal = shtCardDB.getRange(2,1,1,48).getValues(); // Gets Sum of all set Quantity, if > 0, set is present in card pool
@@ -40,10 +42,11 @@ function fcnUpdateCardPool(shtConfig, shtCardDB, Player, shtTest){
       SetName = shtCardDB.getRange(6,colSet+2).getValue();
 
       // Get all Cards Data from set
-      SetData = shtCardDB.getRange(7, colSet, 286, 4).getValues();
-
+      SetData = shtCardDB.getRange(7, colSet, 300, 4).getValues();
+      
       // Loop through each card in Set and get Card Data
-      for (var CardID = 1; CardID <= 285; CardID++){
+      for (var CardID = 1; CardID <= 299; CardID++){
+        Logger.log('CardID:%s',CardID);
         if (SetData[CardID][0] > 0) {
           CardPool[CardNb][0] = SetData[CardID][0]; // Quantity
           CardPool[CardNb][1] = SetData[CardID][1]; // Card Number (ID)

@@ -29,19 +29,19 @@ function fcnSubmitTCG_Master(e) {
   if(ShtName == 'Registration EN' || ShtName == 'Registration FR'){
     fcnRegistrationTCG(ss, shtResponse, RowResponse);
   }
-}  
+} 
 
 
 // **********************************************
 // function fcnProcessMatchTCG_Master()
 //
-// This function populates the Game Results tab 
-// once a player submitted his Form
+// This function analyzes the form submitted
+// and executes the appropriate functions
 //
 // **********************************************
 
 function fcnProcessMatchTCG() {
-    
+  
   // Opens Spreadsheet
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   

@@ -409,10 +409,13 @@ function fcnGenPlayerCardPool(){
     // Look if player exists, if yes, skip, if not, create player
     for(var sheet = NumSheet - 1; sheet >= 0; sheet --){
       SheetName = SheetsCardPool[sheet].getSheetName();
+      
+      Logger.log('Player: %s',SheetName);
       if (SheetName == shtPlyrName) PlayerFound = 1;
     }
     
     if (PlayerFound == 0){
+      Logger.log('Player: %s',shtPlyrName);
       // Get the Template sheet index
       CardPoolNumSht = ssCardPoolEn.getNumSheets();
       // INSERTS TAB BEFORE "Card DB" TAB

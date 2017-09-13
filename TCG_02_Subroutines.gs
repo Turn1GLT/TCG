@@ -128,7 +128,7 @@ function subUpdateStatus(shtRspn, RspnRow, ColStatus, ColStatusMsg, StatusNum) {
     case  2: StatusMsg = 'Finding Duplicate'; break;
     case  3: StatusMsg = 'Finding Dual Response'; break;
     case  4: StatusMsg = 'Post Results in Week Tab'; break;
-    case  5: StatusMsg = 'Update Army DB and Army List'; break;
+    case  5: StatusMsg = 'Update Card DB and Card List'; break;
     case  6: StatusMsg = 'Data Processed'; break;
     case  7: StatusMsg = 'Sending Confirmation Email'; break;
     case  8: StatusMsg = 'Sending Process Error Email'; break;
