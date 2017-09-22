@@ -13,14 +13,15 @@ function fcnRegistrationTCG(ss, shtResponse, RowResponse){
   var shtPlayers = ss.getSheetByName('Players');
   var ssWeekBstrID = shtConfig.getRange(40, 2).getValue();
   
-  var PlayerData = new Array(7);
+  var PlayerData = new Array(8);
   PlayerData[0] = 0 ; // Function Status
   PlayerData[1] = ''; // Number of Players
   PlayerData[2] = ''; // New Player Full Name
   PlayerData[3] = ''; // New Player First Name
   PlayerData[4] = ''; // New Player Email
-  PlayerData[5] = ''; // New Player Language
-  PlayerData[6] = ''; // New Player DCI Number
+  PlayerData[5] = ''; // New Player Phone Number
+  PlayerData[6] = ''; // New Player Language
+  PlayerData[7] = ''; // New Player DCI Number
   
   
   // Add Player to Player List
@@ -77,9 +78,10 @@ function fcnAddPlayerTCG(shtConfig, shtPlayers, shtResponse, RowResponse, Player
   var FirstName = shtResponse.getRange(RowResponse,3).getValue();
   var LastName = shtResponse.getRange(RowResponse,4).getValue();
   var PlayerName = FirstName + ' ' + LastName;
-  var Language = shtResponse.getRange(RowResponse,5).getValue();
-  var DCINum = shtResponse.getRange(RowResponse,6).getValue();
-  var NbPlayers = shtPlayers.getRange(2, 6).getValue();
+  var Phone = shtResponse.getRange(RowResponse,5).getValue();
+  var Language = shtResponse.getRange(RowResponse,6).getValue();
+  var DCINum = shtResponse.getRange(RowResponse,7).getValue();
+  var NbPlayers = shtPlayers.getRange(2,1).getValue();
   
   // Copy Values to Players Sheet at the Next Empty Spot (Number of Players + 3)
   var NextPlayerRow = NbPlayers + 3;
@@ -92,8 +94,11 @@ function fcnAddPlayerTCG(shtConfig, shtPlayers, shtResponse, RowResponse, Player
   // Language
   shtPlayers.getRange(NextPlayerRow, 4).setValue(Language);
   Logger.log('Language: %s',Language);
+  // Phone Number
+  shtPlayers.getRange(NextPlayerRow, 5).setValue(Phone);
+  Logger.log('Phone: %s',Phone);  
   // DCI Number
-  shtPlayers.getRange(NextPlayerRow, 5).setValue(DCINum);
+  shtPlayers.getRange(NextPlayerRow, 7).setValue(DCINum);
   Logger.log('DCI: %s',DCINum);  Logger.log('-----------------------------');
   
   PlayerData[0] = 1;
@@ -101,8 +106,9 @@ function fcnAddPlayerTCG(shtConfig, shtPlayers, shtResponse, RowResponse, Player
   PlayerData[2] = PlayerName;
   PlayerData[3] = FirstName;
   PlayerData[4] = EmailAddress;
-  PlayerData[5] = Language;
-  PlayerData[6] = DCINum;
+  PlayerData[5] = Phone;
+  PlayerData[6] = Language;
+  PlayerData[7] = DCINum;
   
   return PlayerData;
 }
@@ -131,7 +137,7 @@ function fcnModifyReportFormTCG(ss, shtConfig, shtPlayers) {
   var ItemPlayerListFR;
   var ItemPlayerChoice;
   
-  var NbPlayers = shtPlayers.getRange(2, 6).getValue();
+  var NbPlayers = shtPlayers.getRange(2, 1).getValue();
   var Players = shtPlayers.getRange(3, 2, NbPlayers, 1).getValues();
   var ListPlayers = [];
   

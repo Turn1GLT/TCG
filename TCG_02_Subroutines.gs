@@ -143,3 +143,8 @@ function subUpdateStatus(shtRspn, RspnRow, ColStatus, ColStatusMsg, StatusNum) {
 
   return StatusMsg;
 }
+
+
+function sheetName() {
+  return SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getName();
+}

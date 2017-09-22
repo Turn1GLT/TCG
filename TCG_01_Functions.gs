@@ -507,7 +507,7 @@ function fcnCopyStandingsResults(ss, shtConfig, RspnWeekNum, AllSheets){
   var LeagueNameFR = LeagueTypeFR + ' ' + Location;
   
   // Number of Players
-  var NbPlayers = ss.getSheetByName('Players').getRange(2,6).getValue();
+  var NbPlayers = ss.getSheetByName('Players').getRange(2,1).getValue();
   
   var WeekSheet = RspnWeekNum + 1;
   

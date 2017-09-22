@@ -59,7 +59,7 @@ function fcnProcessMatchTCG() {
 
   // Get Number of Players and Players Email
   var shtPlayers = ss.getSheetByName('Players');
-  var NbPlayers = shtPlayers.getRange(2,6).getValue();
+  var NbPlayers = shtPlayers.getRange(2,1).getValue();
   var PlayersEmail = shtPlayers.getRange(3,3,NbPlayers,1).getValues();
   
   // Open Responses sheets

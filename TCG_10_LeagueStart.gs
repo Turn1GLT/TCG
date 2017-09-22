@@ -265,7 +265,7 @@ function fcnGenPlayerCardDB(){
 
   // Players 
   var shtPlayers = ss.getSheetByName('Players'); 
-  var NbPlayers = shtPlayers.getRange(2,6).getValue();
+  var NbPlayers = shtPlayers.getRange(2,1).getValue();
   var PlayerFound = 0;
   
   var shtPlyrCardDB;
@@ -388,7 +388,7 @@ function fcnGenPlayerCardPool(){
   
   // Players 
   var shtPlayers = ss.getSheetByName('Players'); 
-  var NbPlayers = shtPlayers.getRange(2,6).getValue();
+  var NbPlayers = shtPlayers.getRange(2,1).getValue();
   
   var shtPlyrCardPoolEn;
   var shtPlyrCardPoolFr;
@@ -552,8 +552,8 @@ function fcnSetupResponseSht(){
   // Open Responses Sheets
   var shtOldRespEN = ss.getSheetByName('Responses EN');
   var shtOldRespFR = ss.getSheetByName('Responses FR');
-  var shtNewRespEN = ss.getSheetByName('Form Responses EN');
-  var shtNewRespFR = ss.getSheetByName('Form Responses FR');
+  var shtNewRespEN = ss.getSheetByName('New Responses EN');
+  var shtNewRespFR = ss.getSheetByName('New Responses FR');
     
   var OldRespMaxCol = shtOldRespEN.getMaxColumns();
   var NewRespMaxRow = shtNewRespEN.getMaxRows();
