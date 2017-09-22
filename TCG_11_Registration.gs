@@ -98,7 +98,7 @@ function fcnAddPlayerTCG(shtConfig, shtPlayers, shtResponse, RowResponse, Player
   shtPlayers.getRange(NextPlayerRow, 5).setValue(Phone);
   Logger.log('Phone: %s',Phone);  
   // DCI Number
-  shtPlayers.getRange(NextPlayerRow, 7).setValue(DCINum);
+  shtPlayers.getRange(NextPlayerRow, 6).setValue(DCINum);
   Logger.log('DCI: %s',DCINum);  Logger.log('-----------------------------');
   
   PlayerData[0] = 1;

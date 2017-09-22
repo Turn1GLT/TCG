@@ -35,21 +35,25 @@ function fcnCreateReportForm() {
   var WeekArray = new Array(1); WeekArray[0] = WeekNum;
   
   var PlayerNum = shtPlayers.getRange(2,1).getValue();
-  var Players = shtPlayers.getRange(3,2,PlayerNum,1).getValues();
-  var PlayerList = new Array(PlayerNum);
+  var Players;
+  var PlayerList;
   
   var ExpansionNum = shtConfig.getRange(6,3).getValue();
   var ExpansionSet = shtConfig.getRange(7,6,ExpansionNum,1).getValues();
   var ExpansionList = new Array(ExpansionNum);
   
+  var PlayerWinList;
+  var PlayerLosList;
   var SctPackOpenEN;
   var SctPackOpenFR;
+  
+  var CardValidation;
   
   var ConfirmMsgEN;
   var ConfirmMsgFR;
   
-  var RowFormIdEN = 44;
-  var RowFormIdFR = 45;
+  var RowFormIdEN = 36;
+  var RowFormIdFR = 37;
   
   var ErrorVal = '';
   
@@ -74,10 +78,10 @@ function fcnCreateReportForm() {
     //---------------------------------------------
     // TITLE SECTION
     // English
-    FormNameEN = shtConfig.getRange(3, 2).getValue() + " - Match Report";
+    FormNameEN = shtConfig.getRange(3, 2).getValue() + " Match Reporter EN";
     formEN = FormApp.create(FormNameEN).setTitle(FormNameEN);
     // French    
-    FormNameFR = shtConfig.getRange(3, 2).getValue() + " - Rapport de Match";
+    FormNameFR = shtConfig.getRange(3, 2).getValue() + " Match Reporter FR";
     formFR = FormApp.create(FormNameFR).setTitle(FormNameFR);
     
     // Set Match Report Form Description
@@ -109,11 +113,16 @@ function fcnCreateReportForm() {
     
     //---------------------------------------------
     // WEEK NUMBER & PLAYERS SECTION
-        
+    
     // Transfers Players Double Array to Single Array
-    for(var i = 0; i < PlayerNum; i++){
-      PlayerList[i] = Players[i][0];
+    if (PlayerNum > 0){
+      Players = shtPlayers.getRange(3,2,PlayerNum,1).getValues();
+      PlayerList = new Array(PlayerNum);
+      for(var i = 0; i < PlayerNum; i++){
+        PlayerList[i] = Players[i][0];
+      }
     }
+    
     // English
     formEN.addPageBreakItem().setTitle("Week Number & Players");
     // Week
@@ -122,15 +131,17 @@ function fcnCreateReportForm() {
     .setRequired(true)
     .setChoiceValues(WeekArray);
     
-    // Players
-    formEN.addListItem()
+    // Winning Players
+    PlayerWinList = formEN.addListItem()
     .setTitle("Winning Player")
-    .setRequired(true)
-    .setChoiceValues(PlayerList);
-    formEN.addListItem()
+    .setRequired(true);
+    if (PlayerNum > 0) PlayerWinList.setChoiceValues(PlayerList);
+    
+    // Losing Players
+    PlayerLosList = formEN.addListItem()
     .setTitle("Losing Player")
-    .setRequired(true)
-    .setChoiceValues(PlayerList);
+    .setRequired(true);
+    if (PlayerNum > 0) PlayerLosList.setChoiceValues(PlayerList);
     
     // Score
     formEN.addMultipleChoiceItem()
@@ -147,14 +158,15 @@ function fcnCreateReportForm() {
     .setChoiceValues(WeekArray);
     
     // Joueurs
-    formFR.addListItem()
+    PlayerWinList = formFR.addListItem()
     .setTitle("Joueur Gagnant")
-    .setRequired(true)
-    .setChoiceValues(PlayerList);
-    formFR.addListItem()
+    .setRequired(true);
+    if (PlayerNum > 0) PlayerWinList.setChoiceValues(PlayerList);
+    
+    PlayerLosList = formFR.addListItem()
     .setTitle("Joueur Perdant")
-    .setRequired(true)
-    .setChoiceValues(PlayerList);
+    .setRequired(true);
+    if (PlayerNum > 0) PlayerLosList.setChoiceValues(PlayerList);
     
     // Score
     formFR.addMultipleChoiceItem()
@@ -203,6 +215,12 @@ function fcnCreateReportForm() {
     //---------------------------------------------
     // CARD LIST
     
+    // Card Number Validation
+    CardValidation = FormApp.createTextValidation()
+    .setHelpText("Enter a number between 1 and 100.")
+    .requireNumberBetween(1, 100)
+    .build();
+    
     // English
     formEN.addPageBreakItem().setTitle("Card List").setHelpText("Enter the card numbers of each card of your pack. The Card Number is the first number in the lower left side corner.");
     
@@ -211,9 +229,7 @@ function fcnCreateReportForm() {
       formEN.addTextItem()
       .setTitle("Card " + card)
       .setRequired(true)
-      .setHelpText("Enter a number between 1 and 300.")
-      .requireNumberBetween(1, 300)
-      .build();
+      .setValidation(CardValidation);
     }
     
     // Create last card to specify Masterpiece Number if applicable 
@@ -221,9 +237,7 @@ function fcnCreateReportForm() {
     .setTitle("Card 14 / Masterpiece")
     .setHelpText("If you opened a Masterpiece, Please enter the card number here (Kaladesh Invention, Amonkhet Invocation)")
     .setRequired(true)
-    .setHelpText("Enter a number between 1 and 300.")
-    .requireNumberBetween(1, 300)
-    .build();
+    .setValidation(CardValidation);
     
     // Create Masterpiece Selection
     formEN.addMultipleChoiceItem()
@@ -237,12 +251,10 @@ function fcnCreateReportForm() {
 
     // Loop to create first 13 cards of the pack
     for(var card = 1; card<=13; card++){
-      formEN.addTextItem()
+      formFR.addTextItem()
       .setTitle("Carte " + card)
       .setRequired(true)
-      .setHelpText("Entrez un numéro entre 1 et 300.")
-      .requireNumberBetween(1, 300)
-      .build();
+      .setValidation(CardValidation);
     }
     
     // Create last card to specify Masterpiece Number if applicable 
@@ -250,9 +262,7 @@ function fcnCreateReportForm() {
     .setTitle("Carte 14 / Masterpiece")
     .setHelpText("Si vous avez ouvert une Masterpiece, SVP, entrez son numéro ici (Kaladesh Invention, Amonkhet Invocation)")
     .setRequired(true)
-    .setHelpText("Enter a number between 1 and 300.")
-    .requireNumberBetween(1, 300)
-    .build();
+    .setValidation(CardValidation);
     
     // Create Masterpiece Selection
     formFR.addMultipleChoiceItem()
@@ -285,7 +295,7 @@ function fcnCreateReportForm() {
     
     // Move Response Sheet to appropriate spot in file
     shtResp = ss.getSheetByName('New Responses EN');
-    ss.moveActiveSheet(13);
+    ss.moveActiveSheet(15);
     
     // English Form
     formFR.setDestination(FormApp.DestinationType.SPREADSHEET, ss.getId());
@@ -293,13 +303,11 @@ function fcnCreateReportForm() {
     // Find and Rename Response Sheet
     ss = SpreadsheetApp.openById(ssID);
     ssSheets = ss.getSheets();
-    ssSheets[0].setName('RNew Responses FR');
+    ssSheets[0].setName('New Responses FR');
     
     // Move Response Sheet to appropriate spot in file
     shtResp = ss.getSheetByName('New Responses FR');
-    ss.moveActiveSheet(14);
-    
-    
+    ss.moveActiveSheet(16);
     
     // Set Match Report IDs in Config File
     FormIdEN = formEN.getId();

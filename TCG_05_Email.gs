@@ -57,9 +57,9 @@ function fcnSendConfirmEmailEN(shtConfig, Address, MatchData) {
   
   // Get Document URLs
   var UrlValues = shtConfig.getRange(17,2,3,1).getValues();
-  var StandingsUrl = UrlValues[0][0];
-  var CardPoolUrl = UrlValues[1][0];
-  var MatchReporterUrl = UrlValues[2][0];
+  var urlStandings = UrlValues[0][0];
+  var urlCardPool = UrlValues[1][0];
+  var urlMatchReporter = UrlValues[2][0];
   
   // Open Email Templates
   var ssEmailID = shtConfig.getRange(25,2).getValue();
@@ -97,11 +97,11 @@ function fcnSendConfirmEmailEN(shtConfig, Address, MatchData) {
   EmailMessage = subMatchReportTable(EmailMessage, Headers, MatchData,1);
   
   EmailMessage += "<br>Click below to access the League Standings and Results:"+
-    "<br>"+ StandingsUrl +
+    "<br>"+ urlStandings +
       "<br><br>Click below to access your Card Pool:"+
-        "<br>"+ CardPoolUrl +
+        "<br>"+ urlCardPool +
           "<br><br>Click below to send another Match Report:"+
-            "<br>"+ MatchReporterUrl +
+            "<br>"+ urlMatchReporter +
               "<br><br>If you find any problems with your match result, please reply to this message and describe the situation as best you can. You will receive a response once it has been processed."+
                 "<br><br>Thank you for using TCG Booster League Manager from Turn 1 Gaming Leagues & Tournaments";
   
@@ -151,9 +151,9 @@ function fcnSendErrorEmailEN(shtConfig, Address, MatchData, MatchID, Status) {
   
   // Get Document URLs
   var UrlValues = shtConfig.getRange(17,2,3,1).getValues();
-  var StandingsUrl = UrlValues[0][0];
-  var CardPoolUrl = UrlValues[1][0];
-  var MatchReporterUrl = UrlValues[2][0];
+  var urlStandings = UrlValues[0][0];
+  var urlCardPool = UrlValues[1][0];
+  var urlMatchReporter = UrlValues[2][0];
   
   // Open Email Templates
   var ssEmailID = shtConfig.getRange(25,2).getValue();
@@ -229,11 +229,11 @@ function fcnSendErrorEmailEN(shtConfig, Address, MatchData, MatchID, Status) {
   
   if (Status[0] >= -60) {
     EmailMessage += "<br>Click below to access the League Standings and Results:"+
-      "<br>"+ StandingsUrl +
+      "<br>"+ urlStandings +
         "<br><br>Click below to access your Card Pool:"+
-          "<br>"+ CardPoolUrl +
+          "<br>"+ urlCardPool +
             "<br><br>Click below to send another Match Report:"+
-              "<br>"+ MatchReporterUrl +
+              "<br>"+ urlMatchReporter +
                 "<br><br>If you find any problems with your match result, please reply to this message and describe the situation as best you can. You will receive a response once it has been processed."+
                   "<br><br>Thank you for using TCG Booster League Manager from Turn 1 Gaming Leagues & Tournaments";
   }
@@ -278,9 +278,9 @@ function fcnSendConfirmEmailFR(shtConfig, Address, MatchData) {
   
   // Get Document URLs
   var UrlValues = shtConfig.getRange(20,2,3,1).getValues();
-  var StandingsUrl = UrlValues[0][0];
-  var CardPoolUrl = UrlValues[1][0];
-  var MatchReporterUrl = UrlValues[2][0];
+  var urlStandings = UrlValues[0][0];
+  var urlCardPool = UrlValues[1][0];
+  var urlMatchReporter = UrlValues[2][0];
   
   // Open Email Templates
   var ssEmailID = shtConfig.getRange(25,2).getValue();
@@ -318,11 +318,11 @@ function fcnSendConfirmEmailFR(shtConfig, Address, MatchData) {
   EmailMessage = subMatchReportTable(EmailMessage, Headers, MatchData,1);
   
   EmailMessage += "<br>Cliquez ci-dessous pour accéder au classement et statistiques de la ligue:"+
-    "<br>"+ StandingsUrl +
+    "<br>"+ urlStandings +
       "<br><br>Cliquez ci-dessous pour accéder à votre pool de cartes:"+
-        "<br>"+ CardPoolUrl +
+        "<br>"+ urlCardPool +
           "<br><br>Cliquez ci-dessous pour envoyer un autre rapport de match:"+
-            "<br>"+ MatchReporterUrl +
+            "<br>"+ urlMatchReporter +
               "<br><br>Si vous remarquez quel problème que ce soit dans ce rapport, SVP répondez à ce courriel en décrivant la situation de votre mieux. Vous recevrez une réponse dès que la situation sera traitée."+
                 "<br><br>Merci d'utiliser TCG Booster League Manager de Turn 1 Gaming Leagues & Tournaments";
   
@@ -372,9 +372,9 @@ function fcnSendErrorEmailFR(shtConfig, Address, MatchData, MatchID, Status) {
   
   // Get Document URLs
   var UrlValues = shtConfig.getRange(20,2,3,1).getValues();
-  var StandingsUrl = UrlValues[0][0];
-  var CardPoolUrl = UrlValues[1][0];
-  var MatchReporterUrl = UrlValues[2][0];
+  var urlStandings = UrlValues[0][0];
+  var urlCardPool = UrlValues[1][0];
+  var urlMatchReporter = UrlValues[2][0];
   
   // Open Email Templates
   var ssEmailID = shtConfig.getRange(25,2).getValue();
@@ -450,11 +450,11 @@ function fcnSendErrorEmailFR(shtConfig, Address, MatchData, MatchID, Status) {
   
   if (Status[0] >= -60) {
     EmailMessage += "<br>Cliquez ci-dessous pour accéder au classement et statistiques de la ligue:"+
-      "<br>"+ StandingsUrl +
+      "<br>"+ urlStandings +
         "<br><br>Cliquez ci-dessous pour accéder à votre pool de cartes:"+
-          "<br>"+ CardPoolUrl +
+          "<br>"+ urlCardPool +
             "<br><br>Cliquez ci-dessous pour envoyer un autre rapport de match:"+
-              "<br>"+ MatchReporterUrl +
+              "<br>"+ urlMatchReporter +
                 "<br><br>Si vous remarquez quel problème que ce soit dans ce rapport, SVP répondez à ce courriel en décrivant la situation de votre mieux. Vous recevrez une réponse dès que la situation sera traitée."+
                   "<br><br>Merci d'utiliser TCG Booster League Manager de Turn 1 Gaming Leagues & Tournaments";
   }
@@ -551,7 +551,7 @@ function fcnSendNewPlayerConf(shtConfig, PlayerData){
   
   var PlayerName  = PlayerData[3]; 
   var PlayerEmail = PlayerData[4]; 
-  var PlayerLang  = PlayerData[5]; 
+  var PlayerLang  = PlayerData[6]; 
   
   // League Name
   var Location = shtConfig.getRange(11,2).getValue();
@@ -563,9 +563,9 @@ function fcnSendNewPlayerConf(shtConfig, PlayerData){
     
     // Get Document URLs
     var UrlValues = shtConfig.getRange(17,2,3,1).getValues();
-    var StandingsUrl = UrlValues[0][0];
-    var CardPoolUrl = UrlValues[1][0];
-    var MatchReporterUrl = UrlValues[2][0];
+    var urlStandings = UrlValues[0][0];
+    var urlCardPool = UrlValues[1][0];
+    var urlMatchReporter = UrlValues[2][0];
     
     // Set Email Subject
     EmailSubject = 'Subscription Confirmation - ' + LeagueNameEN;
@@ -574,19 +574,27 @@ function fcnSendNewPlayerConf(shtConfig, PlayerData){
     EmailMessage = '<html><body>';
     
     EmailMessage += 'Hi ' +PlayerName+ ','+
-      '<br><br>This message is to confirm your registration to the : '+LeagueNameEN+
-        '<br><br>From now on, you can submit your match results by clicking on the following link:'+
-          '<br><br>'+MatchReporterUrl+
-            '<br><br>You can look at the league results and standings at the following link:'+
-              '<br><br>'+StandingsUrl+
-                '<br><br>Finally, You can check your card pool as well as all other players in the league at the following link '+
-                  '(I will send you a confirmation when all card pools will be completed):'+
-                    '<br><br>'+CardPoolUrl+
-                      '<br><br>If you have any question or comment, please do not hesitate to contact me, it will be my pleasure to answer you as soon as I can.'+
-                        '<br><br>Thank you and Good Luck'+
-                          '<br><br>---------------<br><br>Eric Bouchard<br>Turn 1 Gaming Leagues and Tournament Applications';
+      '<br><br>This message is to confirm your registration to the : '+LeagueNameEN;
     
-        // End of Email Message
+    // If All links are non-null
+    if (urlMatchReporter != '' && urlStandings != '' && urlCardPool != ''){ 
+      EmailMessage += '<br><br>From now on, you can submit your match results by clicking on the following link:<br><br>'+urlMatchReporter;
+      EmailMessage += '<br><br>You can look at the league results and standings at the following link:<br><br>'+urlStandings
+      EmailMessage += '<br><br>Finally, You can check your card pool as well as all other players in the league at the following link '+
+        '(I will send you a confirmation when all card pools will be completed):'+
+          '<br><br>'+urlCardPool;
+    }
+       
+    // If one of them is null    
+    if (urlMatchReporter == '' || urlStandings == '' || urlCardPool == ''){
+      EmailMessage += "<br><br>The League links are under construction, You will receive them as soon as they are operational.";
+    }
+    
+    EmailMessage += '<br><br>If you have any question or comment, please do not hesitate to contact me, it will be my pleasure to answer you as soon as I can.'+
+      '<br><br>Thank you and Good Luck'+
+        '<br><br>---------------<br><br>Eric Bouchard<br>Turn 1 Gaming Leagues and Tournament Applications';
+    
+    // End of Email Message
     EmailMessage += '</body></html>';
   }
   
@@ -597,9 +605,9 @@ function fcnSendNewPlayerConf(shtConfig, PlayerData){
     
     // Get Document URLs
     var UrlValues = shtConfig.getRange(20,2,3,1).getValues();
-    var StandingsUrl = UrlValues[0][0];
-    var CardPoolUrl = UrlValues[1][0];
-    var MatchReporterUrl = UrlValues[2][0];
+    var urlStandings = UrlValues[0][0];
+    var urlCardPool = UrlValues[1][0];
+    var urlMatchReporter = UrlValues[2][0];
     
     // Set Email Subject
     EmailSubject = 'Confirmation Inscription - ' + LeagueNameFR;
@@ -608,17 +616,25 @@ function fcnSendNewPlayerConf(shtConfig, PlayerData){
     EmailMessage = '<html><body>';
     
     EmailMessage += 'Bonjour ' +PlayerName+ ','+
-      '<br><br>Ceci est pour confirmer ton inscription à la ligue: '+LeagueNameFR+
-        '<br><br>À partir de maintenant, tu peux soumettre tes rapports de matches en cliquant sur le lien suivant:'+
-          '<br><br>'+MatchReporterUrl+
-            '<br><br>Tu peux consulter le classement et statistiques de la ligue au lien suivant:'+
-              '<br><br>'+StandingsUrl+
-                '<br><br>Finalement, tu peux consulter ton pool de cartes ainsi que celui de tous les autres joueurs de la ligue au lien suivant '+
-                  '(je vous enverrai une confirmation lorsque les pool de cartes seront complétés):'+
-                    '<br><br>'+CardPoolUrl+
-                      '<br><br>Si tu as des questions ou commentaires, svp n’hésite pas à me contacter, il me fera plaisir de te répondre dans les plus brefs délais.'+
-                        '<br><br>Merci et bonne chance'+
-                          '<br><br>---------------<br><br>Eric Bouchard<br>Turn 1 Gaming Leagues and Tournament Applications';
+      '<br><br>Ceci est pour confirmer ton inscription à la ligue: '+LeagueNameFR;
+    
+    // If All links are non-null
+    if (urlMatchReporter != '' && urlStandings != '' && urlCardPool != ''){    
+      EmailMessage += '<br><br>À partir de maintenant, tu peux soumettre tes rapports de matches en cliquant sur le lien suivant:<br><br>'+urlMatchReporter;
+      EmailMessage += '<br><br>Tu peux consulter le classement et statistiques de la ligue au lien suivant:<br><br>'+urlStandings;
+      EmailMessage += '<br><br>Finalement, tu peux consulter ton pool de cartes ainsi que celui de tous les autres joueurs de la ligue au lien suivant '+
+        '(je vous enverrai une confirmation lorsque les pool de cartes seront complétés):'+
+          '<br><br>'+urlCardPool;
+    }
+   
+    // If one of them is null    
+    if (urlMatchReporter == '' || urlStandings == '' || urlCardPool == ''){
+      EmailMessage += "<br><br>Les liens de la ligue sont en construction, ils te seront envoyés dès qu'ils seront fonctionnels.";
+    }
+                      
+    EmailMessage += '<br><br>Si tu as des questions ou commentaires, svp n’hésite pas à me contacter, il me fera plaisir de te répondre dans les plus brefs délais.'+
+      '<br><br>Merci et bonne chance'+
+        '<br><br>---------------<br><br>Eric Bouchard<br>Turn 1 Gaming Leagues and Tournament Applications';
     
     // End of Email Message
     EmailMessage += '</body></html>';
