@@ -163,7 +163,7 @@ function fcnUpdateLinksIDs(){
   var shtConfig = ss.getSheetByName('Config');
   
   // Copy Log Spreadsheet
-  var shtCopyLogID = shtConfig.getRange(27, 2).getValue();
+  var shtCopyLogID = shtConfig.getRange(46, 2).getValue();
   
   if (shtCopyLogID != '') {
     var shtCopyLog = SpreadsheetApp.openById(shtCopyLogID).getSheets()[0];

@@ -73,6 +73,11 @@ function fcnRegistrationTCG(ss, shtResponse, RowResponse){
 
 function fcnAddPlayerTCG(shtConfig, shtPlayers, shtResponse, RowResponse, PlayerData) {
 
+  // Opens Players List File
+  var ssPlayersListID = shtConfig.getRange(41,2).getValue();
+  var ssPlayersList = SpreadsheetApp.openById(ssPlayersListID);
+  var shtPlayersList = ssPlayersList.getSheetByName('Players');
+  
   // Get All Values from Response Sheet
   var EmailAddress = shtResponse.getRange(RowResponse,2).getValue();
   var FirstName = shtResponse.getRange(RowResponse,3).getValue();
@@ -84,21 +89,27 @@ function fcnAddPlayerTCG(shtConfig, shtPlayers, shtResponse, RowResponse, Player
   var NbPlayers = shtPlayers.getRange(2,1).getValue();
   
   // Copy Values to Players Sheet at the Next Empty Spot (Number of Players + 3)
+  // Copy Values to Players List for Store Access
   var NextPlayerRow = NbPlayers + 3;
   // Name
   shtPlayers.getRange(NextPlayerRow, 2).setValue(PlayerName);
+  shtPlayersList.getRange(NextPlayerRow, 2).setValue(PlayerName);
   Logger.log('Player Name: %s',PlayerName);
   // Email Address
   shtPlayers.getRange(NextPlayerRow, 3).setValue(EmailAddress);
+  shtPlayersList.getRange(NextPlayerRow, 3).setValue(EmailAddress);
   Logger.log('Email Address: %s',EmailAddress);
   // Language
   shtPlayers.getRange(NextPlayerRow, 4).setValue(Language);
+  shtPlayersList.getRange(NextPlayerRow, 4).setValue(Language);
   Logger.log('Language: %s',Language);
   // Phone Number
   shtPlayers.getRange(NextPlayerRow, 5).setValue(Phone);
+  shtPlayersList.getRange(NextPlayerRow, 5).setValue(Phone);
   Logger.log('Phone: %s',Phone);  
   // DCI Number
   shtPlayers.getRange(NextPlayerRow, 6).setValue(DCINum);
+  shtPlayersList.getRange(NextPlayerRow, 6).setValue(DCINum);
   Logger.log('DCI: %s',DCINum);  Logger.log('-----------------------------');
   
   PlayerData[0] = 1;
@@ -157,13 +168,6 @@ function fcnModifyReportFormTCG(ss, shtConfig, shtPlayers) {
       // Set the Player List to the Match Report Forms
       ItemPlayerListEN.setChoiceValues(ListPlayers);
       ItemPlayerListFR.setChoiceValues(ListPlayers);
-      
-//      ItemPlayerChoice = ItemPlayerListEN.getChoices();
-      
-//      Logger.log(ItemTitle);
-//      for(var choice = 0; choice < ItemPlayerChoice.length; choice++){
-//        Logger.log('Player: %s',ItemPlayerChoice[choice].getValue());
-//      }
     }
   }
 }
