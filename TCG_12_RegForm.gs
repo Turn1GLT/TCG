@@ -27,6 +27,8 @@ function fcnCreateRegForm() {
   var FormNameFR;
   var FormItemsFR;
 
+  var RowFormUrlEN = 23;
+  var RowFormUrlFR = 24;
   var RowFormIdEN = 38;
   var RowFormIdFR = 39;
   
@@ -141,5 +143,12 @@ function fcnCreateRegForm() {
     shtConfig.getRange(RowFormIdEN, 2).setValue(FormIdEN);
     FormIdFR = formFR.getId();
     shtConfig.getRange(RowFormIdFR, 2).setValue(FormIdFR);
+    
+    // Create Links to add to Config File  
+    urlFormEN = formEN.getPublishedUrl();
+    shtConfig.getRange(RowFormUrlEN, 2).setValue(urlFormEN); 
+    
+    urlFormFR = formFR.getPublishedUrl();
+    shtConfig.getRange(RowFormUrlFR, 2).setValue(urlFormFR);
   }
 }  

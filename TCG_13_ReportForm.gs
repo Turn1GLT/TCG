@@ -52,6 +52,8 @@ function fcnCreateReportForm() {
   var ConfirmMsgEN;
   var ConfirmMsgFR;
   
+  var RowFormUrlEN = 19;
+  var RowFormUrlFR = 22;
   var RowFormIdEN = 36;
   var RowFormIdFR = 37;
   
@@ -315,6 +317,11 @@ function fcnCreateReportForm() {
     FormIdFR = formFR.getId();
     shtConfig.getRange(RowFormIdFR, 2).setValue(FormIdFR);
 
+    // Create Links to add to Config File  
+    urlFormEN = formEN.getPublishedUrl();
+    shtConfig.getRange(RowFormUrlEN, 2).setValue(urlFormEN); 
+    
+    urlFormFR = formFR.getPublishedUrl();
+    shtConfig.getRange(RowFormUrlFR, 2).setValue(urlFormFR);
   }
-
 }
