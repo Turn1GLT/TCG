@@ -77,6 +77,7 @@ function fcnSendConfirmEmailEN(shtConfig, Address, MatchData) {
   var Week    = MatchData[3][0];
   var Winr    = MatchData[4][0];
   var Losr    = MatchData[5][0];
+  var PunishPack = 0;
   
   // Add Masterpiece mention if necessary
   if (MatchData[24][2] == 'Last Card is Masterpiece'){
@@ -94,7 +95,8 @@ function fcnSendConfirmEmailEN(shtConfig, Address, MatchData) {
     '<br><br>Here is your match result:<br><br>';
     
   // Generate Match Data Table
-  EmailMessage = subMatchReportTable(EmailMessage, Headers, MatchData,1);
+  if (MatchData[9][0] != '') PunishPack = 1;
+  EmailMessage = subMatchReportTable(EmailMessage, Headers, MatchData, PunishPack);
   
   EmailMessage += "<br>Click below to access the League Standings and Results:"+
     "<br>"+ urlStandings +
@@ -298,6 +300,7 @@ function fcnSendConfirmEmailFR(shtConfig, Address, MatchData) {
   var Week    = MatchData[3][0];
   var Winr    = MatchData[4][0];
   var Losr    = MatchData[5][0];
+  var PunishPack = 0;
   
   // Add Masterpiece mention if necessary
   if (MatchData[24][2] == 'Last Card is Masterpiece'){
@@ -306,7 +309,7 @@ function fcnSendConfirmEmailFR(shtConfig, Address, MatchData) {
   }
 
   // Set Email Subject
-  EmailSubject = LeagueNameFR + " - Week " + Week + " - Rapport de Match" ;
+  EmailSubject = LeagueNameFR + " - Semaine " + Week + " - Rapport de Match" ;
     
   // Start of Email Message
   EmailMessage = "<html><body>";
@@ -315,7 +318,8 @@ function fcnSendConfirmEmailFR(shtConfig, Address, MatchData) {
     "<br><br>Voici le sommaire de votre match:<br><br>";
     
   // Generate Match Data Table
-  EmailMessage = subMatchReportTable(EmailMessage, Headers, MatchData,1);
+  if (MatchData[9][0] != '') PunishPack = 1;
+  EmailMessage = subMatchReportTable(EmailMessage, Headers, MatchData, PunishPack);
   
   EmailMessage += "<br>Cliquez ci-dessous pour accéder au classement et statistiques de la ligue:"+
     "<br>"+ urlStandings +
@@ -415,7 +419,7 @@ function fcnSendErrorEmailFR(shtConfig, Address, MatchData, MatchID, Status) {
   }
   
   // Set Email Subject
-  EmailSubject = LeagueNameFR + ' - Week ' + Week + ' - Erreur Rapport de Match' ;
+  EmailSubject = LeagueNameFR + ' - Semaine ' + Week + ' - Erreur Rapport de Match' ;
   
   // Start of Email Message
   EmailMessage = "<html><body>";
@@ -508,6 +512,7 @@ function subMatchReportTable(EmailMessage, Headers, MatchData, Param){
     
     // Match Data
     if(row < 7) {
+      Logger.log(MatchData[row][0]);
       EmailMessage += '<tr><td>'+Headers[row][0]+'</td><td>'+MatchData[row][0]+'</td></tr>';
     }
     
@@ -523,6 +528,12 @@ function subMatchReportTable(EmailMessage, Headers, MatchData, Param){
     // Pack Data
     if(row > 9 && Param == 1) {
       EmailMessage += '<tr><td>'+Headers[row][0]+'</td><td><center>'+MatchData[row][1]+'</td><td>'+MatchData[row][2]+'</td><td><center>'+MatchData[row][3]+'</td></tr>';
+    }
+
+    // If Param is Null, No Pack was opened 
+    if(row == 9 && Param == '') {
+      EmailMessage += '<br><font size="4"><b>No Booster Pack Opened</b></font><br><br>'
+      row = 24;
     }
     
     // If Param is Not 1, Error is Present 
@@ -642,52 +653,6 @@ function fcnSendNewPlayerConf(shtConfig, PlayerData){
   
   // Send Email Confirmation
   MailApp.sendEmail(PlayerEmail, EmailSubject,'',{name:'Turn 1 Gaming League Manager',htmlBody:EmailMessage});
-}
-
-// **********************************************
-// function fcnSendFeedbackEmail()
-//
-// This function generates the feedback email 
-//
-// **********************************************
-
-function fcnSendFeedbackEmail(shtConfig, Address, MatchData, Feedback) {
-  
-  // Variables
-  var EmailSubject;
-  var EmailMessage;
-  
-  // League Name
-  var Location = shtConfig.getRange(11,2).getValue();
-  var LeagueTypeEN = shtConfig.getRange(13,2).getValue();
-  var LeagueNameEN = shtConfig.getRange(3,2).getValue() + ' ' + LeagueTypeEN;
-    
-  // Match Data Assignation
-  var MatchID = MatchData[2][0];
-  var Week    = MatchData[3][0];
-  var Winr    = MatchData[4][0];
-  var Losr    = MatchData[5][0];
-  
-  // Set Email Subject
-  EmailSubject = Location + ' ' + LeagueNameEN + ' - Week ' + Week + ' - Player Feedback' ;
-  
-  // Start of Email Message
-  EmailMessage = '<html><body>';
-  
-  EmailMessage += 'Match ID: ' + MatchID + '<br>' +
-    'Week: ' + Week + '<br>' +
-      'Winning Player: ' + Winr + '<br>' +
-        'Losing Player: ' + Losr + '<br><br>';
-  EmailMessage += 'Here is the feedback received by:<br><br>'+
-    Address[1][1]+'<br>'+
-      Address[2][1]+'<br><br>'+
-        Feedback;
-  
-  // End of Email Message
-  EmailMessage += '</body></html>';
-  
-  // Send email to Administrator
-  MailApp.sendEmail(Address[0][1], EmailSubject, "",{name:'Turn 1 Gaming League Manager',htmlBody:EmailMessage});
 }
 
 

@@ -11,7 +11,7 @@ function fcnRegistrationTCG(ss, shtResponse, RowResponse){
 
   var shtConfig = ss.getSheetByName('Config');
   var shtPlayers = ss.getSheetByName('Players');
-  var ssWeekBstrID = shtConfig.getRange(40, 2).getValue();
+  var ssWeekBstrID = shtConfig.getRange(41, 2).getValue();
   
   var PlayerData = new Array(8);
   PlayerData[0] = 0 ; // Function Status
@@ -29,12 +29,14 @@ function fcnRegistrationTCG(ss, shtResponse, RowResponse){
   var NbPlayers  = PlayerData[1];
   var PlayerName = PlayerData[2];
   
-  // If Player was succesfully added, Generate Card DB, Generate Card Pool, Modify Match Report Form and Add Player to Weekly Booster
+  // If Player was succesfully added, Generate Card DB, Generate Card Pool, Generate Startin Pool, Modify Match Report Form and Add Player to Weekly Booster
   if(PlayerData[0] == 1) {
     fcnGenPlayerCardDB();
     Logger.log('Card Database Generated'); 
     fcnGenPlayerCardPool();
     Logger.log('Card Pool Generated');
+    fcnGenPlayerStartPool();
+    Logger.log('Starting Pool Generated');    
     fcnModifyReportFormTCG(ss, shtConfig, shtPlayers);
     // If Weekly Booster is used, add Player to the list
     if(ssWeekBstrID != ''){
@@ -64,7 +66,7 @@ function fcnRegistrationTCG(ss, shtResponse, RowResponse){
 
 
 // **********************************************
-// function fcnAddPlayerTCG_Master
+// function fcnAddPlayerTCG
 //
 // This function adds the new player to
 // the Player's List
@@ -74,7 +76,7 @@ function fcnRegistrationTCG(ss, shtResponse, RowResponse){
 function fcnAddPlayerTCG(shtConfig, shtPlayers, shtResponse, RowResponse, PlayerData) {
 
   // Opens Players List File
-  var ssPlayersListID = shtConfig.getRange(41,2).getValue();
+  var ssPlayersListID = shtConfig.getRange(40,2).getValue();
   var ssPlayersList = SpreadsheetApp.openById(ssPlayersListID);
   var shtPlayersList = ssPlayersList.getSheetByName('Players');
   
@@ -126,7 +128,7 @@ function fcnAddPlayerTCG(shtConfig, shtPlayers, shtResponse, RowResponse, Player
 
 
 // **********************************************
-// function fcnModifyReportFormTCG_Master
+// function fcnModifyReportFormTCG
 //
 // This function modifies the Match Report Form
 // to add new added players

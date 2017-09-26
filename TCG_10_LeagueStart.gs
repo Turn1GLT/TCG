@@ -1,4 +1,113 @@
 // **********************************************
+// function fcnUpdateLinksIDs()
+//
+// This function updates all sheets Links and IDs  
+// in the Config File
+//
+// **********************************************
+
+function fcnUpdateLinksIDs(){
+  
+  // Main Spreadsheet
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  
+  // Config Spreadsheet
+  var shtConfig = ss.getSheetByName('Config');
+  
+  // Copy Log Spreadsheet
+  var shtCopyLogID = shtConfig.getRange(46, 2).getValue();
+  var LinksStatus = shtConfig.getRange(46, 6).getValue();
+  
+  //  Update Links and ID if Status is Null
+  if (shtCopyLogID != '' && LinksStatus =='') {
+    var shtCopyLog = SpreadsheetApp.openById(shtCopyLogID).getSheets()[0];
+  
+    var CopyLogNbFiles = shtCopyLog.getRange(2, 6).getValue();
+    var StartRowCopyLog = 5;
+    var StartRowConfigId = 30
+    var StartRowConfigLink = 17;
+    
+    var CopyLogVal = shtCopyLog.getRange(StartRowCopyLog, 2, CopyLogNbFiles, 3).getValues();
+    
+    var FileName;
+    var Link;
+    var Formula;
+    var ConfigRowID = 'Not Found';
+    var ConfigRowLk = 'Not Found';
+    
+    // Clear Configuration File
+    shtConfig.getRange(17,2,10,1).clearContent();
+    shtConfig.getRange(30,2,13,1).clearContent();
+    
+    // Loop through all Copied Sheets and get their Link and ID
+    for (var row = 0; row < CopyLogNbFiles; row++){
+      // Get File Name
+      FileName = CopyLogVal[row][0];
+      
+      switch(FileName){
+        case 'Master TCG Booster League' :
+          ConfigRowID = StartRowConfigId + 0;
+          ConfigRowLk = 'Not Found'; break;
+        case 'Master TCG Booster League Card DB' :
+          ConfigRowID = StartRowConfigId + 1; 
+          ConfigRowLk = 'Not Found'; break;
+        case 'Master TCG Booster League Card Pool EN' :
+          ConfigRowID = StartRowConfigId + 2; 
+          ConfigRowLk = StartRowConfigLink + 1; break;
+        case 'Master TCG Booster League Card Pool FR' :
+          ConfigRowID = StartRowConfigId + 3; 
+          ConfigRowLk = StartRowConfigLink + 4; break;
+        case 'Master TCG Booster League Standings EN' :
+          ConfigRowID = StartRowConfigId + 4; 
+          ConfigRowLk = StartRowConfigLink + 0; break;
+        case 'Master TCG Booster League Standings FR' :
+          ConfigRowID = StartRowConfigId + 5; 
+          ConfigRowLk = StartRowConfigLink + 3; break;
+        case 'Master TCG Booster League Match Reporter EN' :
+          ConfigRowID = 'Not Found';
+          ConfigRowLk = 'Not Found'; break;
+        case 'Master TCG Booster League Match Reporter FR' :
+          ConfigRowID = 'Not Found';
+          ConfigRowLk = 'Not Found'; break;	
+        case 'Master TCG Booster League Registration EN' :
+          ConfigRowID = 'Not Found';
+          ConfigRowLk = 'Not Found'; break;
+        case 'Master TCG Booster League Registration FR' :
+          ConfigRowID = 'Not Found';
+          ConfigRowLk = 'Not Found'; break;	
+        case 'Master TCG Booster League Players List' :
+          ConfigRowID = StartRowConfigId + 10; 
+          ConfigRowLk = StartRowConfigLink + 8; break;
+        case 'Master TCG Booster League Weekly Booster' :
+          ConfigRowID = StartRowConfigId + 11; 
+          ConfigRowLk = StartRowConfigLink + 9; break;
+        case 'Master TCG Booster League Starting Pool' :
+          ConfigRowID = StartRowConfigId + 12; 
+          ConfigRowLk = StartRowConfigLink + 10; break;
+        default : 
+          ConfigRowID = 'Not Found'; 
+          ConfigRowLk = 'Not Found'; break;
+      }
+      
+      // Set the Appropriate Sheet ID Value in the Config File
+      if (ConfigRowID != 'Not Found') {
+        shtConfig.getRange(ConfigRowID, 2).setValue(CopyLogVal[row][2]);
+      }
+      // Set tthe Appropriate Sheet ID Value in the Config File
+      if (ConfigRowLk != 'Not Found') {
+        // Opens Spreadsheet by ID
+        Link = SpreadsheetApp.openById(CopyLogVal[row][2]).getUrl();
+        Logger.log(Link); 
+        
+        shtConfig.getRange(ConfigRowLk, 2).setValue(Link);
+      }
+    }
+    // Set Links Updated when Complete
+    shtConfig.getRange(46, 6).SetValue('Links Updated')
+  }
+}
+
+// **********************************************
 // function fcnInitLeague()
 //
 // This function clears all data from sheets  
@@ -75,12 +184,14 @@ function fcnInitLeague(){
   
   // Clear Players DB and Card Pools
   fcnDelPlayerCardDB();
-  fcnDelPlayerCardPoolSht();
+  fcnDelPlayerCardPool();
+  fcnDelPlayerStartPool();
   Logger.log('Card DB and Card Pool Cleared');
   
   // Generate Players DB and Card Pools
   fcnGenPlayerCardDB();
-  fcnGenPlayerCardPoolSht();
+  fcnGenPlayerCardPool();
+  fcnGenPlayerStartPool();
   Logger.log('Card DB and Card Pool Generated');
 }
 
@@ -145,96 +256,6 @@ function fcnResetLeagueMatch(){
 }
 
 
-
-// **********************************************
-// function fcnUpdateLinksIDs()
-//
-// This function updates all sheets Links and IDs  
-// in the Config File
-//
-// **********************************************
-
-function fcnUpdateLinksIDs(){
-  
-  // Main Spreadsheet
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  
-  // Config Spreadsheet
-  var shtConfig = ss.getSheetByName('Config');
-  
-  // Copy Log Spreadsheet
-  var shtCopyLogID = shtConfig.getRange(46, 2).getValue();
-  
-  if (shtCopyLogID != '') {
-    var shtCopyLog = SpreadsheetApp.openById(shtCopyLogID).getSheets()[0];
-  
-    var CopyLogNbFiles = shtCopyLog.getRange(2, 6).getValue();
-    var StartRowCopyLog = 5;
-    var StartRowConfigId = 30
-    var StartRowConfigLink = 17;
-    
-    var CopyLogVal = shtCopyLog.getRange(StartRowCopyLog, 2, CopyLogNbFiles, 3).getValues();
-    
-    var FileName;
-    var Link;
-    var Formula;
-    var ConfigRowID = 'Not Found';
-    var ConfigRowLk = 'Not Found';
-    
-    // Clear Configuration File
-    shtConfig.getRange(17,2,6,1).clearContent();
-    shtConfig.getRange(30,2,7,1).clearContent();
-    
-    // Loop through all Copied Sheets and get their Link and ID
-    for (var row = 0; row < CopyLogNbFiles; row++){
-      // Get File Name
-      FileName = CopyLogVal[row][0];
-      
-      switch(FileName){
-        case 'Master TCG Booster League' :
-          ConfigRowID = StartRowConfigId + 0;
-          ConfigRowLk = 'Not Found'; break;
-        case 'Master TCG Booster League Card DB' :
-          ConfigRowID = StartRowConfigId + 1; 
-          ConfigRowLk = 'Not Found'; break;
-        case 'Master TCG Booster League Card Pool EN' :
-          ConfigRowID = StartRowConfigId + 2; 
-          ConfigRowLk = StartRowConfigLink + 1; break;
-        case 'Master TCG Booster League Card Pool FR' :
-          ConfigRowID = StartRowConfigId + 3; 
-          ConfigRowLk = StartRowConfigLink + 4; break;
-        case 'Master TCG Booster League Standings EN' :
-          ConfigRowID = StartRowConfigId + 4; 
-          ConfigRowLk = StartRowConfigLink + 0; break;
-        case 'Master TCG Booster League Standings FR' :
-          ConfigRowID = StartRowConfigId + 5; 
-          ConfigRowLk = StartRowConfigLink + 3; break;
-        case 'Master TCG Booster League Match Reporter EN' :
-          ConfigRowID = 'Not Found';
-          ConfigRowLk = 'Not Found'; break;
-        case 'Master TCG Booster League Match Reporter FR' :
-          ConfigRowID = 'Not Found';
-          ConfigRowLk = 'Not Found'; break;	
-        default : 
-          ConfigRowID = 'Not Found'; 
-          ConfigRowLk = 'Not Found'; break;
-      }
-      
-      // Set the Appropriate Sheet ID Value in the Config File
-      if (ConfigRowID != 'Not Found') {
-        shtConfig.getRange(ConfigRowID, 2).setValue(CopyLogVal[row][2]);
-      }
-      // Set tthe Appropriate Sheet ID Value in the Config File
-      if (ConfigRowLk != 'Not Found') {
-        // Opens Spreadsheet by ID
-        Link = SpreadsheetApp.openById(CopyLogVal[row][2]).getUrl();
-        Logger.log(Link); 
-        
-        shtConfig.getRange(ConfigRowLk, 2).setValue(Link);
-      }
-    }
-  }
-}
 
 
 // **********************************************
@@ -360,7 +381,7 @@ function fcnGenPlayerCardDB(){
 // **********************************************
 // function fcnGenPlayerCardPool()
 //
-// This function generates all Card DB for all 
+// This function generates all Card Pool for all 
 // players from the Config File
 //
 // **********************************************
@@ -435,6 +456,7 @@ function fcnGenPlayerCardPool(){
     }
   }
   
+  // Update Header
   // English Version
   shtPlyrCardPoolEn = ssCardPoolEn.getSheets()[0];
   ssCardPoolEn.setActiveSheet(shtPlyrCardPoolEn);
@@ -444,6 +466,83 @@ function fcnGenPlayerCardPool(){
   shtPlyrCardPoolFr = ssCardPoolFr.getSheets()[0];
   ssCardPoolFr.setActiveSheet(shtPlyrCardPoolFr);
   ssCardPoolFr.getSheetByName('Template').hideSheet();
+}
+
+
+// **********************************************
+// function fcnGenPlayerStartPool()
+//
+// This function generates Starting Pool for all 
+// players from the Config File
+//
+// **********************************************
+
+function fcnGenPlayerStartPool(){
+    
+  // Main Spreadsheet
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ssID = ss.getId();
+  
+  // Config Spreadsheet
+  var shtConfig = ss.getSheetByName('Config');
+  
+  // Card Pool Spreadsheet
+  var StartPoolShtID = shtConfig.getRange(42, 2).getValue();
+  var ssStartPool = SpreadsheetApp.openById(StartPoolShtID);
+  var shtStartPool = ssStartPool.getSheetByName('Template');
+  var shtStartPoolNum;
+  var NumSheet = ssStartPool.getNumSheets();
+  var SheetsStartPool = ssStartPool.getSheets();
+  var SheetName;
+  var PlayerFound = 0;
+  
+  // Players 
+  var shtPlayers = ss.getSheetByName('Players'); 
+  var NbPlayers = shtPlayers.getRange(2,1).getValue();
+  
+  var shtPlyrStartPool;
+  var shtPlyrName;
+  var PlyrRow;
+  var StartPoolNumSht;
+  
+  // Loops through each player starting from the first
+  for (var plyr = 1; plyr <= NbPlayers; plyr++){
+  
+    // Update the Player Row and Get Player Name from Config File
+    PlyrRow = plyr + 2; // 2 is the row where the player list starts
+    shtPlyrName = shtPlayers.getRange(PlyrRow, 2).getValue();
+    
+    // Resets the Player Found flag before searching
+    PlayerFound = 0;
+    
+    // Look if player exists, if yes, skip, if not, create player
+    for(var sheet = NumSheet - 1; sheet >= 0; sheet --){
+      SheetName = SheetsStartPool[sheet].getSheetName();
+      
+      Logger.log('Player: %s',SheetName);
+      if (SheetName == shtPlyrName) PlayerFound = 1;
+    }
+    
+    if (PlayerFound == 0){
+      Logger.log('Player: %s',shtPlyrName);
+      // Get the Template sheet index
+      StartPoolNumSht = ssStartPool.getNumSheets();
+      // INSERTS TAB BEFORE "Card DB" TAB
+      // English Version
+      ssStartPool.insertSheet(shtPlyrName, StartPoolNumSht-1, {template: shtStartPool});
+      shtPlyrStartPool = ssStartPool.getSheetByName(shtPlyrName).showSheet();
+      
+      // Opens the new sheet and modify appropriate data (Player Name, Header)
+      shtPlyrStartPool.getRange(1,2).setValue(shtPlyrName);
+      shtPlyrStartPool.getRange(2,2).setValue('Not Processed');
+      shtPlyrStartPool.getRange(3,2).setValue(ssID);
+    }
+  }
+  
+  // Hide Template Sheet
+  shtPlyrStartPool = ssStartPool.getSheets()[0];
+  ssStartPool.setActiveSheet(shtPlyrStartPool);
+  ssStartPool.getSheetByName('Template').hideSheet();
 }
 
 
@@ -486,7 +585,7 @@ function fcnDelPlayerCardDB(){
 // **********************************************
 // function fcnDelPlayerCardPool()
 //
-// This function deletes all Card DB for all 
+// This function deletes all Card Pools for all 
 // players from the Config File
 //
 // **********************************************
@@ -506,13 +605,15 @@ function fcnDelPlayerCardPool(){
   var ssCardPoolFr = SpreadsheetApp.openById(CardPoolShtIDFr);
   var shtTemplateEn = ssCardPoolEn.getSheetByName('Template');
   var shtTemplateFr = ssCardPoolFr.getSheetByName('Template');
-  var ssNbSheet = ssCardPoolEn.getNumSheets();
+  var ssNbSheetEn = ssCardPoolEn.getNumSheets();
+  var ssNbSheetFr = ssCardPoolFr.getNumSheets();  
   
-  // Routine Variables
+    // Routine Variables
   var shtCurrEn;
   var shtCurrNameEn;
   var shtCurrFr;
   var shtCurrNameFr;
+  var NbSheet;
   
   // Show Template sheet
   shtTemplateEn.showSheet();
@@ -522,7 +623,11 @@ function fcnDelPlayerCardPool(){
   ssCardPoolEn.setActiveSheet(shtTemplateEn);
   ssCardPoolFr.setActiveSheet(shtTemplateFr);
   
-  for (var sht = 0; sht < ssNbSheet - 1; sht ++){
+  // Check greater number of sheets
+  if (ssNbSheetEn >= ssNbSheetFr) NbSheet = ssNbSheetEn;
+  if (ssNbSheetFr >= ssNbSheetEn) NbSheet = ssNbSheetFr;  
+  
+  for (var sht = 0; sht < NbSheet - 1; sht ++){
     
     // English Version
     shtCurrEn = ssCardPoolEn.getSheets()[0];
@@ -532,7 +637,49 @@ function fcnDelPlayerCardPool(){
     // French Version   
     shtCurrFr = ssCardPoolFr.getSheets()[0];
     shtCurrNameFr = shtCurrFr.getName();
+    Logger.log(shtCurrNameFr);
     if( shtCurrNameFr != 'Template') ssCardPoolFr.deleteSheet(shtCurrFr);
+  }
+}
+
+// **********************************************
+// function fcnDelPlayerStartPool()
+//
+// This function deletes all Starting Pool for all 
+// players from the Config File
+//
+// **********************************************
+
+function fcnDelPlayerStartPool(){
+
+  // Main Spreadsheet
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+
+  // Config Spreadsheet
+  var shtConfig = ss.getSheetByName('Config');
+  
+  // Card Pool Spreadsheet
+  var StartPoolShtID = shtConfig.getRange(42, 2).getValue();
+  var ssStartPool = SpreadsheetApp.openById(StartPoolShtID);
+  var shtTemplate = ssStartPool.getSheetByName('Template');
+  var ssNbSheet = ssStartPool.getNumSheets();
+  
+  // Routine Variables
+  var shtCurr;
+  var shtCurrName;
+  
+  // Show Template sheet
+  shtTemplate.showSheet();
+  
+  // Activates Template Sheet
+  ssStartPool.setActiveSheet(shtTemplate);
+  
+  for (var sht = 0; sht < ssNbSheet - 1; sht ++){
+    
+    // English Version
+    shtCurr = ssStartPool.getSheets()[0];
+    shtCurrName = shtCurr.getName();
+    if( shtCurrName != 'Template') ssStartPool.deleteSheet(shtCurr);
   }
 }
 

@@ -426,7 +426,7 @@ function fcnGameResultsTCG(ss, shtConfig, ConfigData, shtRspn) {
                     CardList[card] = ResponseData[0][card+7];
                   }
                   // If Pack was opened, Update Card Database and Card Pool for Appropriate player
-                  if (CardList[0] != 'No Pack Opened') {
+                  if (ResponseData[0][7] != 'No') {
                     
                     // Updates the Status while processing
                     if(Status[0] >= 0){
@@ -572,12 +572,6 @@ function fcnGameResultsTCG(ss, shtConfig, ConfigData, shtRspn) {
         fcnSendErrorEmailEN(shtConfig, EmailAddresses, MatchData, MatchID, Status);
         fcnSendErrorEmailFR(shtConfig, EmailAddresses, MatchData, MatchID, Status);
         Logger.log('Error Emails Sent');
-      }
-      
-      // If Player Submitted Feedback, send Feedback to Administrator
-      if (ResponseData[0][23] != '') {
-        if (EmailAddresses[1] == '' && EmailAddresses[2] == '') EmailAddresses = subGetEmailAddress(ss, EmailAddresses, RspnDataWinr, RspnDataLosr);
-        fcnSendFeedbackEmail(shtConfig, EmailAddresses, MatchData, ResponseData[0][23]);
       }
       
       // Updates the Status while processing

@@ -15,15 +15,18 @@ function onOpenTCG_Master() {
   
   var LeagueMenu = [];
   LeagueMenu.push({name:'Update Config ID & Links', functionName:'fcnUpdateLinksIDs'});
-  LeagueMenu.push({name:'Create Registration Forms', functionName:'fcnCreateRegForm'});
   LeagueMenu.push({name:'Create Match Report Forms', functionName:'fcnCreateReportForm'});
   LeagueMenu.push({name:'Setup Response Sheets',functionName:'fcnSetupResponseSht'});
+  LeagueMenu.push({name:'Create Registration Forms', functionName:'fcnCreateRegForm'});
   LeagueMenu.push({name:'Initialize League', functionName:'fcnInitLeague'});
   LeagueMenu.push(null);
-  LeagueMenu.push({name:'Generate Players DB',functionName:'fcnGenPlayerCardDB'});
-  LeagueMenu.push({name:'Generate Players Pools', functionName:'fcnGenPlayerCardPool'});
-  LeagueMenu.push({name:'Delete Players DB',functionName:'fcnDelPlayerCardDB'});
-  LeagueMenu.push({name:'Delete Players Pools', functionName:'fcnDelPlayerCardPool'});
+  LeagueMenu.push({name:'Generate Card DB',functionName:'fcnGenPlayerCardDB'});
+  LeagueMenu.push({name:'Generate Card Pools', functionName:'fcnGenPlayerCardPool'});
+  LeagueMenu.push({name:'Generate Starting Pools', functionName:'fcnGenPlayerStartPool'});
+  LeagueMenu.push(null);
+  LeagueMenu.push({name:'Delete Card DB',functionName:'fcnDelPlayerCardDB'});
+  LeagueMenu.push({name:'Delete Card Pools', functionName:'fcnDelPlayerCardPool'});
+  LeagueMenu.push({name:'Delete Starting Pools', functionName:'fcnDelPlayerStartPool'});
 
   
   ss.addMenu("Manage League", LeagueMenu);

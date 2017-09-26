@@ -253,22 +253,22 @@ function fcnPostMatchResultsTCG(ss, ConfigData, shtRspn, ResponseData, MatchingR
     
     // Copies Card Data
     if (OptTCGBooster == 'Enabled'){
-      ResultData[0][9] = ResponseData[0][7]; // Expansion Set
-      ResultData[0][10] = ResponseData[0][8]; // Card 1
-      ResultData[0][11] = ResponseData[0][9]; // Card 2
-      ResultData[0][12] = ResponseData[0][10]; // Card 3
-      ResultData[0][13] = ResponseData[0][11]; // Card 4
-      ResultData[0][14] = ResponseData[0][12]; // Card 5
-      ResultData[0][15] = ResponseData[0][13]; // Card 6
-      ResultData[0][16] = ResponseData[0][14]; // Card 8
-      ResultData[0][17] = ResponseData[0][15]; // Card 7
-      ResultData[0][18] = ResponseData[0][16]; // Card 9
-      ResultData[0][19] = ResponseData[0][17]; // Card 10
-      ResultData[0][20] = ResponseData[0][18]; // Card 11
-      ResultData[0][21] = ResponseData[0][19]; // Card 12
-      ResultData[0][22] = ResponseData[0][20]; // Card 13
-      ResultData[0][23] = ResponseData[0][21]; // Card 14 / Foil
-      ResultData[0][24] = ResponseData[0][22]; // Masterpiece (Y/N)
+      ResultData[0][9] = ResponseData[0][8]; // Expansion Set
+      ResultData[0][10] = ResponseData[0][9]; // Card 1
+      ResultData[0][11] = ResponseData[0][10]; // Card 2
+      ResultData[0][12] = ResponseData[0][11]; // Card 3
+      ResultData[0][13] = ResponseData[0][12]; // Card 4
+      ResultData[0][14] = ResponseData[0][13]; // Card 5
+      ResultData[0][15] = ResponseData[0][14]; // Card 6
+      ResultData[0][16] = ResponseData[0][15]; // Card 7
+      ResultData[0][17] = ResponseData[0][16]; // Card 8
+      ResultData[0][18] = ResponseData[0][17]; // Card 9
+      ResultData[0][19] = ResponseData[0][18]; // Card 10
+      ResultData[0][20] = ResponseData[0][19]; // Card 11
+      ResultData[0][21] = ResponseData[0][20]; // Card 12
+      ResultData[0][22] = ResponseData[0][21]; // Card 13
+      ResultData[0][23] = ResponseData[0][22]; // Card 14 / Foil
+      ResultData[0][24] = ResponseData[0][23]; // Masterpiece (Y/N)
     }
     
     // Sets Data in Match Result Tab
@@ -600,10 +600,12 @@ function fcnCopyStandingsResults(ss, shtConfig, RspnWeekNum, AllSheets){
     }
     
     // Hide Unused Rows
-    ssLgShtEn.hideRows(ssMstrShtStartRow, ssMstrShtMaxRows - ssMstrShtStartRow + 1);
-    ssLgShtEn.showRows(ssMstrShtStartRow, NbPlayers);
-    ssLgShtFr.hideRows(ssMstrShtStartRow, ssMstrShtMaxRows - ssMstrShtStartRow + 1);
-    ssLgShtFr.showRows(ssMstrShtStartRow, NbPlayers);
+    if(NbPlayers > 0){
+      ssLgShtEn.hideRows(ssMstrShtStartRow, ssMstrShtMaxRows - ssMstrShtStartRow + 1);
+      ssLgShtEn.showRows(ssMstrShtStartRow, NbPlayers);
+      ssLgShtFr.hideRows(ssMstrShtStartRow, ssMstrShtMaxRows - ssMstrShtStartRow + 1);
+      ssLgShtFr.showRows(ssMstrShtStartRow, NbPlayers);
+    }
   }
 }
 
