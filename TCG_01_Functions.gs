@@ -670,5 +670,39 @@ function fcnAnalyzeLossPenalty(ss, Week, PlayerData){
 
 function fcnModifyWeekMatchReport(ss, shtConfig){
 
+  var MatchFormEN = FormApp.openById(shtConfig.getRange(36, 2).getValue());
+  var FormItemEN = MatchFormEN.getItems();
+  var NbFormItem = FormItemEN.length;
   
+  var MatchFormFR = FormApp.openById(shtConfig.getRange(37, 2).getValue());
+  var FormItemFR = MatchFormFR.getItems();
+
+  // Function Variables
+  var ItemTitle;
+  var ItemListEN;
+  var ItemListFR;
+  var ItemChoice;
+  var WeekChoice = [];
+  var Week = shtConfig.getRange(5,7).getValue();
+  
+  // Loops to Find Players List
+  for(var item = 0; item < NbFormItem; item++){
+    ItemTitle = FormItemEN[item].getTitle();
+    if(ItemTitle == 'Week'){
+      
+      // Get the List Item from the Match Report Form
+      ItemListEN = FormItemEN[item].asListItem();
+      ItemListFR = FormItemFR[item].asListItem();
+      
+      // Set the New Choice for Item
+      WeekChoice[0] = Week;
+      
+      // Set the Item Choices in the Match Report Forms
+      ItemListEN.setChoiceValues(WeekChoice);
+      ItemListFR.setChoiceValues(WeekChoice);
+      
+      // Exit For
+      item = NbFormItem;
+    }
+  }
 }

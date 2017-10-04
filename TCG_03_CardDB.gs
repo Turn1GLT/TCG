@@ -91,7 +91,7 @@ function fcnUpdateCardDB(shtConfig, Player, CardList, PackData, shtTest){
       if (CardListNb == 14 && CardList[15] == 'No') PackData[15][2] = 'No Masterpiece';
       
       // If Last card is a Masterpiece
-      if (CardListNb == 14 && CardList[15] == 'Yes') PackData[15][2] = 'Last Card is Masterpiece';
+      if (CardListNb == 14 && CardList[15] == 'Yes') PackData[15][2] = 'Masterpiece';
             
     }
     

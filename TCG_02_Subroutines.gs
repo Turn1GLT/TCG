@@ -144,7 +144,59 @@ function subUpdateStatus(shtRspn, RspnRow, ColStatus, ColStatusMsg, StatusNum) {
   return StatusMsg;
 }
 
+// **********************************************
+// function fcnPlayerWithMost()
+//
+// This function searches for the player with the 
+// most "Param" for a given week
+//
+// **********************************************
+function fcnPlayerWithMost(PlayerMostData, NbPlayers, shtWeek, Param){
+ 
+  var ColParam;
+  var Rank = 0;
+  var MostValue = 0;
+  var TestValue = 0;
+  
+  // Get Week Data Array from Sheet
+  // Rows
+  // Players
+  
+  // Columns
+  // 0 = Player Name, 3 = Matches Played, 4 = Wins, 5 = Loss, 6 = Win%, 7 = Penalty Loss, 8 = Matches Played in Store, 9 = Punishment Packs
+  var WeekData = shtWeek.getRange(4,1,33,10).getValues();
+  
+  // Select Appropriate Column according to Param
+  switch (Param){
+    case 'Wins'    : ColParam = 4; break;
+    case 'Loss'    : ColParam = 5; break;
+    case 'Win%'    : ColParam = 6; break;
+    case 'Store'   : ColParam = 8; break;
+    case 'PunPack' : ColParam = 9; break;
+  }
+  
+  // Loop through Selected Column to find the Player with the Most...
+  for(var i=1; i<=NbPlayers; i++){
+    TestValue = WeekData[i][ColParam];
+    // If an Equal Value is found
+    if(TestValue == MostValue){
+      Rank += 1;
+      PlayerMostData[Rank][0] = WeekData[i][1];
+      PlayerMostData[Rank][1] = MostValue;
+    }
 
-function sheetName() {
-  return SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getName();
+    // If a new Highest Value is found
+    if(TestValue > MostValue) {
+      // Clear Array
+      for(var j=0; j<NbPlayers; j++){
+        PlayerMostData[j][0] = '';
+        PlayerMostData[j][1] = '';
+      }
+      // Write New Value
+      MostValue = TestValue;
+      PlayerMostData[0][0] = WeekData[i][1];
+      PlayerMostData[0][1] = MostValue;
+    }
+  }
+  return PlayerMostData; 
 }

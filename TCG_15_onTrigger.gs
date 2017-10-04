@@ -94,7 +94,7 @@ function onWeekChangeTCG_Master(){
   MatchesPlayedStore = MatchesPlayedStore/2;
   
   // Modify the Week Number in the Match Report Sheet
-  //fcnModifyWeekMatchReport(ss, shtConfig);
+  fcnModifyWeekMatchReport(ss, shtConfig);
 
   // Send Weekly Report Email
   EmailSubject = LeagueNameEN +' - Week ' + LastWeek + ' Report';

@@ -80,7 +80,7 @@ function fcnSendConfirmEmailEN(shtConfig, Address, MatchData) {
   var PunishPack = 0;
   
   // Add Masterpiece mention if necessary
-  if (MatchData[24][2] == 'Last Card is Masterpiece'){
+  if (MatchData[24][2] == 'Masterpiece'){
     var Masterpiece = MatchData[23][2];
     MatchData[23][2] += ' (Masterpiece)' 
   }
@@ -303,7 +303,7 @@ function fcnSendConfirmEmailFR(shtConfig, Address, MatchData) {
   var PunishPack = 0;
   
   // Add Masterpiece mention if necessary
-  if (MatchData[24][2] == 'Last Card is Masterpiece'){
+  if (MatchData[24][2] == 'Masterpiece'){
     var Masterpiece = MatchData[23][2];
     MatchData[23][2] += ' (Masterpiece)' 
   }
