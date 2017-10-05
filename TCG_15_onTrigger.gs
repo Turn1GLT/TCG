@@ -34,7 +34,7 @@ function onOpenTCG_Master() {
 }
 
 // **********************************************
-// function fcnWeekChange()
+// function fcnWeekChangeTCG()
 //
 // When the Week number changes, this function analyzes all
 // generates a weekly report 
@@ -61,8 +61,9 @@ function onWeekChangeTCG_Master(){
   var shtCumul = ss.getSheetByName('Cumulative Results');
   var Week = shtCumul.getRange(2,3).getValue();
   var LastWeek = Week - 1;
-  var WeekShtName = 'Week'+Week;
+  var WeekShtName = 'Week'+LastWeek;
   var shtWeek = ss.getSheetByName(WeekShtName);
+  var NbPlayers = shtConfig.getRange(6,2).getValue()+1;
   var PenaltyTable;
   var EmailSubject;
   var EmailMessage;
@@ -72,12 +73,40 @@ function onWeekChangeTCG_Master(){
   var MatchPlydStore;
   var MatchesPlayedStore = 0;
   
+  // Array to Find Player with Most Matches Played in Store
+  var PlayerMostGames = new Array(NbPlayers); 
+  for(var i=0; i<NbPlayers; i++){
+    PlayerMostGames[i] = new Array (2);// [0]= Player Name, [1]= Data  
+  }
+  // Array to Find Player with Most Losses
+  var PlayerMostLoss = new Array(NbPlayers); // [0]= Player Name, [1]= Data
+  for(var i=0; i<NbPlayers; i++){
+    PlayerMostLoss[i] = new Array (2);// [0]= Player Name, [1]= Data  
+  }
+  
   // Players Array to return Penalty Losses
   var PlayerData = new Array(32); // 0= Player Name, 1= Penalty Losses
   for(var plyr = 0; plyr < 32; plyr++){
     PlayerData[plyr] = new Array(2); 
     for (var val = 0; val < 2; val++) PlayerData[plyr][val] = '';
   }
+  
+  // Modify the Week Number in the Match Report Sheet
+  fcnModifyWeekMatchReport(ss, shtConfig);
+  
+  //Player with Most Games Played in Store
+  var Param = 'Store';
+  PlayerMostGames = fcnPlayerWithMost(PlayerMostGames, NbPlayers, shtWeek, Param);
+  Logger.log(PlayerMostGames[0]);
+  Logger.log(PlayerMostGames[1]);
+  Logger.log(PlayerMostGames[2]);
+  
+  // Player with Most Losses
+  Param = 'Loss';
+  PlayerMostLoss = fcnPlayerWithMost(PlayerMostLoss, NbPlayers, shtWeek, Param);
+  Logger.log(PlayerMostLoss[0]);
+  Logger.log(PlayerMostLoss[1]);
+  Logger.log(PlayerMostLoss[2]);
   
   // Get Amount of matches played this week.
   MatchPlyd = shtWeek.getRange(5, 4, 32, 1).getValues();
@@ -92,17 +121,29 @@ function onWeekChangeTCG_Master(){
     if(MatchPlydStore[plyr][0] > 0 ) MatchesPlayedStore += MatchPlydStore[plyr][0];
   }
   MatchesPlayedStore = MatchesPlayedStore/2;
-  
-  // Modify the Week Number in the Match Report Sheet
-  fcnModifyWeekMatchReport(ss, shtConfig);
+
 
   // Send Weekly Report Email
-  EmailSubject = LeagueNameEN +' - Week ' + LastWeek + ' Report';
-  EmailMessage = 'Week ' + LastWeek + ' is now complete and Week '+ Week +' has started. <br><br>Here is the week report for Week ' + LastWeek + '.<br><br>' +
-    MatchesPlayed +' matches were played this week.<br><br>'+
-      MatchesPlayedStore +' matches were played at the store this week.<br><br>'+
-        'etc etc etc...<br><br>';
+  EmailSubject = LeagueNameEN +" - Week " + LastWeek + " Report";
+  
+  EmailMessage = "Hello everyone,<br><br>Week " + LastWeek + " is now complete and Week "+ Week +" has started."+
+    " <br><br>Here is the week report for Week " + LastWeek + 
+      "<br><br><b>Matches Played:</b> " + MatchesPlayed +" matches were played this week."+
+        "<br><br><b>Matches Played in Store:</b> " + MatchesPlayedStore +" matches were played at the store this week.";
 
+  // Players Awards
+  EmailMessage += '<br><br><font size="3"><b>Week Awards</b></font>';
+  // Most Matches Played in Store
+  EmailMessage += '<br><br>The player(s) with the most matches played in store this week: ' + 
+    '<b>' + PlayerMostGames[0][0] + '</b> with <b>' + PlayerMostGames[0][1] + '</b> games played';
+  // Most Losses
+  EmailMessage += "<br><br>The player(s) with the most losses this week: " + 
+    "<b>" + PlayerMostLoss[0][0] + "</b> with <b>" + PlayerMostLoss[0][1] + "</b> losses";
+  
+  EmailMessage += "<br><br>The Players mentioned above win a <b>free Standard Legal Booster Pack of their choice</b>";
+  
+  EmailMessage += "<br><br>Good luck to all player for week "+ Week;
+    
   // If there is a minimum games to play per week, generate the Penalty Losses
   if(cfgMinGame > 0){
 
