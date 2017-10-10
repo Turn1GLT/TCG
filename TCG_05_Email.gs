@@ -15,7 +15,6 @@ function subGetEmailAddress(ss, Addresses, WinPlyr, LosPlyr){
   var rowWinr = 0;
   var rowLosr = 0;
   var PlyrRowStart = 3;
-  //var Addresses = new Array(3);
   
   var PlayerNames = shtPlayers.getRange(PlyrRowStart,2,NbPlayers,1).getValues();
   
@@ -26,11 +25,14 @@ function subGetEmailAddress(ss, Addresses, WinPlyr, LosPlyr){
     if (rowWinr > 0 && rowLosr > 0) row = NbPlayers + 1;
   }
   
+  Logger.log("Row Winr:%s",rowWinr);
+  Logger.log("Row Losr:%s",rowLosr);
+  
   // Get Email addresses using the players rows
-  Addresses[1][0] = shtPlayers.getRange(rowWinr,colEmail+1).getValue();
-  Addresses[1][1] = shtPlayers.getRange(rowWinr,colEmail).getValue();
-  Addresses[2][0] = shtPlayers.getRange(rowLosr,colEmail+1).getValue();
-  Addresses[2][1] = shtPlayers.getRange(rowLosr,colEmail).getValue();
+  Addresses[1][0] = shtPlayers.getRange(rowWinr,colEmail+1).getValue(); // Language
+  Addresses[1][1] = shtPlayers.getRange(rowWinr,colEmail).getValue();   // Email Address
+  Addresses[2][0] = shtPlayers.getRange(rowLosr,colEmail+1).getValue(); // Language
+  Addresses[2][1] = shtPlayers.getRange(rowLosr,colEmail).getValue();   // Email Address
     
   return Addresses;
 }
@@ -80,7 +82,7 @@ function fcnSendConfirmEmailEN(shtConfig, Address, MatchData) {
   var PunishPack = 0;
   
   // Add Masterpiece mention if necessary
-  if (MatchData[24][2] == 'Masterpiece'){
+  if (MatchData[24][2] == 'Last Card is Masterpiece'){
     var Masterpiece = MatchData[23][2];
     MatchData[23][2] += ' (Masterpiece)' 
   }
@@ -303,7 +305,7 @@ function fcnSendConfirmEmailFR(shtConfig, Address, MatchData) {
   var PunishPack = 0;
   
   // Add Masterpiece mention if necessary
-  if (MatchData[24][2] == 'Masterpiece'){
+  if (MatchData[24][2] == 'Last Card is Masterpiece'){
     var Masterpiece = MatchData[23][2];
     MatchData[23][2] += ' (Masterpiece)' 
   }
@@ -603,7 +605,7 @@ function fcnSendNewPlayerConf(shtConfig, PlayerData){
     
     EmailMessage += '<br><br>If you have any question or comment, please do not hesitate to contact me, it will be my pleasure to answer you as soon as I can.'+
       '<br><br>Thank you and Good Luck'+
-        '<br><br>---------------<br><br>Eric Bouchard<br>Turn 1 Gaming Leagues and Tournament Applications';
+        '<br><br>---------------<br><br>Eric Bouchard<br>Turn 1 Gaming Leagues & Tournament Applications';
     
     // End of Email Message
     EmailMessage += '</body></html>';
@@ -645,7 +647,7 @@ function fcnSendNewPlayerConf(shtConfig, PlayerData){
                       
     EmailMessage += '<br><br>Si tu as des questions ou commentaires, svp n’hésite pas à me contacter, il me fera plaisir de te répondre dans les plus brefs délais.'+
       '<br><br>Merci et bonne chance'+
-        '<br><br>---------------<br><br>Eric Bouchard<br>Turn 1 Gaming Leagues and Tournament Applications';
+        '<br><br>---------------<br><br>Eric Bouchard<br>Turn 1 Gaming Leagues & Tournament Applications';
     
     // End of Email Message
     EmailMessage += '</body></html>';
@@ -686,3 +688,98 @@ function subEmailPlayerPenaltyTable(PlayerData){
   return EmailMessage +'</table>';
 }
 
+// **********************************************
+// function fcnGenWeekReportMsgEN()
+//
+// This function generates the HTML message for the 
+// Weekly Report in English
+//
+// **********************************************
+
+function fcnGenWeekReportMsgEN(EmailMessage, LastWeek, Week, MatchesPlayed, MatchesPlayedStore, PlayerMostGames, PlayerMostLoss){
+
+  EmailMessage = 'Hello everyone,<br><br>Week ' + LastWeek + ' is now complete and Week '+ Week +' has started.'+
+    ' <br><br>Here is the week report'+
+      '<br><br><b><font size="4">Week ' + LastWeek + '</b></font>' + 
+        '<br><br><b>Total Matches Played: ' + MatchesPlayed + '</b>' +
+          '<br><b>Total Matches Played in Store: ' + MatchesPlayedStore + '</b>';
+
+  // Player Awards
+  EmailMessage += '<br><br><font size="3"><b>Week Awards</b></font>' +
+    "<br>Each week, the player(s) who played the most matches at the store and the player who lost the most matches win a <b>FREE Standard Showdown Booster</b>."+
+      "<br>Players mentioned below only have to show this email to the store to claim their Booster."+
+        " <br><b>Please note that this booster CANNOT be added to your League Card Pool</b>";
+
+  
+  // Most Matches Played in Store
+  EmailMessage += '<br><br><font size="2"><b>Most Matches Played in Store</b></font>'+
+    '<br>The player with the most matches played in store this week with <b>' + PlayerMostGames[0][1] + ' games played</b>:' + 
+    '<br><b>' + PlayerMostGames[0][0] + '</b>';
+  
+  // Add other players with same record
+  if(PlayerMostGames[1][0] != '') EmailMessage += "<br><b>" + PlayerMostGames[1][0] + "</b>";
+  if(PlayerMostGames[2][0] != '') EmailMessage += "<br><b>" + PlayerMostGames[2][0] + "</b>";
+  if(PlayerMostGames[3][0] != '') EmailMessage += "<br><b>" + PlayerMostGames[3][0] + "</b>";
+  if(PlayerMostGames[4][0] != '') EmailMessage += "<br><b>" + PlayerMostGames[4][0] + "</b>";
+  
+  // Most Losses
+  EmailMessage += '<br><br><font size="2"><b>Most Losses</b></font>'+
+    '<br>The player with the most losses this week:</b> ' + 
+      '<br><b>' + PlayerMostLoss[0][0] + '</b>';
+  
+  // Add other players with same record
+  if(PlayerMostLoss[1][0] != '') EmailMessage += "<br><b>" + PlayerMostLoss[1][0] + "</b>";
+  if(PlayerMostLoss[2][0] != '') EmailMessage += "<br><b>" + PlayerMostLoss[2][0] + "</b>";
+  if(PlayerMostLoss[3][0] != '') EmailMessage += "<br><b>" + PlayerMostLoss[3][0] + "</b>";
+  if(PlayerMostLoss[4][0] != '') EmailMessage += "<br><b>" + PlayerMostLoss[4][0] + "</b>";
+  
+  return EmailMessage;
+}
+
+// **********************************************
+// function fcnGenWeekReportMsgEN()
+//
+// This function generates the HTML message for the 
+// Weekly Report in French
+//
+// **********************************************
+
+function fcnGenWeekReportMsgFR(EmailMessage, LastWeek, Week, MatchesPlayed, MatchesPlayedStore, PlayerMostGames, PlayerMostLoss){
+  
+  EmailMessage = 'Bonjour tout le monde,<br><br>La semaine ' + LastWeek + ' est maintenant terminée et la semaine '+ Week +' vient de commencer.'+
+    ' <br><br>Voici le rapport de la semaine ' + 
+      '<br><br><b><font size="4">Semaine'+ LastWeek +'</b></font>' +
+        '<br><br><b>Nombre total de matches joués: ' + MatchesPlayed + '</b>' +
+          '<br><b>Nombre total de matches joués au magasin: ' + MatchesPlayedStore + '</b>';
+
+  // Player Awards
+  EmailMessage += '<br><br><font size="3"><b>Prix de la semaine </b></font>' +
+    "<br>Chaque semaine, le joueur qui a joué le plus de matches au magasin et le joueur qui a perdu le plus de matches remportent un <b>Booster Standard Showdown GRATUIT</b>."+
+      "<br>Les personnes mentionnées ci-dessous n'ont qu'à se présenter au magasin avec ce courriel pour réclamer leur Booster."+
+        " <br><b>SVP, prenez en note que ce Booster NE PEUT PAS être ajouté à votre Pool de Carte de Ligue</b>";
+
+  
+  // Most Matches Played in Store
+  EmailMessage += '<br><br><font size="2"><b>Plus de Matches en Magasin</b></font>'+
+    '<br>Le joueur ayant joué le plus de matches en magasin avec <b>' + PlayerMostGames[0][1] + ' matches joués</b>:' + 
+    '<br><b>' + PlayerMostGames[0][0] + '</b>';
+  
+  // Add other players with same record
+  if(PlayerMostGames[1][0] != '') EmailMessage += "<br><b>" + PlayerMostGames[1][0] + "</b>";
+  if(PlayerMostGames[2][0] != '') EmailMessage += "<br><b>" + PlayerMostGames[2][0] + "</b>";
+  if(PlayerMostGames[3][0] != '') EmailMessage += "<br><b>" + PlayerMostGames[3][0] + "</b>";
+  if(PlayerMostGames[4][0] != '') EmailMessage += "<br><b>" + PlayerMostGames[4][0] + "</b>";
+  
+  // Most Losses
+  EmailMessage += '<br><br><font size="2"><b>Plus de matches perdus</b></font>'+
+    '<br>Le joueur qui a perdu le plus de parties cette semaine: ' + 
+      '<br><b>' + PlayerMostLoss[0][0] + '</b>';
+  
+  // Add other players with same record
+  if(PlayerMostLoss[1][0] != '') EmailMessage += "<br><b>" + PlayerMostLoss[1][0] + "</b>";
+  if(PlayerMostLoss[2][0] != '') EmailMessage += "<br><b>" + PlayerMostLoss[2][0] + "</b>";
+  if(PlayerMostLoss[3][0] != '') EmailMessage += "<br><b>" + PlayerMostLoss[3][0] + "</b>";
+  if(PlayerMostLoss[4][0] != '') EmailMessage += "<br><b>" + PlayerMostLoss[4][0] + "</b>";
+
+  return EmailMessage;
+}

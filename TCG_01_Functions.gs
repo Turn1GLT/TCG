@@ -553,7 +553,6 @@ function fcnCopyStandingsResults(ss, shtConfig, RspnWeekNum, AllSheets){
     
     // Standings Sheet
     if (sht == 0){
-      Logger.log('Updating Sheet %s',SheetName);
       // Update League Name
       ssLgShtEn.getRange(4,2).setValue(LeagueNameEN + ' Standings')
       ssLgShtFr.getRange(4,2).setValue('Classement ' + LeagueNameFR)
@@ -564,7 +563,6 @@ function fcnCopyStandingsResults(ss, shtConfig, RspnWeekNum, AllSheets){
     
     // Cumulative Results Sheet
     if (sht == 1){
-      Logger.log('Updating Sheet %s',SheetName);
       WeekGame = ssMstrSht.getRange(2,3,3,1).getValues();
       ssLgShtEn.getRange(2,3,3,1).setValues(WeekGame);
       ssLgShtFr.getRange(2,3,3,1).setValues(WeekGame);
@@ -590,7 +588,6 @@ function fcnCopyStandingsResults(ss, shtConfig, RspnWeekNum, AllSheets){
     
     // Week Sheet 
     if (sht == WeekSheet || AllSheets == 1){
-      Logger.log('Updating Sheet %s',SheetName);
       ssMstrStartDate = ssMstrSht.getRange(3,2).getValue();
       ssMstrEndDate   = ssMstrSht.getRange(4,2).getValue();
       ssLgShtEn.getRange(3,2).setValue('Start: ' + ssMstrStartDate);

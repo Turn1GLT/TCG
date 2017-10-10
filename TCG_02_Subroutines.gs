@@ -151,6 +151,7 @@ function subUpdateStatus(shtRspn, RspnRow, ColStatus, ColStatusMsg, StatusNum) {
 // most "Param" for a given week
 //
 // **********************************************
+
 function fcnPlayerWithMost(PlayerMostData, NbPlayers, shtWeek, Param){
  
   var ColParam;
@@ -200,3 +201,39 @@ function fcnPlayerWithMost(PlayerMostData, NbPlayers, shtWeek, Param){
   }
   return PlayerMostData; 
 }
+
+// **********************************************
+// function subGetEmailRecipients()
+//
+// This function searches for all players in the  
+// list with the selected language
+//
+// **********************************************
+
+function subGetEmailRecipients(shtPlayers, NbPlayers, Language){
+  
+  // Function Variables
+  var EmailRecipients = '';
+  var PlayersData = shtPlayers.getRange(3,3,NbPlayers,2).getValues(); // ..[0]= Email Address  ..[1]=  
+  
+  // Loop through all players selected languages and concatenate their email addresses 
+  // if it matches the Language sent in parameter 
+  for(var i = 0; i < NbPlayers; i++){
+    if(PlayersData[i][1] == Language) {
+      if(EmailRecipients !='') EmailRecipients += ', '
+      EmailRecipients += PlayersData[i][0];
+    }
+  }
+  
+  return EmailRecipients;
+}
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      

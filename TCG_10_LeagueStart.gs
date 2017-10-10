@@ -78,12 +78,9 @@ function fcnUpdateLinksIDs(){
         case 'Master TCG Booster League Players List' :
           ConfigRowID = StartRowConfigId + 10; 
           ConfigRowLk = StartRowConfigLink + 8; break;
-        case 'Master TCG Booster League Weekly Booster' :
+        case 'Master TCG Booster League Starting Pool' :
           ConfigRowID = StartRowConfigId + 11; 
           ConfigRowLk = StartRowConfigLink + 9; break;
-        case 'Master TCG Booster League Starting Pool' :
-          ConfigRowID = StartRowConfigId + 12; 
-          ConfigRowLk = StartRowConfigLink + 10; break;
         default : 
           ConfigRowID = 'Not Found'; 
           ConfigRowLk = 'Not Found'; break;
@@ -416,6 +413,7 @@ function fcnGenPlayerCardPool(){
   var shtPlyrName;
   var PlyrRow;
   var CardPoolNumSht;
+  var shtName;
   
   // Loops through each player starting from the first
   for (var plyr = 1; plyr <= NbPlayers; plyr++){
@@ -431,12 +429,10 @@ function fcnGenPlayerCardPool(){
     for(var sheet = NumSheet - 1; sheet >= 0; sheet --){
       SheetName = SheetsCardPool[sheet].getSheetName();
       
-      Logger.log('Player: %s',SheetName);
       if (SheetName == shtPlyrName) PlayerFound = 1;
     }
     
     if (PlayerFound == 0){
-      Logger.log('Player: %s',shtPlyrName);
       // Get the Template sheet index
       CardPoolNumSht = ssCardPoolEn.getNumSheets();
       // INSERTS TAB BEFORE "Card DB" TAB
@@ -456,16 +452,17 @@ function fcnGenPlayerCardPool(){
     }
   }
   
-  // Update Header
   // English Version
   shtPlyrCardPoolEn = ssCardPoolEn.getSheets()[0];
+  shtName = shtPlyrCardPoolEn.getName();
   ssCardPoolEn.setActiveSheet(shtPlyrCardPoolEn);
-  ssCardPoolEn.getSheetByName('Template').hideSheet();
+  if (shtName != 'Template') ssCardPoolEn.getSheetByName('Template').hideSheet();
     
   // French Version
   shtPlyrCardPoolFr = ssCardPoolFr.getSheets()[0];
+  shtName = shtPlyrCardPoolFr.getName();
   ssCardPoolFr.setActiveSheet(shtPlyrCardPoolFr);
-  ssCardPoolFr.getSheetByName('Template').hideSheet();
+   if (shtName != 'Template') ssCardPoolFr.getSheetByName('Template').hideSheet();
 }
 
 
@@ -487,7 +484,7 @@ function fcnGenPlayerStartPool(){
   var shtConfig = ss.getSheetByName('Config');
   
   // Card Pool Spreadsheet
-  var StartPoolShtID = shtConfig.getRange(42, 2).getValue();
+  var StartPoolShtID = shtConfig.getRange(41, 2).getValue();
   var ssStartPool = SpreadsheetApp.openById(StartPoolShtID);
   var shtStartPool = ssStartPool.getSheetByName('Template');
   var shtStartPoolNum;
@@ -504,6 +501,7 @@ function fcnGenPlayerStartPool(){
   var shtPlyrName;
   var PlyrRow;
   var StartPoolNumSht;
+  var shtName;
   
   // Loops through each player starting from the first
   for (var plyr = 1; plyr <= NbPlayers; plyr++){
@@ -541,8 +539,9 @@ function fcnGenPlayerStartPool(){
   
   // Hide Template Sheet
   shtPlyrStartPool = ssStartPool.getSheets()[0];
+  shtName = shtPlyrStartPool.getName();
   ssStartPool.setActiveSheet(shtPlyrStartPool);
-  ssStartPool.getSheetByName('Template').hideSheet();
+   if (shtName != 'Template') ssStartPool.getSheetByName('Template').hideSheet();
 }
 
 
@@ -659,7 +658,7 @@ function fcnDelPlayerStartPool(){
   var shtConfig = ss.getSheetByName('Config');
   
   // Card Pool Spreadsheet
-  var StartPoolShtID = shtConfig.getRange(42, 2).getValue();
+  var StartPoolShtID = shtConfig.getRange(41, 2).getValue();
   var ssStartPool = SpreadsheetApp.openById(StartPoolShtID);
   var shtTemplate = ssStartPool.getSheetByName('Template');
   var ssNbSheet = ssStartPool.getNumSheets();

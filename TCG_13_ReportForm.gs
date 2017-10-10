@@ -219,8 +219,8 @@ function fcnCreateReportForm() {
     
     // Card Number Validation
     CardValidation = FormApp.createTextValidation()
-    .setHelpText("Enter a number between 1 and 100.")
-    .requireNumberBetween(1, 100)
+    .setHelpText("Enter a number between 1 and 300.")
+    .requireNumberBetween(1, 300)
     .build();
     
     // English
