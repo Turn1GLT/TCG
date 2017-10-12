@@ -24,10 +24,7 @@ function subGetEmailAddress(ss, Addresses, WinPlyr, LosPlyr){
     if (PlayerNames[row] == LosPlyr) rowLosr = row + PlyrRowStart;
     if (rowWinr > 0 && rowLosr > 0) row = NbPlayers + 1;
   }
-  
-  Logger.log("Row Winr:%s",rowWinr);
-  Logger.log("Row Losr:%s",rowLosr);
-  
+   
   // Get Email addresses using the players rows
   Addresses[1][0] = shtPlayers.getRange(rowWinr,colEmail+1).getValue(); // Language
   Addresses[1][1] = shtPlayers.getRange(rowWinr,colEmail).getValue();   // Email Address
@@ -514,7 +511,6 @@ function subMatchReportTable(EmailMessage, Headers, MatchData, Param){
     
     // Match Data
     if(row < 7) {
-      Logger.log(MatchData[row][0]);
       EmailMessage += '<tr><td>'+Headers[row][0]+'</td><td>'+MatchData[row][0]+'</td></tr>';
     }
     
@@ -733,6 +729,9 @@ function fcnGenWeekReportMsgEN(EmailMessage, LastWeek, Week, MatchesPlayed, Matc
   if(PlayerMostLoss[3][0] != '') EmailMessage += "<br><b>" + PlayerMostLoss[3][0] + "</b>";
   if(PlayerMostLoss[4][0] != '') EmailMessage += "<br><b>" + PlayerMostLoss[4][0] + "</b>";
   
+  // Message Ending
+  EmailMessage += '<br><br><font size="3">Good luck to all player for week '+ Week + '</font>';
+  
   return EmailMessage;
 }
 
@@ -780,6 +779,9 @@ function fcnGenWeekReportMsgFR(EmailMessage, LastWeek, Week, MatchesPlayed, Matc
   if(PlayerMostLoss[2][0] != '') EmailMessage += "<br><b>" + PlayerMostLoss[2][0] + "</b>";
   if(PlayerMostLoss[3][0] != '') EmailMessage += "<br><b>" + PlayerMostLoss[3][0] + "</b>";
   if(PlayerMostLoss[4][0] != '') EmailMessage += "<br><b>" + PlayerMostLoss[4][0] + "</b>";
+  
+  // Message Ending
+  EmailMessage += '<br><br><font size="3">Bonne chance à tous pour la semaine '+ Week + '</font>';
 
   return EmailMessage;
 }

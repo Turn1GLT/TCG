@@ -517,12 +517,10 @@ function fcnGenPlayerStartPool(){
     for(var sheet = NumSheet - 1; sheet >= 0; sheet --){
       SheetName = SheetsStartPool[sheet].getSheetName();
       
-      Logger.log('Player: %s',SheetName);
       if (SheetName == shtPlyrName) PlayerFound = 1;
     }
     
     if (PlayerFound == 0){
-      Logger.log('Player: %s',shtPlyrName);
       // Get the Template sheet index
       StartPoolNumSht = ssStartPool.getNumSheets();
       // INSERTS TAB BEFORE "Card DB" TAB
@@ -534,6 +532,9 @@ function fcnGenPlayerStartPool(){
       shtPlyrStartPool.getRange(1,2).setValue(shtPlyrName);
       shtPlyrStartPool.getRange(2,2).setValue('Not Processed');
       shtPlyrStartPool.getRange(3,2).setValue(ssID);
+      
+      //Hides the 3rd row
+      shtPlyrStartPool.hideRows(3);
     }
   }
   

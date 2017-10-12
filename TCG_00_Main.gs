@@ -418,7 +418,7 @@ function fcnGameResultsTCG(ss, shtConfig, ConfigData, shtRspn) {
               // If Match was populated in Match Results Tab
               if (MatchPostStatus == 1){
                 // Match ID doesn't change because we assumed it was already OK
-                Logger.log('Match Posted ID: %s',MatchID);
+                Logger.log('Posted Match ID: %s',MatchID);
                 
                 // Copies all cards added to the Card Database
                 if (OptTCGBooster == 'Enabled'){
@@ -531,9 +531,7 @@ function fcnGameResultsTCG(ss, shtConfig, ConfigData, shtRspn) {
         // Set the Status Message
         Status = subGenErrorMsg(Status, -50,0);
       }
-      
-      Logger.log('Match Post Status: %s - %s',Status[0], Status[1])
-      
+     
       // Call the Email Function, sends Match Data if Send Email Option is Enabled
       if(Status[0] >= 0 && OptSendEmail == 'Enabled') {
         
@@ -611,6 +609,7 @@ function fcnGameResultsTCG(ss, shtConfig, ConfigData, shtRspn) {
       RspnRow = RspnMaxRows + 1;
     }
   }
+  Logger.log('--------- Match Processed and Posted ---------');
   return Status;
 }
 

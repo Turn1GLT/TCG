@@ -65,19 +65,23 @@ function fcnCreateRegForm() {
     // FIRST NAME    
     formEN.addTextItem()
     .setTitle("First Name")
+    .setHelpText("Please, Remove any space at the end of the name")
     .setRequired(true);
         
     formFR.addTextItem()
     .setTitle("Prénom")
+    .setHelpText("SVP, enlevez les espaces à la fin du nom")
     .setRequired(true);
     
     // LAST NAME 
     formEN.addTextItem()
     .setTitle("Last Name")
+    .setHelpText("Please, Remove any space at the end of the name")
     .setRequired(true);
     
     formFR.addTextItem()
     .setTitle("Nom de Famille")
+    .setHelpText("SVP, enlevez les espaces à la fin du nom")
     .setRequired(true);
     
     // PHONE NUMBER    

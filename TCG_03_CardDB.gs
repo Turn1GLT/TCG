@@ -24,9 +24,7 @@ function fcnUpdateCardDB(shtConfig, Player, CardList, PackData, shtTest){
   var CardRarity;
   var CardListSet = CardList[0];
   var CardInfo; 
-  
-  Logger.log('Card Set: %s',CardListSet);
-  
+    
   // Updates the Set Name to return to Main Function
   PackData[0][0] = CardListSet;
   

@@ -58,6 +58,7 @@ function onWeekChangeTCG_Master(){
   var EmailSubjectFR;
   var EmailMessageFR;
   var EmailLanguage;  
+  var Recipients;
   
   // League Name
   var LeagueLocation = shtConfig.getRange(11,2).getValue();
@@ -81,14 +82,16 @@ function onWeekChangeTCG_Master(){
   var shtWeek = ss.getSheetByName(WeekShtName);
   var shtPlayers = ss.getSheetByName('Players');
   var NbPlayers = shtPlayers.getRange(2,1).getValue();
+  var LocationEmail = shtConfig.getRange(12,2).getValue();
   
   // Function Variables
   var PenaltyTable;
-  var MatchPlyd;
-  var MatchPlydStore;
-  var MatchesPlayed = 0;
-  var MatchPlydStore;
-  var MatchesPlayedStore = 0;
+  var WeekData;
+  var TotalMatch = 0;
+  var TotalWins = 0;
+  var TotalLoss = 0;
+  var TotalMatchStore = 0;
+  var MostParam;
   
   // Array to Find Player with Most Matches Played in Store
   var PlayerMostGames = new Array(NbPlayers); 
@@ -112,97 +115,124 @@ function onWeekChangeTCG_Master(){
   fcnModifyWeekMatchReport(ss, shtConfig);
   
   //Player with Most Games Played in Store
-  var Param = 'Store';
-  PlayerMostGames = fcnPlayerWithMost(PlayerMostGames, NbPlayers, shtWeek, Param);
+  MostParam = 'Store';
+  PlayerMostGames = fcnPlayerWithMost(PlayerMostGames, NbPlayers, shtWeek, MostParam);
   
   // Player with Most Losses
-  Param = 'Loss';
-  PlayerMostLoss = fcnPlayerWithMost(PlayerMostLoss, NbPlayers, shtWeek, Param);
+  MostParam = 'Loss';
+  PlayerMostLoss = fcnPlayerWithMost(PlayerMostLoss, NbPlayers, shtWeek, MostParam);
   
-  // Get Amount of matches played this week.
-  MatchPlyd = shtWeek.getRange(5, 4, 32, 1).getValues();
-  for(var plyr=0; plyr<32; plyr++){
-    if(MatchPlyd[plyr][0] > 0) MatchesPlayed += MatchPlyd[plyr][0];
+ // Verify Week Matches Data Integrity
+  WeekData = shtWeek.getRange(5,4,NbPlayers,6).getValues(); //[0]= Matches Played [1]= Wins [2]= Losses [5]= Matches in Store
+  // Get Total Matches Played
+  for(var plyr=0; plyr<NbPlayers; plyr++){
+    if(WeekData[plyr][0] > 0) TotalMatch += WeekData[plyr][0];
   }
-  MatchesPlayed = MatchesPlayed/2;
+  TotalMatch = TotalMatch/2;
+  
+  // Get Total Wins
+  for(plyr=0; plyr<NbPlayers; plyr++){
+    if(WeekData[plyr][1] > 0 ) TotalWins += WeekData[plyr][1];
+  }
+  
+  // Get Total Losses
+  for(plyr=0; plyr<NbPlayers; plyr++){
+    if(WeekData[plyr][2] > 0 ) TotalLoss += WeekData[plyr][2];
+  }
   
   // Get Amount of matches played at the store this week.
-  MatchPlydStore = shtWeek.getRange(5, 9, 32, 1).getValues();
-  for(plyr=0; plyr<32; plyr++){
-    if(MatchPlydStore[plyr][0] > 0 ) MatchesPlayedStore += MatchPlydStore[plyr][0];
+  for(plyr=0; plyr<NbPlayers; plyr++){
+    if(WeekData[plyr][5] > 0 ) TotalMatchStore += WeekData[plyr][5];
   }
-  MatchesPlayedStore = MatchesPlayedStore/2;
-
+ TotalMatchStore = TotalMatchStore/2;
   
-  // Send Weekly Report Email
-  EmailSubjectEN = LeagueNameEN +" - Week " + LastWeek + " Report";
-  EmailSubjectFR = LeagueNameFR +" - Rapport de la semaine " + LastWeek;
-  
-  // Generate Report Messages
-  EmailMessageEN = fcnGenWeekReportMsgEN(EmailMessageEN, LastWeek, Week, MatchesPlayed, MatchesPlayedStore, PlayerMostGames, PlayerMostLoss);
-  EmailMessageFR = fcnGenWeekReportMsgFR(EmailMessageFR, LastWeek, Week, MatchesPlayed, MatchesPlayedStore, PlayerMostGames, PlayerMostLoss);
-
-  // If there is a minimum games to play per week, generate the Penalty Losses
-  if(cfgMinGame > 0){
-
-    // Analyze if Players have missing matches to apply Loss Penalties
-    PlayerData = fcnAnalyzeLossPenalty(ss, Week, PlayerData);
+  // If All Totals are equal, Week Data is Valid, Send Week Report
+  if(TotalMatch == TotalWins &&  TotalMatch == TotalLoss && TotalWins == TotalLoss) {
     
-    // Logs All Players Record
-    for(var row = 0; row<32; row++){
-      if (PlayerData[row][0] != '') Logger.log('Player: %s - Missing: %s',PlayerData[row][0], PlayerData[row][1]);
+    // Send Weekly Report Email
+    EmailSubjectEN = LeagueNameEN +" - Week " + LastWeek + " Report";
+    EmailSubjectFR = LeagueNameFR +" - Rapport de la semaine " + LastWeek;
+    
+    // Generate Week Report Messages
+    EmailMessageEN = fcnGenWeekReportMsgEN(EmailMessageEN, LastWeek, Week, TotalMatch, TotalMatchStore, PlayerMostGames, PlayerMostLoss);
+    EmailMessageFR = fcnGenWeekReportMsgFR(EmailMessageFR, LastWeek, Week, TotalMatch, TotalMatchStore, PlayerMostGames, PlayerMostLoss);
+    
+    // If there is a minimum games to play per week, generate the Penalty Losses
+    if(cfgMinGame > 0){
+      
+      // Analyze if Players have missing matches to apply Loss Penalties
+      PlayerData = fcnAnalyzeLossPenalty(ss, Week, PlayerData);
+      
+      // Logs All Players Record
+      for(var row = 0; row<32; row++){
+        if (PlayerData[row][0] != '') Logger.log('Player: %s - Missing: %s',PlayerData[row][0], PlayerData[row][1]);
+      }
+      
+      // Populate the Penalty Table for the Weekly Report
+      PenaltyTable = subEmailPlayerPenaltyTable(PlayerData);  
+      // Update the Email message to add the Penalty Losses table
+      EmailMessageEN += PenaltyTable;
+      EmailMessageFR += PenaltyTable;
     }
     
-    // Populate the Penalty Table for the Weekly Report
-    PenaltyTable = subEmailPlayerPenaltyTable(PlayerData);  
-    // Update the Email message to add the Penalty Losses table
-    EmailMessageEN += PenaltyTable;
-    EmailMessageFR += PenaltyTable;
+    // English Custom Message
+    // Add Standings Link
+    EmailMessageEN += "<br><br>Click here to access the League Standings and Results:<br>" + urlStandingsEN ;
+    
+    // Add Facebook Page Link
+    EmailMessageEN += "<br><br>Please join the Community Facebook page to chat with other players and plan matches.<br>" + urlFacebook;
+    
+    // Turn1 Signature
+    EmailMessageEN += "<br><br>Thank you for using TCG Booster League Manager from Turn 1 Gaming Leagues & Tournaments";
+    
+    
+    // French Custom Message
+    // Add Standings Link
+    EmailMessageFR += "<br><br>Cliquez ici pour accéder aux résutlats et classement de la ligue:<br>" + urlStandingsFR ;
+    
+    // Add Facebook Page Link
+    EmailMessageFR += "<br><br>Joignez vous à la page Facebook de la communauté pour discuter avec les autres joueurs et organiser vos matches.<br>" + urlFacebook;
+    
+    // Turn1 Signature
+    EmailMessageFR += "<br><br>Merci d'utiliser TCG Booster League Manager de Turn 1 Gaming Ligues & Tournois";
+    
+    // General Recipients
+    Recipients = LocationEmail + ', turn1glt@gmail.com';
+    
+    // Get English Players Email
+    EmailLanguage = "English";
+    EmailRecipientsEN = subGetEmailRecipients(shtPlayers, NbPlayers, EmailLanguage);
+    Logger.log(EmailRecipientsEN);
+    
+    // Get French Players Email
+    EmailLanguage = "Français";
+    EmailRecipientsFR = subGetEmailRecipients(shtPlayers, NbPlayers, EmailLanguage);
+    Logger.log(EmailRecipientsFR);
+    
+    // Send English Email
+    MailApp.sendEmail(Recipients, EmailSubjectEN,"",{bcc:EmailRecipientsEN,name:'Turn 1 Gaming League Manager',htmlBody:EmailMessageEN});
+    
+    // Send French Email
+    MailApp.sendEmail(Recipients, EmailSubjectFR,"",{bcc:EmailRecipientsFR,name:'Turn 1 Gaming League Manager',htmlBody:EmailMessageFR});
+    
+    // Execute Ranking function in Standing tab
+    fcnUpdateStandings(ss, shtConfig);
+    
+    // Copy all data to League Spreadsheet
+    fcnCopyStandingsResults(ss, shtConfig, LastWeek, 0);
   }
   
-  // English Message
+  // If Week Match Data is not Valid
+  else{
+    Logger.log('Week Match Data is not Valid');
+    Logger.log('Total Match Played: %s',TotalMatch);
+    Logger.log('Total Wins: %s',TotalWins);
+    Logger.log('Total Losses: %s',TotalLoss);
   
-  // Add Standings Link
-  EmailMessageEN += "<br><br>Click here to access the League Standings and Results:<br>" + urlStandingsEN ;
-  
-  // Add Facebook Page Link
-  EmailMessageEN += "<br><br>Please join the Community Facebook page to chat with other players and plan matches.<br>" + urlFacebook;
-  
-  // Turn1 Signature
-  EmailMessageEN += "<br><br>Thank you for using TCG Booster League Manager from Turn 1 Gaming Leagues & Tournaments";
-  
-  
-  // French Message
-  
-  // Add Standings Link
-  EmailMessageFR += "<br><br>Cliquez ici pour accéder aux résutlats et classement de la ligue:<br>" + urlStandingsFR ;
-  
-  // Add Facebook Page Link
-  EmailMessageFR += "<br><br>Joignez vous à la page Facebook de la communauté pour discuter avec les autres joueurs et organiser vos matches.<br>" + urlFacebook;
-  
-  // Turn1 Signature
-  EmailMessageFR += "<br><br>Merci d'utiliser TCG Booster League Manager de Turn 1 Gaming Ligues & Tournois";
-  
-  // Get English Recipients
-  EmailLanguage = "English";
-  EmailRecipientsEN = subGetEmailRecipients(shtPlayers, NbPlayers, EmailLanguage);
-  Logger.log(EmailRecipientsEN);
-  
-  // Get French Recipients
-  EmailLanguage = "Français";
-  EmailRecipientsFR = subGetEmailRecipients(shtPlayers, NbPlayers, EmailLanguage);
-  Logger.log(EmailRecipientsFR);
-  
-  // Send English Email
-  MailApp.sendEmail('turn1glt@gmail.com', EmailSubjectEN,"",{name:'Turn 1 Gaming League Manager',htmlBody:EmailMessageEN});
-
-  // Send French Email
-  MailApp.sendEmail('turn1glt@gmail.com', EmailSubjectFR,"",{name:'Turn 1 Gaming League Manager',htmlBody:EmailMessageFR});
-  
-  // Execute Ranking function in Standing tab
-  fcnUpdateStandings(ss, shtConfig);
-  
-  // Copy all data to League Spreadsheet
-  fcnCopyStandingsResults(ss, shtConfig, LastWeek, 0);
-  
+    // Send Log by email
+    var recipient = Session.getActiveUser().getEmail();
+    var subject = LeagueNameEN + ' - Week ' + LastWeek + ' - Week Data is not Valid';
+    var body = Logger.getLog();
+    MailApp.sendEmail(recipient, subject, body)
+  }
 }
