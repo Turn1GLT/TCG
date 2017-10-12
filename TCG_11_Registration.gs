@@ -7,8 +7,10 @@
 //
 // **********************************************
 
-function fcnRegistrationTCG(ss, shtResponse, RowResponse){
+function fcnRegistrationTCG(shtResponse, RowResponse){
 
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  
   var shtConfig = ss.getSheetByName('Config');
   var shtPlayers = ss.getSheetByName('Players');
   

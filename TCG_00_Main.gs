@@ -8,17 +8,16 @@
 
 function fcnSubmitTCG_Master(e) {
   
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-   
   // Get Row from New Response
-  var rngResponse = e.range;
   var RowResponse = e.range.getRow();
-  Logger.log('Response Row: %s',RowResponse);
-  
+    
   // Get Sheet from New Response
   var shtResponse = SpreadsheetApp.getActiveSheet();
   var ShtName = shtResponse.getSheetName();
+  
+  Logger.log('------- New Response Received -------');
   Logger.log('Sheet: %s',ShtName);
+  Logger.log('Response Row: %s',RowResponse);
   
   // If Form Submitted is a Match Report, process results
   if(ShtName == 'Responses EN' || ShtName == 'Responses FR') {
@@ -27,9 +26,9 @@ function fcnSubmitTCG_Master(e) {
   
   // If Form Submitted is a Player Subscription
   if(ShtName == 'Registration EN' || ShtName == 'Registration FR'){
-    fcnRegistrationTCG(ss, shtResponse, RowResponse);
+    fcnRegistrationTCG(shtResponse, RowResponse);
   }
-} 
+}   
 
 
 // **********************************************

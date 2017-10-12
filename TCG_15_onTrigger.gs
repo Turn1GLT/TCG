@@ -178,21 +178,16 @@ function onWeekChangeTCG_Master(){
     // English Custom Message
     // Add Standings Link
     EmailMessageEN += "<br><br>Click here to access the League Standings and Results:<br>" + urlStandingsEN ;
-    
     // Add Facebook Page Link
     EmailMessageEN += "<br><br>Please join the Community Facebook page to chat with other players and plan matches.<br>" + urlFacebook;
-    
     // Turn1 Signature
     EmailMessageEN += "<br><br>Thank you for using TCG Booster League Manager from Turn 1 Gaming Leagues & Tournaments";
-    
-    
+        
     // French Custom Message
     // Add Standings Link
     EmailMessageFR += "<br><br>Cliquez ici pour accéder aux résutlats et classement de la ligue:<br>" + urlStandingsFR ;
-    
     // Add Facebook Page Link
     EmailMessageFR += "<br><br>Joignez vous à la page Facebook de la communauté pour discuter avec les autres joueurs et organiser vos matches.<br>" + urlFacebook;
-    
     // Turn1 Signature
     EmailMessageFR += "<br><br>Merci d'utiliser TCG Booster League Manager de Turn 1 Gaming Ligues & Tournois";
     
