@@ -439,7 +439,7 @@ function fcnGameResultsTCG(ss, shtConfig, ConfigData, shtRspn) {
                     CardList[card] = ResponseData[0][card+7];
                   }
                   // If Pack was opened, Update Card Database and Card Pool for Appropriate player
-                  if (ResponseData[0][7] != 'No') {
+                  if (ResponseData[0][7] != 'No' && ResponseData[0][7] != 'Non') {
                     
                     // Updates the Status while processing
                     if(Status[0] >= 0){
