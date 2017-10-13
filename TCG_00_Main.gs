@@ -223,9 +223,23 @@ function fcnProcessMatchTCG() {
     if(EmailValid == 0) Logger.log('Submission Email Not Valid : %s',Email)
     // Send Log by email
     var recipient = Session.getActiveUser().getEmail();
-    var subject = 'TCG Process Log - ' + shtConfig.getRange(11,2).getValue() + ' ' + shtConfig.getRange(13,2).getValue()
+    var subject = 'TCG Process Log - ' + shtConfig.getRange(11,2).getValue() + ' ' + shtConfig.getRange(13,2).getValue() + '- Entry Row ' + RspnRow;
     var body = Logger.getLog();
-    MailApp.sendEmail(recipient, subject, body);  
+    MailApp.sendEmail(recipient, subject, body);
+    
+    // Send Error Email to sender if Email is not valid
+    if(EmailValid == 0 && Email != ''){
+      // Send Log by email
+      recipient = Email;
+      subject = 'Erreur Rapport de Match - ' + shtConfig.getRange(11,2).getValue() + ' ' + shtConfig.getRange(13,2).getValue();
+      body = "<html><body>" + 
+        "Bonjour,<br><br>L'adresse courriel que vous avez entré n'est pas valide."+
+          "<br>SVP, entrez l'adresse courriel utilisée pour votre inscription."+
+            "<br><br>Merci de votre compréhension"+
+              "<br><br>Turn 1 Gaming Leagues & Tournaments"+
+                "</body></html>";
+      MailApp.sendEmail(recipient, subject, "",{name:'Turn 1 Gaming League Manager',htmlBody:body}); 
+    }
   }
 }
 
