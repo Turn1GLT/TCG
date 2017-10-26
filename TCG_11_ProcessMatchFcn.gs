@@ -452,41 +452,97 @@ function fcnPostResultWeekTCG(ss, ConfigData, ResultData, shtTest) {
 //
 // **********************************************
 
-function fcnUpdateStandings(ss, shtConfig){
+//function fcnUpdateStandings(ss, shtConfig){
+function fcnUpdateStandings(){
 
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var shtConfig = ss.getSheetByName('Config');
+  
+  // Sheets
   var shtCumul = ss.getSheetByName('Cumulative Results');
   var shtStand = ss.getSheetByName('Standings');
+  var shtTest = ss.getSheetByName('Test');
   
-  var SortVal = shtConfig.getRange(10,9).getValue();
+  // Sorting Category from Configuration file
+  var CfgSortVal = shtConfig.getRange(10,9).getValue();
   
-  // Get Player Record Range
-  var RngCumul = shtCumul.getRange(5,2,32,6);
-  var RngStand = shtStand.getRange(6,2,32,6);
+  // Get Cumulative Results Values
+  var ValCumul = shtCumul.getRange(5,2,32,6).getValues(); // Rows = Players, Columns 0= Player Name, 1= N/A, 2= MP, 3= W, 4= L, 5= W%
   
-  // Get Cumulative Results Values and puts them in the Standings Values
-  var ValCumul = RngCumul.getValues();
-  RngStand.setValues(ValCumul);
-
+  // Standings Ranges In Limits and Out Limits
+  var RngStandInLim;
+  var RngStandOutLim;
+  var RngTestIn;
+  var RngTestOut;
+   
+  // Get Number of players
+  var NbPlayers = shtConfig.getRange(15, 2).getValue();
+  var RankMatchLimit = shtConfig.getRange(29, 9).getValue();
+  var InLimit = 0;
+  var OutLimit = 0;
+  var PlyrInLimArray = subCreateArray(NbPlayers,6);
+  var PlyrOutLimArray = subCreateArray(NbPlayers,6);
+  
+  // Find Players with enough matches played
+  for(var i=0; i<NbPlayers; i++){
+    // If player has played enough matches, put it in InLimit Array
+    if(ValCumul[i][2] >= RankMatchLimit){
+      PlyrInLimArray[InLimit] = ValCumul[i];
+      Logger.log('In Limit - Player: %s - MP: %s',PlyrInLimArray[InLimit][0], PlyrInLimArray[InLimit][2]);
+      InLimit++;
+    }
+    // If player has not played enough matches, put it in OutLimit Array
+    if(ValCumul[i][2] < RankMatchLimit){
+      PlyrOutLimArray[OutLimit] = ValCumul[i];
+      Logger.log('Out Limit - Player: %s - MP: %s',PlyrOutLimArray[OutLimit][0], PlyrOutLimArray[OutLimit][2]);
+      OutLimit++;
+    }
+  }
+  // Define new lengths for both arrays
+  PlyrInLimArray.length  = InLimit;
+  PlyrOutLimArray.length = OutLimit;
+  
+  // Create New Ranges with those Arrays
+  // In Limit Array
+  RngTestIn  = shtTest.getRange(6, 2, InLimit, 6);
+  RngTestIn.setValues(PlyrInLimArray);
+  // compare
+  shtTest.getRange(6, 10, InLimit, 6).setValues(PlyrInLimArray);
+  
+  // Out Limit Array
+  RngTestOut = shtTest.getRange(6+InLimit+1, 2, OutLimit, 6);
+  RngTestOut.setValues(PlyrOutLimArray);
+  
+  // compare
+  shtTest.getRange(6+InLimit+1, 10, OutLimit, 6).setValues(PlyrOutLimArray);
+  
+  
   // Sorts the Standings Values by Number of Wins (column 5) and Win% (column 7)
-  if(SortVal == 'WinNb'){
-    RngStand.sort([{column: 5, ascending: false},{column: 7, ascending: false}]);
+  if(CfgSortVal == 'WinNb'){
+    // Sort In Limit Range
+    RngTestIn.sort([{column: 5, ascending: false},{column: 7, ascending: false}]);
+    // Sort Out Limit Range
+    RngTestOut.sort([{column: 5, ascending: false},{column: 7, ascending: false}]);
   }
   
   // Sorts the Standings Values by Win % (column 7) and Matches Played (column 4)
-  if(SortVal == 'Win%'){
-    RngStand.sort([{column: 7, ascending: false},{column: 4, ascending: false}]);
+  if(CfgSortVal == 'Win%'){
+    // Sort In Limit Range
+    RngTestIn.sort([{column: 7, ascending: false},{column: 4, ascending: false}]);
+    // Sort Out Limit Range
+    RngTestOut.sort([{column: 7, ascending: false},{column: 4, ascending: false}]);
   }
 }
 
 // **********************************************
-// function fcnCopyStandingsResults()
+// function fcnCopyStandingsSheets()
 //
 // This function copies all Standings and Results in 
 // the spreadsheet that is accessible to players
 //
 // **********************************************
 
-function fcnCopyStandingsResults(ss, shtConfig, RspnWeekNum, AllSheets){
+function fcnCopyStandingsSheets(ss, shtConfig, RspnWeekNum, AllSheets){
 
   var ssLgStdIDEn = shtConfig.getRange(34,2).getValue();
   var ssLgStdIDFr = shtConfig.getRange(35,2).getValue();
@@ -505,6 +561,10 @@ function fcnCopyStandingsResults(ss, shtConfig, RspnWeekNum, AllSheets){
   var LeagueNameEN = Location + ' ' + LeagueTypeEN;
   var LeagueTypeFR = shtConfig.getRange(14,2).getValue();
   var LeagueNameFR = LeagueTypeFR + ' ' + Location;
+  var rngSheetInitializedEN = shtConfig.getRange(34,5);
+  var SheetInitializedEN = rngSheetInitializedEN.getValue();
+  var rngSheetInitializedFR = shtConfig.getRange(35,5);
+  var SheetInitializedFR = rngSheetInitializedFR.getValue();
   
   // Number of Players
   var NbPlayers = ss.getSheetByName('Players').getRange(2,1).getValue();
@@ -515,7 +575,7 @@ function fcnCopyStandingsResults(ss, shtConfig, RspnWeekNum, AllSheets){
   var ssMstrSht;
   var ssMstrShtStartRow;
   var ssMstrShtMaxRows;
-  var ssMstrShtMaxCols;
+  var ssMstrShtNbCol;
   var ssMstrShtData;
   var ssMstrStartDate;
   var ssMstrEndDate;
@@ -534,77 +594,100 @@ function fcnCopyStandingsResults(ss, shtConfig, RspnWeekNum, AllSheets){
     
     if(sht == 0 || sht == 1 || sht == WeekSheet || AllSheets == 1){
       ssMstrShtMaxRows = ssMstrSht.getMaxRows();
-      ssMstrShtMaxCols = ssMstrSht.getMaxColumns();
       
       ssLgShtEn = ssLgEn.getSheets()[sht];
       ssLgShtFr = ssLgFr.getSheets()[sht];
       
-      if (sht == 0) ssMstrShtStartRow = 6;
-      if (sht >= 1 && sht <= 9) ssMstrShtStartRow = 5;
+      // If sheet is Standings
+      if (sht == 0) {
+        ssMstrShtStartRow = 6;
+        ssMstrShtNbCol = 7;
+      }
+      
+      // If sheet is Cumulative Results or Week Results
+      if (sht == 1) {
+        ssMstrShtStartRow = 5;
+        ssMstrShtNbCol = 13;
+      }
+            
+      // If sheet is Cumulative Results or Week Results
+      if (sht > 1 && sht <= 9) {
+        ssMstrShtStartRow = 5;
+        ssMstrShtNbCol = 11;
+      }
       
       // Set the number of values to fetch
       NumValues = ssMstrShtMaxRows - ssMstrShtStartRow + 1;
       
-      // Get Range and Data from Master and copy to Standings
-      ssMstrShtData = ssMstrSht.getRange(ssMstrShtStartRow,1,NumValues,ssMstrShtMaxCols).getValues();
-      ssLgShtEn.getRange(ssMstrShtStartRow,1,NumValues,ssMstrShtMaxCols).setValues(ssMstrShtData);
-      ssLgShtFr.getRange(ssMstrShtStartRow,1,NumValues,ssMstrShtMaxCols).setValues(ssMstrShtData);
-    }
-    
-    // Standings Sheet
-    if (sht == 0){
-      Logger.log('Standings Sheet Updated');
-      // Update League Name
-      ssLgShtEn.getRange(4,2).setValue(LeagueNameEN + ' Standings')
-      ssLgShtFr.getRange(4,2).setValue('Classement ' + LeagueNameFR)
-      // Update Form Link
-      ssLgShtEn.getRange(2,5).setValue('=HYPERLINK("' + FormUrlEN + '","Send Match Results")');      
-      ssLgShtFr.getRange(2,5).setValue('=HYPERLINK("' + FormUrlFR + '","Envoyer Résultats de Match")'); 
-    }
-    
-    // Cumulative Results Sheet
-    if (sht == 1){
-      Logger.log('Cumulative Results Sheet Updated');
-      WeekGame = ssMstrSht.getRange(2,3,3,1).getValues();
-      ssLgShtEn.getRange(2,3,3,1).setValues(WeekGame);
-      ssLgShtFr.getRange(2,3,3,1).setValues(WeekGame);
+      // Get Range and Data from Master
+      ssMstrShtData = ssMstrSht.getRange(ssMstrShtStartRow,1,NumValues,ssMstrShtNbCol).getValues();
       
-      // Loop through Values in columns K and M to translate each value
-      // Column K (11)
-      ColValues = ssLgShtFr.getRange(ssMstrShtStartRow, 11, NumValues, 1).getValues();
-      for (var row = 0 ; row < NumValues; row++){
-        if (ColValues[row][0] == 'Active') ColValues[row][0] = 'Actif';
-        if (ColValues[row][0] == 'Eliminated') ColValues[row][0] = 'Éliminé';
+      // And copy to Standings
+      ssLgShtEn.getRange(ssMstrShtStartRow,1,NumValues,ssMstrShtNbCol).setValues(ssMstrShtData);
+      ssLgShtFr.getRange(ssMstrShtStartRow,1,NumValues,ssMstrShtNbCol).setValues(ssMstrShtData);
+    }
+    
+    // If Sheet Tites are not initialized, initialize them
+    if(SheetInitializedEN != 1){
+      // Standings Sheet
+      if (sht == 0){
+        Logger.log('Standings Sheet Updated');
+        // Update League Name
+        ssLgShtEn.getRange(4,2).setValue(LeagueNameEN + ' Standings')
+        ssLgShtFr.getRange(4,2).setValue('Classement ' + LeagueNameFR)
+        // Update Form Link
+        ssLgShtEn.getRange(2,5).setValue('=HYPERLINK("' + FormUrlEN + '","Send Match Results")');      
+        ssLgShtFr.getRange(2,5).setValue('=HYPERLINK("' + FormUrlFR + '","Envoyer Résultats de Match")'); 
       }
-      ssLgShtFr.getRange(ssMstrShtStartRow, 11, NumValues, 1).setValues(ColValues);
       
-      // Loop through Values in columns K and M to translate each value
-      // Column M (13)
-      ColValues = ssLgShtFr.getRange(ssMstrShtStartRow, 13, NumValues, 1).getValues();
-      for (var row = 0 ; row < NumValues; row++){
-        if (ColValues[row][0] == 'Yes') ColValues[row][0] = 'Oui';
-        if (ColValues[row][0] == 'No')  ColValues[row][0] = 'Non';
+      // Cumulative Results Sheet
+      if (sht == 1){
+        Logger.log('Cumulative Results Sheet Updated');
+        WeekGame = ssMstrSht.getRange(2,3,3,1).getValues();
+        ssLgShtEn.getRange(2,3,3,1).setValues(WeekGame);
+        ssLgShtFr.getRange(2,3,3,1).setValues(WeekGame);
+        
+        // Loop through Values in columns K and M to translate each value
+        // Column K (11)
+        ColValues = ssLgShtFr.getRange(ssMstrShtStartRow, 11, NumValues, 1).getValues();
+        for (var row = 0 ; row < NumValues; row++){
+          if (ColValues[row][0] == 'Active') ColValues[row][0] = 'Actif';
+          if (ColValues[row][0] == 'Eliminated') ColValues[row][0] = 'Éliminé';
+        }
+        ssLgShtFr.getRange(ssMstrShtStartRow, 11, NumValues, 1).setValues(ColValues);
+        
+        // Loop through Values in columns K and M to translate each value
+        // Column M (13)
+        ColValues = ssLgShtFr.getRange(ssMstrShtStartRow, 13, NumValues, 1).getValues();
+        for (var row = 0 ; row < NumValues; row++){
+          if (ColValues[row][0] == 'Yes') ColValues[row][0] = 'Oui';
+          if (ColValues[row][0] == 'No')  ColValues[row][0] = 'Non';
+        }
+        ssLgShtFr.getRange(ssMstrShtStartRow, 13, NumValues, 1).setValues(ColValues);
       }
-      ssLgShtFr.getRange(ssMstrShtStartRow, 13, NumValues, 1).setValues(ColValues);
-    }
-    
-    // Week Sheet 
-    if (sht == WeekSheet){
-      Logger.log('Week %s Sheet Updated',sht-1);
-      ssMstrStartDate = ssMstrSht.getRange(3,2).getValue();
-      ssMstrEndDate   = ssMstrSht.getRange(4,2).getValue();
-      ssLgShtEn.getRange(3,2).setValue('Start: ' + ssMstrStartDate);
-      ssLgShtEn.getRange(4,2).setValue('End: ' + ssMstrEndDate);
-      ssLgShtFr.getRange(3,2).setValue('Début: ' + ssMstrStartDate);
-      ssLgShtFr.getRange(4,2).setValue('Fin: ' + ssMstrEndDate);
-    }
-    
-    // Hide Unused Rows
-    if(NbPlayers > 0){
-      ssLgShtEn.hideRows(ssMstrShtStartRow, ssMstrShtMaxRows - ssMstrShtStartRow + 1);
-      ssLgShtEn.showRows(ssMstrShtStartRow, NbPlayers);
-      ssLgShtFr.hideRows(ssMstrShtStartRow, ssMstrShtMaxRows - ssMstrShtStartRow + 1);
-      ssLgShtFr.showRows(ssMstrShtStartRow, NbPlayers);
+      
+      // Week Sheet 
+      if (sht == WeekSheet){
+        Logger.log('Week %s Sheet Updated',sht-1);
+        ssMstrStartDate = ssMstrSht.getRange(3,2).getValue();
+        ssMstrEndDate   = ssMstrSht.getRange(4,2).getValue();
+        ssLgShtEn.getRange(3,2).setValue('Start: ' + ssMstrStartDate);
+        ssLgShtEn.getRange(4,2).setValue('End: ' + ssMstrEndDate);
+        ssLgShtFr.getRange(3,2).setValue('Début: ' + ssMstrStartDate);
+        ssLgShtFr.getRange(4,2).setValue('Fin: ' + ssMstrEndDate);
+      }
+      
+      // Hide Unused Rows
+      if(NbPlayers > 0){
+        ssLgShtEn.hideRows(ssMstrShtStartRow, ssMstrShtMaxRows - ssMstrShtStartRow + 1);
+        ssLgShtEn.showRows(ssMstrShtStartRow, NbPlayers);
+        ssLgShtFr.hideRows(ssMstrShtStartRow, ssMstrShtMaxRows - ssMstrShtStartRow + 1);
+        ssLgShtFr.showRows(ssMstrShtStartRow, NbPlayers);
+      }
+      if(sht == 9) {
+        rngSheetInitializedEN.setValue(1);
+        rngSheetInitializedFR.setValue(1);
+      }
     }
   }
 }

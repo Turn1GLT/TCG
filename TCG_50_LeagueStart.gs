@@ -154,36 +154,41 @@ function fcnInitLeague(){
     shtResponses.getRange(2,1,MaxRowRspn-1,MaxColRspn).clearContent();
     shtResponses.getRange(1,ColMatchIDLastVal).setValue(0);
     shtResponsesEN.getRange(2,1,MaxRowRspnEN-1,MaxColRspnEN).clearContent();
-    shtResponsesFR.getRange(2,1,MaxRowRspnFR-1,MaxColRspnFR).clearContent()
+    shtResponsesFR.getRange(2,1,MaxRowRspnFR-1,MaxColRspnFR).clearContent();
+    
+    // Clear Standing Spreadsheets Initialization Values
+    shtConfig.getRange(34,5,2,1).clearContent();
     
     // Week Results
     for (var WeekNum = 1; WeekNum <= 8; WeekNum++){
       // Select Week or Round prefix (League or Tournament)
       if(cfgWeekRound == 'Week') shtWeek = ss.getSheetByName('Week'+WeekNum);
       if(cfgWeekRound == 'Round') shtWeek = ss.getSheetByName('Round'+WeekNum);
+      // Clear Wins/Loss
       shtWeek.getRange(5,5,32,2).clearContent();
-      shtWeek.getRange(5,8,32,106-8).clearContent();
+      // Clear Rest of Information
+      shtWeek.getRange(5,8,32,107-8).clearContent();
     }
     
     Logger.log('League Data Cleared');
     
-    // Clear Weekly Booster Sheet
-    if(ssWeekBstrID != ''){
-      var ssWeekBstr = SpreadsheetApp.openById(ssWeekBstrID);
-      var WeekBstrSheets = ssWeekBstr.getSheets();
-      var WeekBstrNumSheets = ssWeekBstr.getNumSheets();
-      var shtWeekBstr = WeekBstrSheets[0];
-      var MaxCols;
-      
-      for(var sheet = 0; sheet < WeekBstrNumSheets; sheet++){
-        shtWeekBstr = WeekBstrSheets[sheet];
-        MaxCols = shtWeekBstr.getMaxColumns();
-        shtWeekBstr.getRange(4,2,18,MaxCols-1).clearContent();
-      }
-    }
+//    // Clear Weekly Booster Sheet
+//    if(ssWeekBstrID != ''){
+//      var ssWeekBstr = SpreadsheetApp.openById(ssWeekBstrID);
+//      var WeekBstrSheets = ssWeekBstr.getSheets();
+//      var WeekBstrNumSheets = ssWeekBstr.getNumSheets();
+//      var shtWeekBstr = WeekBstrSheets[0];
+//      var MaxCols;
+//      
+//      for(var sheet = 0; sheet < WeekBstrNumSheets; sheet++){
+//        shtWeekBstr = WeekBstrSheets[sheet];
+//        MaxCols = shtWeekBstr.getMaxColumns();
+//        shtWeekBstr.getRange(4,2,18,MaxCols-1).clearContent();
+//      }
+//    }
     
     // Update Standings Copies
-    fcnCopyStandingsResults(ss, shtConfig, 0, 1);
+    fcnCopyStandingsSheets(ss, shtConfig, 0, 1);
     Logger.log('Standings Updated');
     
     // Clear Players DB and Card Pools
@@ -256,14 +261,16 @@ function fcnResetLeagueMatch(){
       // Select Week or Round prefix (League or Tournament)
       if(cfgWeekRound == 'Week') shtWeek = ss.getSheetByName('Week'+WeekNum);
       if(cfgWeekRound == 'Round') shtWeek = ss.getSheetByName('Round'+WeekNum);
+      // Clear Wins/Loss
       shtWeek.getRange(5,5,32,2).clearContent();
-      shtWeek.getRange(5,8,32,106-8).clearContent();
+      // Clear Rest of Information
+      shtWeek.getRange(5,8,32,107-8).clearContent();
     }
     
     Logger.log('League Data Cleared');
     
     // Update Standings Copies
-    fcnCopyStandingsResults(ss, shtConfig, 0, 1);
+    fcnCopyStandingsSheets(ss, shtConfig, 0, 1);
     Logger.log('Standings Updated');
   }
 }

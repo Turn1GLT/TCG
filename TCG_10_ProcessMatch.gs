@@ -180,7 +180,7 @@ function fcnProcessMatchTCG() {
         
         Logger.log('Copy to League Spreadsheets');
         // Copy all data to League Spreadsheet
-        fcnCopyStandingsResults(ss, shtConfig, Status[2], 0);
+        fcnCopyStandingsSheets(ss, shtConfig, Status[2], 0);
         Logger.log('------------ Standings Updated ------------');
       }
       

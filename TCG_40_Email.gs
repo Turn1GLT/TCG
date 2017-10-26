@@ -123,7 +123,7 @@ function fcnSendConfirmEmailEN(shtConfig, Address, MatchData) {
   }
 
   // Set Email Subject
-  EmailSubject = LeagueNameEN + " - Week " + Week + " - Match Result" ;
+  EmailSubject = LeagueNameEN + " - Match Result" + " Week " + Week ;
     
   // Start of Email Message
   EmailMessage = '<html><body>';
@@ -226,7 +226,7 @@ function fcnSendConfirmEmailFR(shtConfig, Address, MatchData) {
   }
 
   // Set Email Subject
-  EmailSubject = LeagueNameFR + " - Semaine " + Week + " - Rapport de Match" ;
+  EmailSubject = LeagueNameFR + " - Rapport de Match" + " Semaine " + Week;
     
   // Start of Email Message
   EmailMessage = "<html><body>";
@@ -340,7 +340,7 @@ function fcnSendErrorEmailEN(shtConfig, Address, MatchData, MatchID, Status) {
   }
   
   // Set Email Subject
-  EmailSubject = LeagueNameEN + ' - Week ' + Week + ' - Match Report Error' ;
+  EmailSubject = LeagueNameEN + ' - Match Report Error' + ' Week ' + Week ;
   
   // Start of Email Message
   EmailMessage = '<html><body>';
@@ -466,7 +466,7 @@ function fcnSendErrorEmailFR(shtConfig, Address, MatchData, MatchID, Status) {
   }
   
   // Set Email Subject
-  EmailSubject = LeagueNameFR + ' - Semaine ' + Week + ' - Erreur Rapport de Match' ;
+  EmailSubject = LeagueNameFR + ' - Erreur Rapport de Match' + ' Semaine ' + Week ;
   
   // Start of Email Message
   EmailMessage = "<html><body>";
@@ -875,7 +875,7 @@ function fcnSendBstrCnfrmEmail(Player, Week, EmailAddresses, PackData, shtConfig
     var LeagueName = Location + ' ' + LeagueTypeEN;
     
     // Set Email Subject
-    EmailSubject = LeagueName + " - Week " + Week + " - Weekly Booster" ;
+    EmailSubject = LeagueName + " - Weekly Booster" + " Week " + Week ;
     
     // Start of Email Message
     EmailMessage = '<html><body>';
@@ -921,7 +921,7 @@ function fcnSendBstrCnfrmEmail(Player, Week, EmailAddresses, PackData, shtConfig
     var LeagueName = LeagueTypeFR + ' du ' + Location;
     
     // Set Email Subject
-    EmailSubject = LeagueName + " - Semaine " + Week + " - Booster de Semaine" ;
+    EmailSubject = LeagueName + " - Booster de Semaine" + " Semaine " + Week ;
     
     // Start of Email Message
     EmailMessage = '<html><body>';
@@ -993,7 +993,7 @@ function fcnSendBstrErrorEmail(Player, Week, EmailAddresses, PackData, ErrorMsg,
     var UrlWeekBstrForm = shtConfig.getRange(27,2).getValue();
     
     // Set Email Subject
-    EmailSubject = LeagueName + " - Week " + Week + " - Weekly Booster Error" ;
+    EmailSubject = LeagueName + " - Weekly Booster Error"  + " Week " + Week;
     
     // Start of Email Message
     EmailMessage = "<html><body>";
@@ -1037,7 +1037,7 @@ function fcnSendBstrErrorEmail(Player, Week, EmailAddresses, PackData, ErrorMsg,
     var UrlWeekBstrForm = shtConfig.getRange(28,2).getValue();
     
     // Set Email Subject
-    EmailSubject = LeagueName + " - Semaine " + Week + " - Erreur Booster de Semaine" ;
+    EmailSubject = LeagueName + " - Erreur Booster de Semaine" + " Semaine " + Week ;
     
     // Start of Email Message
     EmailMessage = "<html><body>";

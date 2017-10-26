@@ -46,7 +46,7 @@ function fcnRegistrationTCG(shtResponse, RowResponse){
     fcnUpdateStandings(ss, shtConfig);
     
     // Copy all data to Standing League Spreadsheet
-    fcnCopyStandingsResults(ss, shtConfig, 0, 1);
+    fcnCopyStandingsSheets(ss, shtConfig, 0, 1);
     
     // Send Confirmation to New Player
     fcnSendNewPlayerConf(shtConfig, PlayerData);

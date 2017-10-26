@@ -193,7 +193,7 @@ function onWeekChangeTCG_Master(){
   if(TotalMatch == TotalWins &&  TotalMatch == TotalLoss && TotalWins == TotalLoss) {
     
     // Send Weekly Report Email
-    EmailSubjectEN = LeagueNameEN +" - Week " + LastWeek + " Report";
+    EmailSubjectEN = LeagueNameEN +" - Week Report " + LastWeek;
     EmailSubjectFR = LeagueNameFR +" - Rapport de la semaine " + LastWeek;
     
     // Generate Week Report Messages
@@ -262,7 +262,7 @@ function onWeekChangeTCG_Master(){
     fcnUpdateStandings(ss, shtConfig);
     
     // Copy all data to League Spreadsheet
-    fcnCopyStandingsResults(ss, shtConfig, LastWeek, 0);
+    fcnCopyStandingsSheets(ss, shtConfig, LastWeek, 0);
   }
   
   // If Week Match Data is not Valid

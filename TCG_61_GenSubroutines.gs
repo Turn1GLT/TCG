@@ -228,12 +228,44 @@ function subGetEmailRecipients(shtPlayers, NbPlayers, Language){
   return EmailRecipients;
 }
       
+
+// **********************************************
+// function subCreateArray(X,Y)
+//
+// This function creates and array of two dimensions X-Y
+// First
+//
+// **********************************************
+
+function subCreateArray(X,Y){
+  
+  var newArray;
+  
+  // If dimension X is greater than zero
+  if(X > 0){
+    // Create Array of dimension X
+    newArray = new Array(X)
+    // Loops in dimension X to create dimension Y
+    for(var x = 0; x < X; x++){
+      // If a dimension Y is greater than zero, dimension Y exists
+      if(Y > 0){
+        newArray[x] = new Array(Y);
+        for (var y = 0; y < Y; y++) newArray[x][y] = '';
+      }
+      // If not, Array is one dimension X
+      else{
+        newArray[x] = '';
+      }
+    }
+  }
+  else{
+    newArray = '';
+  }
+  return newArray;
+} 
       
       
-      
-      
-      
-      
+   
       
       
       
